@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Base64
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -170,10 +171,15 @@ publishing {
 
 signing {
     val signingKeyId = System.getenv("SIGNING_KEY_ID")
-    val signingKey = System.getenv("SIGNING_KEY")
+    val rawKey = System.getenv("SIGNING_KEY")
     val signingPassword = System.getenv("SIGNING_PASSWORD")
 
-    if (!signingKey.isNullOrBlank()) {
+    if (!rawKey.isNullOrBlank()) {
+        val signingKey = try {
+            String(Base64.getDecoder().decode(rawKey))
+        } catch (e: IllegalArgumentException) {
+            rawKey
+        }
         useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
         sign(publishing.publications)
     }
