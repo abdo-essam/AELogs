@@ -171,7 +171,6 @@ publishing {
 }
 
 signing {
-    val signingKeyId = System.getenv("SIGNING_KEY_ID")
     val signingKeyRaw = System.getenv("SIGNING_KEY")
     val signingPassword = System.getenv("SIGNING_PASSWORD")
 
@@ -183,7 +182,7 @@ signing {
             } catch (_: IllegalArgumentException) {
                 signingKeyRaw.trim() // Already raw ASCII-armored
             }
-        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+        useInMemoryPgpKeys(signingKey, signingPassword)
         sign(publishing.publications)
     }
 }
