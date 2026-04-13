@@ -14,6 +14,7 @@ import com.ae.devlens.ui.theme.DevLensSpacing
  * The active plugin's [UIPlugin.HeaderContent], [UIPlugin.HeaderActions],
  * and [UIPlugin.Content] are rendered below the tab row.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun DevLensContent(
     plugins: List<UIPlugin>,

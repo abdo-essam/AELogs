@@ -52,12 +52,12 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
-            implementation(compose.materialIconsExtended)
+            implementation("org.jetbrains.compose.runtime:runtime:1.7.3")
+            implementation("org.jetbrains.compose.foundation:foundation:1.7.3")
+            implementation("org.jetbrains.compose.material3:material3:1.7.3")
+            implementation("org.jetbrains.compose.ui:ui:1.7.3")
+            implementation("org.jetbrains.compose.components:components-resources:1.7.3")
+            implementation("org.jetbrains.compose.material:material-icons-extended:1.7.3")
 
             implementation(libs.kotlinx.datetime)
             implementation(libs.ktor.serialization.kotlinx.json)
