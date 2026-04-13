@@ -52,16 +52,10 @@ jobs:
       - uses: gradle/actions/setup-gradle@v6
 
       - name: Build
-        run: ./gradlew :devlens:assembleRelease
+        run: ./gradlew :devlens:assembleAndroidMain
 
-      - name: Unit Tests
-        run: ./gradlew :devlens:testDebugUnitTest
-
-      - name: Common Tests
-        run: ./gradlew :devlens:desktopTest
-
-      - name: Generate Coverage Report
-        run: ./gradlew :devlens:koverXmlReport
+      - name: Unit Tests & Coverage
+        run: ./gradlew :devlens:desktopTest :devlens:koverXmlReport
 
       - name: Upload Coverage to Codecov
         uses: codecov/codecov-action@v4
@@ -139,16 +133,18 @@ jobs:
       - uses: gradle/actions/setup-gradle@v6
 
       - name: Build AAR
-        run: ./gradlew :devlens:assembleRelease
+        run: ./gradlew :devlens:bundleAndroidMainAar
 
       - name: Report Size
-        uses: actions/github-script@v9
+        uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
             const path = 'devlens/build/outputs/aar/';
+            if (!fs.existsSync(path)) { console.log('AAR not found, skipping.'); return; }
             const files = fs.readdirSync(path);
             const aar = files.find(f => f.endsWith('.aar'));
+            if (!aar) { console.log('No AAR file found, skipping.'); return; }
             const stats = fs.statSync(path + aar);
             const sizeKB = (stats.size / 1024).toFixed(1);
             

@@ -70,7 +70,6 @@ nav:
     - Custom Plugins: custom-plugins.md
     - Kermit Integration: kermit-integration.md
     - Ktor Integration: ktor-integration.md
-  - API Reference: api/index.html
   - Changelog: changelog.md
   - Contributing: contributing.md
 
