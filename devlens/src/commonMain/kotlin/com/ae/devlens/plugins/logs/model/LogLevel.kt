@@ -12,15 +12,17 @@ enum class LogLevel {
     INFO,
     WARN,
     ERROR,
-    ASSERT;
+    ASSERT,
+    ;
 
     val label: String
-        get() = when (this) {
-            VERBOSE -> "V"
-            DEBUG -> "D"
-            INFO -> "I"
-            WARN -> "W"
-            ERROR -> "E"
-            ASSERT -> "A"
-        }
+        get() =
+            when (this) {
+                VERBOSE -> "V"
+                DEBUG -> "D"
+                INFO -> "I"
+                WARN -> "W"
+                ERROR -> "E"
+                ASSERT -> "A"
+            }
 }

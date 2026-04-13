@@ -30,9 +30,8 @@ import kotlinx.coroutines.launch
  * ```
  */
 class LogsPlugin(
-    internal val logStore: LogStore = LogStore()
+    internal val logStore: LogStore = LogStore(),
 ) : UIPlugin {
-
     override val id: String = ID
     override val name: String = "Logs"
     override val icon: ImageVector = Icons.Default.Description
@@ -45,11 +44,12 @@ class LogsPlugin(
     private var onCloseCallback: (() -> Unit)? = null
 
     override fun onAttach(inspector: AEDevLens) {
-        badgeJob = scope.launch {
-            logStore.logsFlow.collect { logs ->
-                _badgeCount.value = if (logs.isEmpty()) null else logs.size
+        badgeJob =
+            scope.launch {
+                logStore.logsFlow.collect { logs ->
+                    _badgeCount.value = if (logs.isEmpty()) null else logs.size
+                }
             }
-        }
     }
 
     override fun onOpen() {
@@ -80,7 +80,7 @@ class LogsPlugin(
         LogsContent(
             logStore = logStore,
             modifier = modifier,
-            onCloseInspector = { onCloseCallback?.invoke() }
+            onCloseInspector = { onCloseCallback?.invoke() },
         )
     }
 

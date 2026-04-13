@@ -11,15 +11,16 @@ import com.ae.devlens.ui.theme.DevLensSpacing
 @Composable
 internal fun EmptyPlaceholder() {
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(DevLensSpacing.x10),
-        contentAlignment = Alignment.Center
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(DevLensSpacing.x10),
+        contentAlignment = Alignment.Center,
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 text = "📭",
-                style = MaterialTheme.typography.headlineLarge
+                style = MaterialTheme.typography.headlineLarge,
             )
 
             Spacer(modifier = Modifier.height(DevLensSpacing.x3))
@@ -27,7 +28,7 @@ internal fun EmptyPlaceholder() {
             Text(
                 text = "No logs found",
                 style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
             Spacer(modifier = Modifier.height(DevLensSpacing.x1))
@@ -35,7 +36,7 @@ internal fun EmptyPlaceholder() {
             Text(
                 text = "Logs will appear here as they are generated",
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
             )
         }
     }

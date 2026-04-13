@@ -32,6 +32,7 @@ class AEDevLensController {
  *
  * Available inside [com.ae.devlens.AEDevLensProvider].
  */
-val LocalAEDevLensController = compositionLocalOf<AEDevLensController> {
-    error("AEDevLensController not provided. Wrap your content with AEDevLensProvider.")
-}
+val LocalAEDevLensController =
+    compositionLocalOf<AEDevLensController> {
+        error("AEDevLensController not provided. Wrap your content with AEDevLensProvider.")
+    }

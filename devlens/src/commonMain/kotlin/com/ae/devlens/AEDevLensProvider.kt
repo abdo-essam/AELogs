@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
@@ -45,7 +44,7 @@ import com.ae.devlens.ui.theme.DevLensSpacing
 fun AEDevLensProvider(
     inspector: AEDevLens = AEDevLens.default,
     enabled: Boolean = true,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     if (!enabled) {
         content()
@@ -77,19 +76,20 @@ fun AEDevLensProvider(
     CompositionLocalProvider(LocalAEDevLensController provides controller) {
         AEDevLensTheme(colorScheme = config.colorScheme) {
             BoxWithConstraints(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .then(
-                        if (config.enableLongPress) {
-                            Modifier.pointerInput(Unit) {
-                                detectTapGestures(
-                                    onLongPress = { controller.show() }
-                                )
-                            }
-                        } else {
-                            Modifier
-                        }
-                    )
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .then(
+                            if (config.enableLongPress) {
+                                Modifier.pointerInput(Unit) {
+                                    detectTapGestures(
+                                        onLongPress = { controller.show() },
+                                    )
+                                }
+                            } else {
+                                Modifier
+                            },
+                        ),
             ) {
                 content()
 
@@ -97,12 +97,13 @@ fun AEDevLensProvider(
                 if (config.showFloatingButton) {
                     AEDevLensFloatingButton(
                         onClick = { controller.show() },
-                        modifier = Modifier
-                            .align(config.floatingButtonAlignment)
-                            .padding(
-                                end = DevLensSpacing.x5,
-                                bottom = 100.dp
-                            )
+                        modifier =
+                            Modifier
+                                .align(config.floatingButtonAlignment)
+                                .padding(
+                                    end = DevLensSpacing.x5,
+                                    bottom = 100.dp,
+                                ),
                     )
                 }
 
@@ -112,7 +113,7 @@ fun AEDevLensProvider(
                     AEDevLensContainer(
                         plugins = uiPlugins,
                         isLargeScreen = isLargeScreen,
-                        onDismiss = { controller.hide() }
+                        onDismiss = { controller.hide() },
                     )
                 }
             }

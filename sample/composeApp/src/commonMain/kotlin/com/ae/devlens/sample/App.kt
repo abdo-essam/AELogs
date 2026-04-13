@@ -19,26 +19,27 @@ fun App() {
     MaterialTheme {
         AEDevLensProvider(
             enabled = true,
-            inspector = AEDevLens.default.apply {
-                if (getPlugin<LogsPlugin>() == null) {
-                    install(LogsPlugin())
-                }
-            }
+            inspector =
+                AEDevLens.default.apply {
+                    if (getPlugin<LogsPlugin>() == null) {
+                        install(LogsPlugin())
+                    }
+                },
         ) {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Center,
             ) {
                 Text("AEDevLens Sample App")
                 Text("The Developer Tool SDK is active!")
-                
+
                 Button(onClick = {
                     AEDevLens.default.log(LogLevel.INFO, "SampleApp", "Hello from the sample app!")
                 }) {
                     Text("Trigger Info Log")
                 }
-                
+
                 Button(onClick = {
                     AEDevLens.default.log(LogLevel.ERROR, "SampleApp", "Uh oh! Something went wrong!")
                 }) {

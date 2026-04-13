@@ -19,15 +19,16 @@ internal fun LogTypeBadge(log: LogEntry) {
     val label = LogUtils.getBadgeLabel(log)
 
     Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(6.dp))
-            .background(color)
-            .padding(horizontal = 8.dp, vertical = 4.dp)
+        modifier =
+            Modifier
+                .clip(RoundedCornerShape(6.dp))
+                .background(color)
+                .padding(horizontal = 8.dp, vertical = 4.dp),
     ) {
         Text(
             text = label,
             style = MaterialTheme.typography.labelSmall,
-            color = Color.White
+            color = Color.White,
         )
     }
 }
@@ -37,15 +38,16 @@ internal fun HttpMethodBadge(method: String) {
     val color = LogUtils.getMethodColor(method)
 
     Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(4.dp))
-            .background(color)
-            .padding(horizontal = 6.dp, vertical = 2.dp)
+        modifier =
+            Modifier
+                .clip(RoundedCornerShape(4.dp))
+                .background(color)
+                .padding(horizontal = 6.dp, vertical = 2.dp),
     ) {
         Text(
             text = method,
             style = MaterialTheme.typography.labelSmall,
-            color = Color.White
+            color = Color.White,
         )
     }
 }
@@ -55,15 +57,16 @@ internal fun HttpStatusBadge(statusCode: Int) {
     val color = LogUtils.getStatusCodeColor(statusCode)
 
     Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(4.dp))
-            .background(color.copy(alpha = 0.15f))
-            .padding(horizontal = 6.dp, vertical = 2.dp)
+        modifier =
+            Modifier
+                .clip(RoundedCornerShape(4.dp))
+                .background(color.copy(alpha = 0.15f))
+                .padding(horizontal = 6.dp, vertical = 2.dp),
     ) {
         Text(
             text = statusCode.toString(),
             style = MaterialTheme.typography.labelSmall,
-            color = color
+            color = color,
         )
     }
 }

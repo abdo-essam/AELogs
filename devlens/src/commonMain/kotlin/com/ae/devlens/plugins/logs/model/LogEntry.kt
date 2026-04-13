@@ -15,33 +15,36 @@ data class LogEntry(
     val level: LogLevel,
     val tag: String,
     val message: String,
-    val timestamp: Long = Clock.System.now().toEpochMilliseconds()
+    val timestamp: Long = Clock.System.now().toEpochMilliseconds(),
 ) {
     // --- Type Classification ---
 
     val isResponse: Boolean
-        get() = message.contains("<--") ||
+        get() =
+            message.contains("<--") ||
                 message.contains("RESPONSE", ignoreCase = true) ||
                 (httpStatusCode != null && !message.contains("-->"))
 
     val isRequest: Boolean
-        get() = !isResponse && (
+        get() =
+            !isResponse && (
                 message.contains("-->") ||
-                        message.contains("REQUEST", ignoreCase = true) ||
-                        httpMethod != null
-                )
+                    message.contains("REQUEST", ignoreCase = true) ||
+                    httpMethod != null
+            )
 
     val isNetworkLog: Boolean
-        get() = !isAnalytics && (
+        get() =
+            !isAnalytics && (
                 tag.contains("HTTP", ignoreCase = true) ||
-                        tag.contains("Network", ignoreCase = true) ||
-                        tag.contains("API", ignoreCase = true) ||
-                        tag.contains("ktor", ignoreCase = true) ||
-                        isRequest ||
-                        isResponse ||
-                        url != null ||
-                        httpMethod != null
-                )
+                    tag.contains("Network", ignoreCase = true) ||
+                    tag.contains("API", ignoreCase = true) ||
+                    tag.contains("ktor", ignoreCase = true) ||
+                    isRequest ||
+                    isResponse ||
+                    url != null ||
+                    httpMethod != null
+            )
 
     val isError: Boolean
         get() = level == LogLevel.ERROR || level == LogLevel.ASSERT
@@ -55,50 +58,58 @@ data class LogEntry(
         get() = HTTP_METHODS.firstOrNull { message.contains(it) }
 
     val httpStatusCode: Int?
-        get() = runCatching {
-            STATUS_CODE_PATTERN.find(message)?.groupValues?.get(1)?.toIntOrNull()
-                ?.takeIf { it in 100..599 }
-        }.getOrNull()
+        get() =
+            runCatching {
+                STATUS_CODE_PATTERN
+                    .find(message)
+                    ?.groupValues
+                    ?.get(1)
+                    ?.toIntOrNull()
+                    ?.takeIf { it in 100..599 }
+            }.getOrNull()
 
     val url: String?
-        get() = runCatching {
-            URL_PATTERN.find(message)?.value
-        }.getOrNull()
+        get() =
+            runCatching {
+                URL_PATTERN.find(message)?.value
+            }.getOrNull()
 
     val endpoint: String?
-        get() = url?.runCatching {
-            val path = substringAfter("://").substringAfter("/").substringBefore("?")
-            if (path.isNotEmpty()) "/$path" else null
-        }?.getOrNull()
+        get() =
+            url
+                ?.runCatching {
+                    val path = substringAfter("://").substringAfter("/").substringBefore("?")
+                    if (path.isNotEmpty()) "/$path" else null
+                }?.getOrNull()
 
     // --- Display Helpers ---
 
     val displayTag: String
-        get() = when {
-            isAnalytics -> "ANALYTICS"
-            isError -> "ERROR"
-            isResponse -> "RESPONSE"
-            isRequest -> "REQUEST"
-            isNetworkLog -> "NETWORK"
-            else -> "LOG"
-        }
+        get() =
+            when {
+                isAnalytics -> "ANALYTICS"
+                isError -> "ERROR"
+                isResponse -> "RESPONSE"
+                isRequest -> "REQUEST"
+                isNetworkLog -> "NETWORK"
+                else -> "LOG"
+            }
 
     val cleanMessage: String
-        get() = message
-            .lineSequence()
-            .filterNot { line ->
-                EXCLUDED_LINES.any { excluded ->
-                    line.trim().startsWith(excluded, ignoreCase = true)
-                }
-            }
-            .filterNot { line ->
-                line.contains(":") &&
+        get() =
+            message
+                .lineSequence()
+                .filterNot { line ->
+                    EXCLUDED_LINES.any { excluded ->
+                        line.trim().startsWith(excluded, ignoreCase = true)
+                    }
+                }.filterNot { line ->
+                    line.contains(":") &&
                         HEADER_PATTERNS.any { it.matches(line.trim()) } &&
                         !IMPORTANT_HEADERS.any { line.trim().startsWith(it, ignoreCase = true) }
-            }
-            .joinToString("\n")
-            .trim()
-            .ifEmpty { message }
+                }.joinToString("\n")
+                .trim()
+                .ifEmpty { message }
 
     val jsonBody: String?
         get() = extractJson(message)?.let { formatJson(it) }
@@ -118,7 +129,12 @@ data class LogEntry(
         }
     }
 
-    private fun extractJsonBlock(text: String, startIndex: Int, open: Char, close: Char): String? {
+    private fun extractJsonBlock(
+        text: String,
+        startIndex: Int,
+        open: Char,
+        close: Char,
+    ): String? {
         var count = 0
         for (i in startIndex until text.length) {
             when (text[i]) {
@@ -133,20 +149,20 @@ data class LogEntry(
     }
 
     @OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
-    private fun formatJson(json: String): String {
-        return runCatching {
+    private fun formatJson(json: String): String =
+        runCatching {
             val jsonElement = PRETTY_JSON.parseToJsonElement(json)
             PRETTY_JSON.encodeToString(JsonElement.serializer(), jsonElement)
         }.getOrDefault(json)
-    }
 
     companion object {
         const val ANALYTICS_TAG = "Analytics"
 
-        private val PRETTY_JSON = Json {
-            prettyPrint = true
-            prettyPrintIndent = "  "
-        }
+        private val PRETTY_JSON =
+            Json {
+                prettyPrint = true
+                prettyPrintIndent = "  "
+            }
 
         private val HTTP_METHODS = listOf("GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS")
 
@@ -162,21 +178,23 @@ data class LogEntry(
             listOf(Regex("^[A-Za-z][A-Za-z0-9-]*:\\s*.+$"))
         }
 
-        private val EXCLUDED_LINES = listOf(
-            "COMMON HEADERS",
-            "CONTENT HEADERS",
-            "BODY START",
-            "BODY END",
-            "REQUEST",
-            "RESPONSE",
-            "HEADERS",
-            "-->",
-            "<--"
-        )
+        private val EXCLUDED_LINES =
+            listOf(
+                "COMMON HEADERS",
+                "CONTENT HEADERS",
+                "BODY START",
+                "BODY END",
+                "REQUEST",
+                "RESPONSE",
+                "HEADERS",
+                "-->",
+                "<--",
+            )
 
-        private val IMPORTANT_HEADERS = listOf(
-            "Content-Type",
-            "Authorization"
-        )
+        private val IMPORTANT_HEADERS =
+            listOf(
+                "Content-Type",
+                "Authorization",
+            )
     }
 }

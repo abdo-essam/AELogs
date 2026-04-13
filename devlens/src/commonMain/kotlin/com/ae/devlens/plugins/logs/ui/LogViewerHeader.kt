@@ -15,30 +15,31 @@ internal fun LogViewerHeader(
     logCount: Int,
     totalCount: Int,
     onClearAll: () -> Unit,
-    onCopyAll: () -> Unit
+    onCopyAll: () -> Unit,
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = DevLensSpacing.x5),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = DevLensSpacing.x5),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = "Showing $logCount of $totalCount logs",
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         Row(horizontalArrangement = Arrangement.spacedBy(DevLensSpacing.x1)) {
             OutlinedButton(
                 onClick = onCopyAll,
-                contentPadding = PaddingValues(horizontal = DevLensSpacing.x3, vertical = DevLensSpacing.x1)
+                contentPadding = PaddingValues(horizontal = DevLensSpacing.x3, vertical = DevLensSpacing.x1),
             ) {
                 Icon(
                     imageVector = Icons.Default.ContentCopy,
                     contentDescription = "Copy all",
-                    modifier = Modifier.size(DevLensSpacing.x4)
+                    modifier = Modifier.size(DevLensSpacing.x4),
                 )
                 Spacer(modifier = Modifier.width(DevLensSpacing.x1))
                 Text("Copy", style = MaterialTheme.typography.labelSmall)
@@ -46,12 +47,12 @@ internal fun LogViewerHeader(
 
             Button(
                 onClick = onClearAll,
-                contentPadding = PaddingValues(horizontal = DevLensSpacing.x3, vertical = DevLensSpacing.x1)
+                contentPadding = PaddingValues(horizontal = DevLensSpacing.x3, vertical = DevLensSpacing.x1),
             ) {
                 Icon(
                     imageVector = Icons.Default.DeleteOutline,
                     contentDescription = "Clear all",
-                    modifier = Modifier.size(DevLensSpacing.x4)
+                    modifier = Modifier.size(DevLensSpacing.x4),
                 )
                 Spacer(modifier = Modifier.width(DevLensSpacing.x1))
                 Text("Clear", style = MaterialTheme.typography.labelSmall)

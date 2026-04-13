@@ -35,8 +35,9 @@ import kotlinx.coroutines.flow.update
  * inspector.install(MyCustomPlugin())
  * ```
  */
-class AEDevLens private constructor(val config: AEDevLensConfig) {
-
+class AEDevLens private constructor(
+    val config: AEDevLensConfig,
+) {
     private val _plugins = MutableStateFlow<List<DevLensPlugin>>(emptyList())
 
     /** All registered plugins */
@@ -48,8 +49,9 @@ class AEDevLens private constructor(val config: AEDevLensConfig) {
 
     /** The built-in log store — shortcut for quick logging */
     val logStore: LogStore
-        get() = getPlugin<LogsPlugin>()?.logStore
-            ?: error("LogsPlugin is not installed. Install it with inspector.install(LogsPlugin())")
+        get() =
+            getPlugin<LogsPlugin>()?.logStore
+                ?: error("LogsPlugin is not installed. Install it with inspector.install(LogsPlugin())")
 
     init {
         // Install the built-in LogsPlugin by default
@@ -107,21 +109,21 @@ class AEDevLens private constructor(val config: AEDevLensConfig) {
      * val logsPlugin = inspector.getPlugin<LogsPlugin>()
      * ```
      */
-    inline fun <reified T : DevLensPlugin> getPlugin(): T? {
-        return plugins.value.filterIsInstance<T>().firstOrNull()
-    }
+    inline fun <reified T : DevLensPlugin> getPlugin(): T? = plugins.value.filterIsInstance<T>().firstOrNull()
 
     /**
      * Get a plugin by its ID.
      */
-    fun getPluginById(id: String): DevLensPlugin? {
-        return _plugins.value.find { it.id == id }
-    }
+    fun getPluginById(id: String): DevLensPlugin? = _plugins.value.find { it.id == id }
 
     /**
      * Shortcut: Log a message to the built-in LogStore.
      */
-    fun log(level: LogLevel, tag: String, message: String) {
+    fun log(
+        level: LogLevel,
+        tag: String,
+        message: String,
+    ) {
         val logsPlugin = _plugins.value.filterIsInstance<LogsPlugin>().firstOrNull()
         logsPlugin?.logStore?.log(level, tag, message)
     }
@@ -162,14 +164,15 @@ class AEDevLens private constructor(val config: AEDevLensConfig) {
          *
          * Use this for testing or when you need multiple isolated instances.
          */
-        fun create(config: AEDevLensConfig = AEDevLensConfig()): AEDevLens {
-            return AEDevLens(config)
-        }
+        fun create(config: AEDevLensConfig = AEDevLensConfig()): AEDevLens = AEDevLens(config)
 
         /**
          * Safely call a plugin method, catching and logging any exceptions.
          */
-        internal fun safeCall(pluginId: String, block: () -> Unit) {
+        internal fun safeCall(
+            pluginId: String,
+            block: () -> Unit,
+        ) {
             runCatching { block() }
                 .onFailure { e ->
                     // Optionally log via an error handler or ignore if none exists.

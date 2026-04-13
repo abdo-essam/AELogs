@@ -17,12 +17,18 @@ group = "io.github.abdo-essam"
 version = project.findProperty("VERSION_NAME")?.toString() ?: "0.0.1-SNAPSHOT"
 
 kotlin {
-    explicitApi()
+    explicitApiWarning()
 
     androidLibrary {
         namespace = "com.ae.devlens"
-        compileSdk = libs.versions.android.compileSdk.get().toInt()
-        minSdk = libs.versions.android.minSdk.get().toInt()
+        compileSdk =
+            libs.versions.android.compileSdk
+                .get()
+                .toInt()
+        minSdk =
+            libs.versions.android.minSdk
+                .get()
+                .toInt()
 
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
@@ -33,7 +39,7 @@ kotlin {
     listOf(
         iosX64(),
         iosArm64(),
-        iosSimulatorArm64()
+        iosSimulatorArm64(),
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "AEDevLens"
@@ -107,12 +113,12 @@ val javadocJar by tasks.registering(Jar::class) {
 publishing {
     publications.withType<MavenPublication> {
         artifact(javadocJar)
-        
+
         pom {
             name.set("AEDevLens")
             description.set(
                 "Extensible on-device dev tools SDK for Kotlin Multiplatform — " +
-                "inspect logs, network, and more with a beautiful Compose UI."
+                    "inspect logs, network, and more with a beautiful Compose UI.",
             )
             url.set("https://github.com/abdo-essam/AEDevLens")
             inceptionYear.set("2025")

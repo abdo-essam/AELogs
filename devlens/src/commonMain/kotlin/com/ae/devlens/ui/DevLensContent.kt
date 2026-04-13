@@ -18,17 +18,17 @@ import com.ae.devlens.ui.theme.DevLensSpacing
 internal fun DevLensContent(
     plugins: List<UIPlugin>,
     onDismiss: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     if (plugins.isEmpty()) {
         Box(
             modifier = modifier.fillMaxSize(),
-            contentAlignment = androidx.compose.ui.Alignment.Center
+            contentAlignment = androidx.compose.ui.Alignment.Center,
         ) {
             Text(
                 text = "No plugins installed",
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
         return
@@ -40,16 +40,17 @@ internal fun DevLensContent(
     Column(modifier = modifier.fillMaxSize()) {
         // Header row with title and close
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = DevLensSpacing.x5, vertical = DevLensSpacing.x3),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = DevLensSpacing.x5, vertical = DevLensSpacing.x3),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
         ) {
             Text(
                 text = "AEDevLens",
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
             )
 
             // Active plugin's header actions
@@ -64,7 +65,7 @@ internal fun DevLensContent(
                 selectedTabIndex = selectedIndex,
                 containerColor = MaterialTheme.colorScheme.surface,
                 contentColor = MaterialTheme.colorScheme.primary,
-                edgePadding = DevLensSpacing.x4
+                edgePadding = DevLensSpacing.x4,
             ) {
                 plugins.forEachIndexed { index, plugin ->
                     val badgeCount by plugin.badgeCount.collectAsState()
@@ -80,23 +81,23 @@ internal fun DevLensContent(
                                         Badge {
                                             Text(
                                                 text = if (badgeCount!! > 99) "99+" else badgeCount.toString(),
-                                                style = MaterialTheme.typography.labelSmall
+                                                style = MaterialTheme.typography.labelSmall,
                                             )
                                         }
-                                    }
+                                    },
                                 ) {
                                     Icon(
                                         imageVector = plugin.icon,
-                                        contentDescription = plugin.name
+                                        contentDescription = plugin.name,
                                     )
                                 }
                             } else {
                                 Icon(
                                     imageVector = plugin.icon,
-                                    contentDescription = plugin.name
+                                    contentDescription = plugin.name,
                                 )
                             }
-                        }
+                        },
                     )
                 }
             }
@@ -108,7 +109,7 @@ internal fun DevLensContent(
         // Active plugin's main content (with error boundary)
         SafePluginContent(
             plugin = selectedPlugin,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         )
     }
 }

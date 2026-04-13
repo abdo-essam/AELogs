@@ -23,25 +23,26 @@ import com.ae.devlens.core.UIPlugin
 internal fun AEDevLensContainer(
     plugins: List<UIPlugin>,
     isLargeScreen: Boolean,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     if (isLargeScreen) {
         // Tablets / Desktop → Centered Dialog
         Dialog(
             onDismissRequest = onDismiss,
-            properties = DialogProperties(usePlatformDefaultWidth = false)
+            properties = DialogProperties(usePlatformDefaultWidth = false),
         ) {
             Surface(
-                modifier = Modifier
-                    .fillMaxWidth(0.85f)
-                    .fillMaxHeight(0.8f),
+                modifier =
+                    Modifier
+                        .fillMaxWidth(0.85f)
+                        .fillMaxHeight(0.8f),
                 shape = RoundedCornerShape(24.dp),
                 color = MaterialTheme.colorScheme.surface,
-                tonalElevation = 6.dp
+                tonalElevation = 6.dp,
             ) {
                 DevLensContent(
                     plugins = plugins,
-                    onDismiss = onDismiss
+                    onDismiss = onDismiss,
                 )
             }
         }
@@ -53,14 +54,15 @@ internal fun AEDevLensContainer(
             onDismissRequest = onDismiss,
             sheetState = sheetState,
             containerColor = MaterialTheme.colorScheme.surface,
-            shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+            shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
         ) {
             DevLensContent(
                 plugins = plugins,
                 onDismiss = onDismiss,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.9f)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.9f),
             )
         }
     }

@@ -27,30 +27,31 @@ internal fun LogEntryItem(
     log: LogEntry,
     isExpanded: Boolean,
     onToggleExpand: () -> Unit,
-    onCopy: () -> Unit
+    onCopy: () -> Unit,
 ) {
     val (_, bgColor) = LogUtils.getLogTypeColor(log)
 
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            ) { onToggleExpand() }
-            .padding(horizontal = DevLensSpacing.x4, vertical = DevLensSpacing.x3)
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() },
+                ) { onToggleExpand() }
+                .padding(horizontal = DevLensSpacing.x4, vertical = DevLensSpacing.x3),
     ) {
         LogEntryHeader(log = log, isExpanded = isExpanded)
 
         AnimatedVisibility(
             visible = isExpanded,
             enter = expandVertically(),
-            exit = shrinkVertically()
+            exit = shrinkVertically(),
         ) {
             LogEntryExpandedContent(
                 log = log,
                 bgColor = bgColor,
-                onCopy = onCopy
+                onCopy = onCopy,
             )
         }
     }
@@ -59,11 +60,11 @@ internal fun LogEntryItem(
 @Composable
 private fun LogEntryHeader(
     log: LogEntry,
-    isExpanded: Boolean
+    isExpanded: Boolean,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         LogTypeBadge(log = log)
 
@@ -73,7 +74,7 @@ private fun LogEntryHeader(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = log.endpoint ?: log.tag,
@@ -82,13 +83,13 @@ private fun LogEntryHeader(
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
                 )
 
                 Text(
                     text = LogUtils.formatTimestamp(log.timestamp),
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
 
@@ -103,7 +104,7 @@ private fun LogEntryHeader(
             imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
             contentDescription = if (isExpanded) "Collapse" else "Expand",
             modifier = Modifier.size(24.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }
@@ -123,7 +124,7 @@ private fun LogEntryPreview(log: LogEntry) {
                 fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
             if (subtitle != null) {
                 Text(
@@ -131,14 +132,14 @@ private fun LogEntryPreview(log: LogEntry) {
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
         }
     } else if (log.isNetworkLog) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(DevLensSpacing.x2),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             log.httpMethod?.let { method ->
                 HttpMethodBadge(method = method)
@@ -149,10 +150,17 @@ private fun LogEntryPreview(log: LogEntry) {
             }
 
             Text(
-                text = if (log.isRequest) "→" else if (log.isResponse) "←" else "",
+                text =
+                    if (log.isRequest) {
+                        "→"
+                    } else if (log.isResponse) {
+                        "←"
+                    } else {
+                        ""
+                    },
                 style = MaterialTheme.typography.bodySmall,
                 fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
-                color = if (log.isRequest) Color(0xFF2196F3) else Color(0xFF4CAF50)
+                color = if (log.isRequest) Color(0xFF2196F3) else Color(0xFF4CAF50),
             )
         }
     } else {
@@ -161,7 +169,7 @@ private fun LogEntryPreview(log: LogEntry) {
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
         )
     }
 }
@@ -170,17 +178,18 @@ private fun LogEntryPreview(log: LogEntry) {
 private fun LogEntryExpandedContent(
     log: LogEntry,
     bgColor: Color,
-    onCopy: () -> Unit
+    onCopy: () -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = DevLensSpacing.x3)
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(top = DevLensSpacing.x3),
     ) {
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(DevLensSpacing.x2),
-            colors = CardDefaults.cardColors(containerColor = bgColor)
+            colors = CardDefaults.cardColors(containerColor = bgColor),
         ) {
             Column(modifier = Modifier.padding(DevLensSpacing.x3)) {
                 LogDetailsContent(log = log)
@@ -188,23 +197,24 @@ private fun LogEntryExpandedContent(
         }
 
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = DevLensSpacing.x2),
-            horizontalArrangement = Arrangement.End
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = DevLensSpacing.x2),
+            horizontalArrangement = Arrangement.End,
         ) {
             TextButton(onClick = onCopy) {
                 Icon(
                     imageVector = Icons.Default.ContentCopy,
                     contentDescription = "Copy",
                     tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(16.dp)
+                    modifier = Modifier.size(16.dp),
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = "Copy",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
                 )
             }
         }

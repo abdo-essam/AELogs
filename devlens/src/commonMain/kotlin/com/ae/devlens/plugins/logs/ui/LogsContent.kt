@@ -30,7 +30,7 @@ import com.ae.devlens.ui.theme.DevLensSpacing
 internal fun LogsContent(
     logStore: LogStore,
     modifier: Modifier = Modifier,
-    onCloseInspector: () -> Unit = {}
+    onCloseInspector: () -> Unit = {},
 ) {
     val logs by logStore.logsFlow.collectAsState()
     val searchQuery by logStore.searchQuery.collectAsState()
@@ -40,22 +40,26 @@ internal fun LogsContent(
     val clipboardManager = LocalClipboardManager.current
     val listState = rememberLazyListState()
 
-    val filteredLogs = remember(logs, searchQuery, selectedFilter) {
-        logs.filter { log ->
-            val matchesSearch = searchQuery.isEmpty() ||
-                    log.message.contains(searchQuery, ignoreCase = true) ||
-                    log.tag.contains(searchQuery, ignoreCase = true) ||
-                    log.url?.contains(searchQuery, ignoreCase = true) == true
+    val filteredLogs =
+        remember(logs, searchQuery, selectedFilter) {
+            logs
+                .filter { log ->
+                    val matchesSearch =
+                        searchQuery.isEmpty() ||
+                            log.message.contains(searchQuery, ignoreCase = true) ||
+                            log.tag.contains(searchQuery, ignoreCase = true) ||
+                            log.url?.contains(searchQuery, ignoreCase = true) == true
 
-            val matchesFilter = when (selectedFilter) {
-                LogFilter.ALL -> true
-                LogFilter.NETWORK -> log.isNetworkLog
-                LogFilter.ANALYTICS -> log.isAnalytics
-            }
+                    val matchesFilter =
+                        when (selectedFilter) {
+                            LogFilter.ALL -> true
+                            LogFilter.NETWORK -> log.isNetworkLog
+                            LogFilter.ANALYTICS -> log.isAnalytics
+                        }
 
-            matchesSearch && matchesFilter
-        }.reversed()
-    }
+                    matchesSearch && matchesFilter
+                }.reversed()
+        }
 
     Column(modifier = modifier.fillMaxWidth()) {
         LogViewerHeader(
@@ -67,7 +71,7 @@ internal fun LogsContent(
             onCopyAll = {
                 val allLogs = LogUtils.formatAllLogsForCopy(filteredLogs)
                 clipboardManager.setText(AnnotatedString(allLogs))
-            }
+            },
         )
 
         Spacer(modifier = Modifier.height(DevLensSpacing.x3))
@@ -75,7 +79,7 @@ internal fun LogsContent(
         LogSearchBar(
             query = searchQuery,
             onQueryChange = { logStore.updateSearchQuery(it) },
-            modifier = Modifier.padding(horizontal = DevLensSpacing.x5)
+            modifier = Modifier.padding(horizontal = DevLensSpacing.x5),
         )
 
         Spacer(modifier = Modifier.height(DevLensSpacing.x3))
@@ -83,7 +87,7 @@ internal fun LogsContent(
         LogFilterChips(
             selectedFilter = selectedFilter,
             onFilterSelected = { logStore.updateSelectedFilter(it) },
-            modifier = Modifier.padding(horizontal = DevLensSpacing.x5)
+            modifier = Modifier.padding(horizontal = DevLensSpacing.x5),
         )
 
         Spacer(modifier = Modifier.height(DevLensSpacing.x3))
@@ -101,7 +105,7 @@ internal fun LogsContent(
                 onCopyLog = { log ->
                     val copyText = LogUtils.formatLogForCopy(log)
                     clipboardManager.setText(AnnotatedString(copyText))
-                }
+                },
             )
         }
     }
@@ -113,36 +117,37 @@ private fun LogsList(
     listState: LazyListState,
     expandedLogId: String?,
     onToggleExpand: (String) -> Unit,
-    onCopyLog: (LogEntry) -> Unit
+    onCopyLog: (LogEntry) -> Unit,
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = DevLensSpacing.x5),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = DevLensSpacing.x5),
         shape = RoundedCornerShape(DevLensSpacing.x3),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
     ) {
         LazyColumn(
             state = listState,
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(vertical = DevLensSpacing.x2)
+            contentPadding = PaddingValues(vertical = DevLensSpacing.x2),
         ) {
             itemsIndexed(
                 items = logs,
-                key = { _, log -> log.id }
+                key = { _, log -> log.id },
             ) { index, log ->
                 LogEntryItem(
                     log = log,
                     isExpanded = expandedLogId == log.id,
                     onToggleExpand = { onToggleExpand(log.id) },
-                    onCopy = { onCopyLog(log) }
+                    onCopy = { onCopyLog(log) },
                 )
 
                 if (index < logs.lastIndex) {
                     HorizontalDivider(
                         modifier = Modifier.padding(horizontal = DevLensSpacing.x3),
                         color = MaterialTheme.colorScheme.outlineVariant,
-                        thickness = 1.dp
+                        thickness = 1.dp,
                     )
                 }
             }

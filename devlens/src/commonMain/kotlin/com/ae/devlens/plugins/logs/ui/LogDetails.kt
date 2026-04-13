@@ -28,7 +28,7 @@ internal fun LogDetailsContent(log: LogEntry) {
             DetailSection(
                 title = if (log.jsonBody != null) "Body" else "Message",
                 content = content,
-                isCode = true
+                isCode = true,
             )
         }
     }
@@ -38,13 +38,13 @@ internal fun LogDetailsContent(log: LogEntry) {
 private fun DetailSection(
     title: String,
     content: String,
-    isCode: Boolean = false
+    isCode: Boolean = false,
 ) {
     Column {
         Text(
             text = title,
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         Spacer(modifier = Modifier.height(4.dp))
@@ -55,7 +55,7 @@ private fun DetailSection(
             Text(
                 text = content,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
             )
         }
     }
@@ -64,19 +64,20 @@ private fun DetailSection(
 @Composable
 private fun CodeBlock(content: String) {
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(DevLensSpacing.x2))
-            .background(MaterialTheme.colorScheme.surfaceVariant)
-            .padding(DevLensSpacing.x2)
-            .horizontalScroll(rememberScrollState())
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(DevLensSpacing.x2))
+                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .padding(DevLensSpacing.x2)
+                .horizontalScroll(rememberScrollState()),
     ) {
         Text(
             text = content,
             fontFamily = FontFamily.Monospace,
             fontSize = 11.sp,
             lineHeight = 16.sp,
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onSurface,
         )
     }
 }

@@ -13,7 +13,7 @@ import com.ae.devlens.core.UIPlugin
 @Composable
 internal fun SafePluginContent(
     plugin: UIPlugin,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     plugin.Content(modifier)
 }
