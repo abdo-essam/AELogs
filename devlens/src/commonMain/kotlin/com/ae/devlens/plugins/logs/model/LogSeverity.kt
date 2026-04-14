@@ -1,12 +1,11 @@
 package com.ae.devlens.plugins.logs.model
 
 /**
- * Log severity level.
+ * Log severity levels.
  *
- * Library-owned enum that replaces Kermit's `Severity` to avoid hard coupling.
- * The [com.ae.devlens.bridge.AEDevLensLogWriter] bridges between Kermit Severity and this.
+ * AEDevLens works with any logging library by forwarding logs to this level.
  */
-enum class LogLevel {
+public enum class LogSeverity {
     VERBOSE,
     DEBUG,
     INFO,
@@ -15,7 +14,7 @@ enum class LogLevel {
     ASSERT,
     ;
 
-    val label: String
+    public val label: String
         get() =
             when (this) {
                 VERBOSE -> "V"

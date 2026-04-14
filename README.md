@@ -118,15 +118,15 @@ fun App() {
 val inspector = AEDevLens.default
 
 // Simple logging
-inspector.log(LogLevel.INFO, "HomeScreen", "User opened home screen")
-inspector.log(LogLevel.ERROR, "API", "Failed to fetch user: 401 Unauthorized")
+inspector.log(LogSeverity.INFO, "HomeScreen", "User opened home screen")
+inspector.log(LogSeverity.ERROR, "API", "Failed to fetch user: 401 Unauthorized")
 
 // Network logging (auto-detected)
-inspector.log(LogLevel.DEBUG, "HTTP", "--> GET https://api.example.com/users")
-inspector.log(LogLevel.DEBUG, "HTTP", "<-- 200 OK https://api.example.com/users")
+inspector.log(LogSeverity.DEBUG, "HTTP", "--> GET https://api.example.com/users")
+inspector.log(LogSeverity.DEBUG, "HTTP", "<-- 200 OK https://api.example.com/users")
 
 // Analytics events
-inspector.log(LogLevel.INFO, "Analytics", "screen_view: HomeScreen")
+inspector.log(LogSeverity.INFO, "Analytics", "screen_view: HomeScreen")
 ```
 
 ### 3. Open DevLens
@@ -203,24 +203,17 @@ inspector.install(FeatureFlagsPlugin())
 
 📖 See the [Custom Plugins Guide](https://abdo-essam.github.io/AEDevLens/custom-plugins) for the full API reference.
 
-## 🔗 Kermit Integration
+## 🔗 Logging Integrations
 
-Bridge your existing Kermit logs into AEDevLens:
-
-```kotlin
-// In your DI / initialization
-val inspector = AEDevLens.default
-
-Logger.addLogWriter(AEDevLensLogWriter(inspector))
-```
+AEDevLens works with any logging library (Kermit, Napier, Timber, etc.). Just forward your logs to the inspector.
 
 ```kotlin
-class AEDevLensLogWriter(
-    private val inspector: AEDevLens
+class DevLensKermitWriter(
+    private val inspector: AEDevLens = AEDevLens.default
 ) : LogWriter() {
     override fun log(severity: Severity, message: String, tag: String, throwable: Throwable?) {
         inspector.log(
-            level = severity.toDevLensLevel(),
+            severity = severity.toDevLensLogSeverity(),
             tag = tag,
             message = buildString {
                 append(message)
@@ -230,6 +223,8 @@ class AEDevLensLogWriter(
     }
 }
 ```
+
+📖 See the [Logging Integrations Guide](https://abdo-essam.github.io/AEDevLens/integrations) for more examples.
 
 ## 🏗️ Architecture
 

@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
  *
  * ```kotlin
  * val logsPlugin = inspector.getPlugin<LogsPlugin>()
- * logsPlugin?.logStore?.log(LogLevel.INFO, "MyTag", "Hello!")
+ * logsPlugin?.logStore?.log(LogSeverity.INFO, "MyTag", "Hello!")
  * ```
  */
 class LogsPlugin(

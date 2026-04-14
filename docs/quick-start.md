@@ -19,8 +19,10 @@ AEDevLensOverlay(controller = devLens) {
 ## Log Something
 
 ```kotlin
-AEDevLens.log(tag = "MyScreen", message = "Button clicked")
-AEDevLens.log(tag = "Network", message = "GET /api/users", level = LogLevel.DEBUG)
+val devLens = AEDevLens.default
+
+devLens.log(severity = LogSeverity.INFO, tag = "MyScreen", message = "Button clicked")
+devLens.log(severity = LogSeverity.DEBUG, tag = "Network", message = "GET /api/users")
 ```
 
 ## Show / Hide the Overlay

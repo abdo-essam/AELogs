@@ -4,7 +4,7 @@ import com.ae.devlens.core.AEDevLensConfig
 import com.ae.devlens.core.DevLensPlugin
 import com.ae.devlens.core.UIPlugin
 import com.ae.devlens.plugins.logs.LogsPlugin
-import com.ae.devlens.plugins.logs.model.LogLevel
+import com.ae.devlens.plugins.logs.model.LogSeverity
 import com.ae.devlens.plugins.logs.store.LogStore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,7 +27,7 @@ import kotlinx.coroutines.flow.update
  *
  * ## Logging
  * ```kotlin
- * inspector.log(LogLevel.INFO, "MyTag", "Something happened")
+ * inspector.log(LogSeverity.INFO, "MyTag", "Something happened")
  * ```
  *
  * ## Custom Plugins
@@ -120,12 +120,12 @@ public class AEDevLens private constructor(
      * Shortcut: Log a message to the built-in LogStore.
      */
     public fun log(
-        level: LogLevel,
+        severity: LogSeverity,
         tag: String,
         message: String,
     ) {
         val logsPlugin = _plugins.value.filterIsInstance<LogsPlugin>().firstOrNull()
-        logsPlugin?.logStore?.log(level, tag, message)
+        logsPlugin?.logStore?.log(severity, tag, message)
     }
 
     /**

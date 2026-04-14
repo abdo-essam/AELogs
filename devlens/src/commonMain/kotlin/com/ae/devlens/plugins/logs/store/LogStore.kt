@@ -2,7 +2,7 @@ package com.ae.devlens.plugins.logs.store
 
 import com.ae.devlens.plugins.logs.model.LogEntry
 import com.ae.devlens.plugins.logs.model.LogFilter
-import com.ae.devlens.plugins.logs.model.LogLevel
+import com.ae.devlens.plugins.logs.model.LogSeverity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -33,11 +33,11 @@ class LogStore(
     val selectedFilter: StateFlow<LogFilter> = _selectedFilter.asStateFlow()
 
     fun log(
-        level: LogLevel,
+        severity: LogSeverity,
         tag: String,
         message: String,
     ) {
-        val entry = LogEntry(level = level, tag = tag, message = message)
+        val entry = LogEntry(severity = severity, tag = tag, message = message)
         _logsFlow.update { current ->
             val updated = current.toMutableList()
             updated.add(entry)

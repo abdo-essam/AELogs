@@ -12,7 +12,7 @@ import kotlin.time.Clock
  */
 data class LogEntry(
     val id: String = "log_${Clock.System.now().toEpochMilliseconds()}_${kotlin.random.Random.nextInt(10000)}",
-    val level: LogLevel,
+    val severity: LogSeverity,
     val tag: String,
     val message: String,
     val timestamp: Long = Clock.System.now().toEpochMilliseconds(),
@@ -49,7 +49,7 @@ data class LogEntry(
                 )
 
     val isError: Boolean
-        get() = level == LogLevel.ERROR || level == LogLevel.ASSERT
+        get() = severity == LogSeverity.ERROR || severity == LogSeverity.ASSERT
 
     val isAnalytics: Boolean
         get() = tag == ANALYTICS_TAG

@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import com.ae.devlens.AEDevLens
 import com.ae.devlens.AEDevLensProvider
 import com.ae.devlens.plugins.logs.LogsPlugin
-import com.ae.devlens.plugins.logs.model.LogLevel
+import com.ae.devlens.plugins.logs.model.LogSeverity
 
 @Composable
 fun App() {
@@ -35,13 +35,13 @@ fun App() {
                 Text("The Developer Tool SDK is active!")
 
                 Button(onClick = {
-                    AEDevLens.default.log(LogLevel.INFO, "SampleApp", "Hello from the sample app!")
+                    AEDevLens.default.log(LogSeverity.INFO, "SampleApp", "Hello from the sample app!")
                 }) {
                     Text("Trigger Info Log")
                 }
 
                 Button(onClick = {
-                    AEDevLens.default.log(LogLevel.ERROR, "SampleApp", "Uh oh! Something went wrong!")
+                    AEDevLens.default.log(LogSeverity.ERROR, "SampleApp", "Uh oh! Something went wrong!")
                 }) {
                     Text("Trigger Error Log")
                 }

@@ -68,8 +68,7 @@ nav:
   - Guides:
     - Plugins Overview: plugins-guide.md
     - Custom Plugins: custom-plugins.md
-    - Kermit Integration: kermit-integration.md
-    - Ktor Integration: ktor-integration.md
+    - Logging Integrations: integrations.md
   - Changelog: changelog.md
   - Contributing: contributing.md
 
