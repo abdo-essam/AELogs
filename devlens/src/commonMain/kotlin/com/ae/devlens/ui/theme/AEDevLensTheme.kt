@@ -11,8 +11,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 // --- Brand Colors ---
-private val DevLensPrimary = Color(0xFF6C5CE7) // Purple accent
-private val DevLensPrimaryDark = Color(0xFFA29BFE) // Lighter purple for dark mode
+private val DevLensPrimary = Color(0xFFBF3547) // Brand Red
+private val DevLensPrimaryDark = Color(0xFFD46A78) // Lighter red for dark mode
 private val DevLensError = Color(0xFFE53935)
 private val DevLensOnPrimary = Color.White
 

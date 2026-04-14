@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/banner.png" width="600" alt="AEDevLens Banner" />
+  <img src="docs/assets/logo.png" width="400" alt="AEDevLens Logo" />
 </p>
 
 <h1 align="center">AEDevLens</h1>
@@ -12,7 +12,7 @@
 
 <p align="center">
   <a href="https://central.sonatype.com/artifact/io.github.abdo-essam/devlens">
-    <img src="https://img.shields.io/maven-central/v/io.github.abdo-essam/devlens?style=flat-square&color=6C5CE7" alt="Maven Central" />
+    <img src="https://img.shields.io/maven-central/v/io.github.abdo-essam/devlens?style=flat-square&color=BF3547" alt="Maven Central" />
   </a>
   <a href="https://github.com/abdo-essam/AEDevLens/actions/workflows/ci.yml">
     <img src="https://img.shields.io/github/actions/workflow/status/abdo-essam/AEDevLens/ci.yml?branch=main&style=flat-square" alt="CI" />
