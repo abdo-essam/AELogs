@@ -2,6 +2,7 @@ package com.ae.devlens
 
 import com.ae.devlens.core.DevLensPlugin
 import com.ae.devlens.plugins.logs.LogsPlugin
+import kotlin.concurrent.Volatile
 
 /**
  * One-stop setup helper for apps using the `:devlens` all-in-one dependency.
@@ -33,6 +34,7 @@ import com.ae.devlens.plugins.logs.LogsPlugin
  */
 public object DevLensSetup {
 
+    @Volatile
     private var initialized = false
 
     /**

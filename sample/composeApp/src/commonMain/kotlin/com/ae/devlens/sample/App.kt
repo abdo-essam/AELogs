@@ -9,24 +9,22 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.ae.devlens.AEDevLens
 import com.ae.devlens.AEDevLensProvider
 import com.ae.devlens.DevLens
-import com.ae.devlens.DevLensSetup
 import com.ae.devlens.DevLensUiConfig
 
 @Composable
 fun App() {
-    // DevLensSetup.init() is idempotent — safe to call on every recomposition
-    // It wires AEDevLens.default + DevLens.inspector in one call.
-    val inspector = remember { DevLensSetup.init() }
+    // No init here — DevLensSetup.init() runs in SampleApp.onCreate()
+    // AEDevLens.default is already configured with LogsPlugin by then.
 
     MaterialTheme {
         AEDevLensProvider(
-            inspector = inspector,
+            inspector = AEDevLens.default,
             uiConfig = DevLensUiConfig(
                 showFloatingButton = true,
                 enableLongPress = true,
