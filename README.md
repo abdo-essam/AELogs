@@ -72,7 +72,7 @@ AEDevLens is fully modularized. Include only the plugins you need to keep your a
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            // Core UI + Logging plugin (Required)
+            // Default setup: Core UI + LogsPlugin
             implementation("io.github.abdo-essam:devlens:1.0.0")
             
             // Optional Plugins
@@ -82,6 +82,8 @@ kotlin {
     }
 }
 ```
+
+> **🔥 True Modularity**: Worried about APK/bundle size? You can drop the `LogsPlugin` entirely! Just remove the `devlens` dependency and import `devlens-network:1.0.0` or `devlens-analytics:1.0.0` directly. Because each acts completely independently and transitively exports `devlens-core` and `devlens-ui`, your app stays incredibly lightweight!
 
 ### Version Catalog
 
