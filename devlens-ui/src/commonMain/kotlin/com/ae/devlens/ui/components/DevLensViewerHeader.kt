@@ -31,6 +31,7 @@ public fun DevLensViewerHeader(
     itemLabel: String = "entries",
     onClearAll: () -> Unit,
     modifier: Modifier = Modifier,
+    actions: (@Composable androidx.compose.foundation.layout.RowScope.() -> Unit)? = null,
 ) {
     Row(
         modifier =
@@ -46,21 +47,28 @@ public fun DevLensViewerHeader(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
-        Button(
-            onClick = onClearAll,
-            contentPadding =
-                PaddingValues(
-                    horizontal = DevLensSpacing.x3,
-                    vertical = DevLensSpacing.x1,
-                ),
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(DevLensSpacing.x2)
         ) {
-            Icon(
-                imageVector = Icons.Default.DeleteOutline,
-                contentDescription = "Clear all",
-                modifier = Modifier.size(DevLensSpacing.x4),
-            )
-            Spacer(modifier = Modifier.width(DevLensSpacing.x1))
-            Text("Clear", style = MaterialTheme.typography.labelSmall)
+            actions?.invoke(this)
+
+            Button(
+                onClick = onClearAll,
+                contentPadding =
+                    PaddingValues(
+                        horizontal = DevLensSpacing.x3,
+                        vertical = DevLensSpacing.x1,
+                    ),
+            ) {
+                Icon(
+                    imageVector = Icons.Default.DeleteOutline,
+                    contentDescription = "Clear all",
+                    modifier = Modifier.size(DevLensSpacing.x4),
+                )
+                Spacer(modifier = Modifier.width(DevLensSpacing.x1))
+                Text("Clear", style = MaterialTheme.typography.labelSmall)
+            }
         }
     }
 }

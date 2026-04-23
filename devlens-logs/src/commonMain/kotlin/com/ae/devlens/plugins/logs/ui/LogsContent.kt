@@ -15,6 +15,12 @@ import androidx.compose.ui.unit.dp
 import com.ae.devlens.plugins.logs.model.LogEntry
 import com.ae.devlens.ui.theme.DevLensSpacing
 
+import com.ae.devlens.ui.components.DevLensViewerHeader
+import com.ae.devlens.ui.components.DevLensSearchBar
+import com.ae.devlens.ui.components.DevLensFilterChips
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ContentCopy
+
 /**
  * Main logs panel content — used by [com.ae.devlens.plugins.logs.LogsPlugin].
  *
@@ -40,19 +46,32 @@ internal fun LogsContent(
     val displayLogs = remember(allLogs) { allLogs.reversed() }
 
     Column(modifier = modifier.fillMaxWidth()) {
-        LogViewerHeader(
-            logCount = displayLogs.size,
-            totalCount = allLogs.size,
+        DevLensViewerHeader(
+            itemCount = displayLogs.size,
+            itemLabel = if (allLogs.size != displayLogs.size) "entries (filtered)" else "entries",
             onClearAll = { viewModel.clearLogs() },
-            onCopyAll = {
-                val text = LogUtils.formatAllLogsForCopy(displayLogs)
-                clipboardManager.setText(AnnotatedString(text))
-            },
+            actions = {
+                Button(
+                    onClick = {
+                        val text = LogUtils.formatAllLogsForCopy(displayLogs)
+                        clipboardManager.setText(AnnotatedString(text))
+                    },
+                    contentPadding = PaddingValues(horizontal = DevLensSpacing.x3, vertical = DevLensSpacing.x1)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ContentCopy,
+                        contentDescription = "Copy all",
+                        modifier = Modifier.size(DevLensSpacing.x4)
+                    )
+                    Spacer(modifier = Modifier.width(DevLensSpacing.x1))
+                    Text("Copy All", style = MaterialTheme.typography.labelSmall)
+                }
+            }
         )
 
         Spacer(modifier = Modifier.height(DevLensSpacing.x3))
 
-        LogSearchBar(
+        DevLensSearchBar(
             query = searchQuery,
             onQueryChange = { viewModel.updateSearchQuery(it) },
             modifier = Modifier.padding(horizontal = DevLensSpacing.x5),
@@ -60,9 +79,10 @@ internal fun LogsContent(
 
         Spacer(modifier = Modifier.height(DevLensSpacing.x3))
 
-        LogFilterChips(
+        DevLensFilterChips(
             selectedFilter = selectedFilter,
             onFilterSelected = { viewModel.updateSelectedFilter(it) },
+            options = listOf("All", "Network", "Errors", "Analytics"),
             modifier = Modifier.padding(horizontal = DevLensSpacing.x5),
         )
 
