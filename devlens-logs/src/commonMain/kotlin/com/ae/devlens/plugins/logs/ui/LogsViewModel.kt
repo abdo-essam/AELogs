@@ -29,6 +29,7 @@ public class LogsViewModel(
             _selectedFilter,
         ) { logs, query, filter ->
             logs
+                .reversed()
                 .filter { entry ->
                     when (filter) {
                         LogFilter.ALL -> true

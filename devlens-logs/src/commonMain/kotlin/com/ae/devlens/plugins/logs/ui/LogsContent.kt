@@ -42,18 +42,15 @@ internal fun LogsContent(
     val clipboardManager = LocalClipboardManager.current
     val listState = rememberLazyListState()
 
-    // Newest entries at the top
-    val displayLogs = remember(allLogs) { allLogs.reversed() }
-
     Column(modifier = modifier.fillMaxWidth()) {
         DevLensViewerHeader(
-            itemCount = displayLogs.size,
-            itemLabel = if (allLogs.size != displayLogs.size) "entries (filtered)" else "entries",
+            itemCount = allLogs.size,
+            itemLabel = "entries",
             onClearAll = { viewModel.clearLogs() },
             actions = {
                 Button(
                     onClick = {
-                        val text = LogUtils.formatAllLogsForCopy(displayLogs)
+                        val text = LogUtils.formatAllLogsForCopy(allLogs)
                         clipboardManager.setText(AnnotatedString(text))
                     },
                     contentPadding = PaddingValues(horizontal = DevLensSpacing.x3, vertical = DevLensSpacing.x1)
@@ -91,11 +88,11 @@ internal fun LogsContent(
 
         Spacer(modifier = Modifier.height(DevLensSpacing.x3))
 
-        if (displayLogs.isEmpty()) {
+        if (allLogs.isEmpty()) {
             EmptyPlaceholder()
         } else {
             LogsList(
-                logs = displayLogs,
+                logs = allLogs,
                 listState = listState,
                 expandedLogId = expandedLogId,
                 onToggleExpand = { id ->
