@@ -40,7 +40,7 @@ public class NetworkPlugin : UIPlugin {
     override val badgeCount: StateFlow<Int?> = _badgeCount
 
     private val store = NetworkStore()
-    private lateinit var viewModel: NetworkViewModel
+    private var viewModel: NetworkViewModel? = null
 
     /** Public API for recording requests/responses from interceptors. */
     public val api: NetworkApi = NetworkApi(store)
@@ -62,9 +62,8 @@ public class NetworkPlugin : UIPlugin {
 
     @Composable
     override fun Content(modifier: Modifier) {
-        if (::viewModel.isInitialized) {
-            NetworkContent(viewModel = viewModel, modifier = modifier)
-        }
+        val vm = viewModel ?: return
+        NetworkContent(viewModel = vm, modifier = modifier)
     }
 
     public companion object {

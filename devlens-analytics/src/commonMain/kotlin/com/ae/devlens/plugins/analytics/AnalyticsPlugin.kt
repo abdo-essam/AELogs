@@ -39,7 +39,7 @@ public class AnalyticsPlugin : UIPlugin {
     override val badgeCount: StateFlow<Int?> = _badgeCount
 
     private val store = AnalyticsStore()
-    private lateinit var viewModel: AnalyticsViewModel
+    private var viewModel: AnalyticsViewModel? = null
 
     /** Public API for recording events from your analytics adapters. */
     public val api: AnalyticsApi = AnalyticsApi(store)
@@ -61,9 +61,8 @@ public class AnalyticsPlugin : UIPlugin {
 
     @Composable
     override fun Content(modifier: Modifier) {
-        if (::viewModel.isInitialized) {
-            AnalyticsContent(viewModel = viewModel, modifier = modifier)
-        }
+        val vm = viewModel ?: return
+        AnalyticsContent(viewModel = vm, modifier = modifier)
     }
 
     public companion object {
