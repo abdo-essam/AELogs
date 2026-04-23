@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 
-public class LogsViewModel(
+internal class LogsViewModel(
     private val logStore: LogStore,
     scope: CoroutineScope,
 ) {
