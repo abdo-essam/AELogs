@@ -80,5 +80,5 @@ public class NetworkApi internal constructor(
     public fun clear(): Unit = store.clear()
 
     /** Generate a unique request ID. */
-    public fun newId(): String = abs(kotlin.random.Random.nextLong()).toString(36)
+    public fun newId(): String = com.ae.devlens.core.utils.IdGenerator.generateId()
 }

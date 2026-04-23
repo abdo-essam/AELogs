@@ -9,7 +9,7 @@ import kotlin.time.Clock
  * are provided via extension properties in LogClassifier.
  */
 public data class LogEntry(
-    val id: String = "log_${Clock.System.now().toEpochMilliseconds()}_${kotlin.random.Random.nextInt(10000)}",
+    val id: String = com.ae.devlens.core.utils.IdGenerator.generateId(),
     val severity: LogSeverity,
     val tag: String,
     val message: String,
