@@ -94,7 +94,10 @@ internal object LogUtils {
 
     fun getBadgeLabel(log: LogEntry): String =
         when {
-            log.isAnalytics -> com.ae.devlens.plugins.logs.model.LogTagRegistry.getLabel(log.tag) ?: log.tag.take(3).uppercase()
+            log.isAnalytics ->
+                com.ae.devlens.plugins.logs.model.LogTagRegistry
+                    .getLabel(log.tag)
+                    ?: log.tag.take(3).uppercase()
             log.isError -> "ERR"
             log.isResponse -> "RES"
             log.isRequest -> "REQ"

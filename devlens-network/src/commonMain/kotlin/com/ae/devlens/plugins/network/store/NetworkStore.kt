@@ -31,7 +31,10 @@ internal class NetworkStore(
     }
 
     /** Update an existing entry atomically by ID. No-op if ID is not found. */
-    fun update(id: String, transform: (NetworkEntry) -> NetworkEntry) {
+    fun update(
+        id: String,
+        transform: (NetworkEntry) -> NetworkEntry,
+    ) {
         store.updateFirst({ it.id == id }, transform)
     }
 

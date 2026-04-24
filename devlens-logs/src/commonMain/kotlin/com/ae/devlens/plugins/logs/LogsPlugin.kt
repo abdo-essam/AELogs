@@ -69,7 +69,8 @@ public class LogsPlugin(
             context.eventBus.events
                 .filterIsInstance<com.ae.devlens.core.bus.RegisterLogTagEvent>()
                 .collect { event ->
-                    com.ae.devlens.plugins.logs.model.LogTagRegistry.register(event.tag, event.badgeLabel)
+                    com.ae.devlens.plugins.logs.model.LogTagRegistry
+                        .register(event.tag, event.badgeLabel)
                 }
         }
     }

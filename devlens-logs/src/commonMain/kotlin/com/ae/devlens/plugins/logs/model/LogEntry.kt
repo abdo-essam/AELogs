@@ -1,8 +1,7 @@
 package com.ae.devlens.plugins.logs.model
 
-import kotlin.time.Clock
-
 import androidx.compose.runtime.Immutable
+import kotlin.time.Clock
 
 /**
  * Represents a single log entry captured by AEDevLens.
@@ -12,7 +11,9 @@ import androidx.compose.runtime.Immutable
  */
 @Immutable
 public data class LogEntry(
-    val id: String = com.ae.devlens.core.utils.IdGenerator.generateId(),
+    val id: String =
+        com.ae.devlens.core.utils.IdGenerator
+            .generateId(),
     val severity: LogSeverity,
     val tag: String,
     val message: String,

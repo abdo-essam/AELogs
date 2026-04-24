@@ -9,7 +9,6 @@ gradle-app.setting
 
 # Kotlin / Multiplatform
 .kotlin/
-.kotlin/
 *.kover
 
 # MkDocs
@@ -39,3 +38,4 @@ Thumbs.db
 secret_key.txt
 secret.properties
 /.vscode/settings.json
+/AI_SKILLS.md

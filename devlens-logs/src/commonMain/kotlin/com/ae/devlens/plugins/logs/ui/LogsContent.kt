@@ -6,6 +6,8 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -13,13 +15,10 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import com.ae.devlens.plugins.logs.model.LogEntry
-import com.ae.devlens.ui.theme.DevLensSpacing
-
-import com.ae.devlens.ui.components.DevLensViewerHeader
-import com.ae.devlens.ui.components.DevLensSearchBar
 import com.ae.devlens.ui.components.DevLensFilterChips
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ContentCopy
+import com.ae.devlens.ui.components.DevLensSearchBar
+import com.ae.devlens.ui.components.DevLensViewerHeader
+import com.ae.devlens.ui.theme.DevLensSpacing
 
 /**
  * Main logs panel content — used by [com.ae.devlens.plugins.logs.LogsPlugin].
@@ -52,17 +51,17 @@ internal fun LogsContent(
                         val text = LogUtils.formatAllLogsForCopy(allLogs)
                         clipboardManager.setText(AnnotatedString(text))
                     },
-                    contentPadding = PaddingValues(horizontal = DevLensSpacing.x3, vertical = DevLensSpacing.x1)
+                    contentPadding = PaddingValues(horizontal = DevLensSpacing.x3, vertical = DevLensSpacing.x1),
                 ) {
                     Icon(
                         imageVector = Icons.Default.ContentCopy,
                         contentDescription = "Copy all",
-                        modifier = Modifier.size(DevLensSpacing.x4)
+                        modifier = Modifier.size(DevLensSpacing.x4),
                     )
                     Spacer(modifier = Modifier.width(DevLensSpacing.x1))
                     Text("Copy All", style = MaterialTheme.typography.labelSmall)
                 }
-            }
+            },
         )
 
         Spacer(modifier = Modifier.height(DevLensSpacing.x3))

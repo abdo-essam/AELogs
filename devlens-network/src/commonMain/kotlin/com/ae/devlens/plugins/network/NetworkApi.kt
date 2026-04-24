@@ -3,7 +3,6 @@ package com.ae.devlens.plugins.network
 import com.ae.devlens.plugins.network.model.NetworkEntry
 import com.ae.devlens.plugins.network.model.NetworkMethod
 import com.ae.devlens.plugins.network.store.NetworkStore
-import kotlin.math.abs
 import kotlin.time.Clock
 
 /**
@@ -80,5 +79,7 @@ public class NetworkApi internal constructor(
     public fun clear(): Unit = store.clear()
 
     /** Generate a unique request ID. */
-    public fun newId(): String = com.ae.devlens.core.utils.IdGenerator.generateId()
+    public fun newId(): String =
+        com.ae.devlens.core.utils.IdGenerator
+            .generateId()
 }

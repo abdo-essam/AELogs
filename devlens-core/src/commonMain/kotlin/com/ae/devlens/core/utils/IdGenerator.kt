@@ -9,7 +9,5 @@ public object IdGenerator {
     /**
      * Generates a unique, collision-resistant string ID.
      */
-    public fun generateId(): String {
-        return Uuid.random().toString()
-    }
+    public fun generateId(): String = Uuid.random().toString()
 }

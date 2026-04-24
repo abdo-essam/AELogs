@@ -10,7 +10,6 @@ import com.ae.devlens.core.UIPlugin
 import com.ae.devlens.plugins.analytics.store.AnalyticsStore
 import com.ae.devlens.plugins.analytics.ui.AnalyticsContent
 import com.ae.devlens.plugins.analytics.ui.AnalyticsViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -48,10 +47,13 @@ public class AnalyticsPlugin(
 
     override fun onAttach(context: PluginContext) {
         viewModel = AnalyticsViewModel(store, context.scope)
-        
+
         // Register tag with logs plugin dynamically
         context.scope.launch {
-            context.eventBus.publish(com.ae.devlens.core.bus.RegisterLogTagEvent("Analytics", "Analytics"))
+            context.eventBus.publish(
+                com.ae.devlens.core.bus
+                    .RegisterLogTagEvent("Analytics", "Analytics"),
+            )
         }
 
         // Update badge count whenever events change

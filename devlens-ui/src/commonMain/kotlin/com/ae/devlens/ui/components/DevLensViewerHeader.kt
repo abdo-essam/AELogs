@@ -49,7 +49,7 @@ public fun DevLensViewerHeader(
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(DevLensSpacing.x2)
+            horizontalArrangement = Arrangement.spacedBy(DevLensSpacing.x2),
         ) {
             actions?.invoke(this)
 
