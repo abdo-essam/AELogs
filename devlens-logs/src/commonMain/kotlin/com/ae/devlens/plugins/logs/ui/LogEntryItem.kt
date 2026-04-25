@@ -19,8 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.ae.devlens.plugins.logs.model.LogEntry
 import com.ae.devlens.plugins.logs.model.*
+import com.ae.devlens.plugins.logs.model.LogEntry
 import com.ae.devlens.ui.theme.DevLensSpacing
 
 @Composable

@@ -14,8 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
-import com.ae.devlens.plugins.logs.model.LogEntry
 import com.ae.devlens.plugins.logs.model.*
+import com.ae.devlens.plugins.logs.model.LogEntry
 import com.ae.devlens.ui.components.DevLensFilterChips
 import com.ae.devlens.ui.components.DevLensSearchBar
 import com.ae.devlens.ui.components.DevLensViewerHeader
