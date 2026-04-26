@@ -55,7 +55,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             // Re-export all modules — consumers only need this one dependency
-                                                
+
             implementation(libs.kotlinx.coroutines.core)
             api(libs.kotlinx.atomicfu)
             implementation(libs.components.resources)
@@ -67,7 +67,6 @@ kotlin {
             implementation(libs.material.icons.extended)
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.kotlinx.datetime)
-
         }
     }
 }

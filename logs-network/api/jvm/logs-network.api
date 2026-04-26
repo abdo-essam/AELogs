@@ -104,6 +104,6 @@ public final class com/ae/logs/plugins/network/model/NetworkMethod : java/lang/E
 public final class com/ae/logs/plugins/network/ui/ComposableSingletons$NetworkContentKt {
 	public static final field INSTANCE Lcom/ae/logs/plugins/network/ui/ComposableSingletons$NetworkContentKt;
 	public fun <init> ()V
-	public final fun getLambda$-1265988892$logs_network ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$1376801586$logs_network ()Lkotlin/jvm/functions/Function3;
 }
 

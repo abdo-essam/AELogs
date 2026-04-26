@@ -68,6 +68,6 @@ public final class com/ae/logs/plugins/analytics/model/AnalyticsFilter : java/la
 public final class com/ae/logs/plugins/analytics/ui/ComposableSingletons$AnalyticsContentKt {
 	public static final field INSTANCE Lcom/ae/logs/plugins/analytics/ui/ComposableSingletons$AnalyticsContentKt;
 	public fun <init> ()V
-	public final fun getLambda$525563828$logs_analytics ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$-1751268926$logs_analytics ()Lkotlin/jvm/functions/Function3;
 }
 

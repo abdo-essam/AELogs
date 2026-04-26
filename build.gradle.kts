@@ -12,7 +12,7 @@ plugins {
 }
 
 apiValidation {
-    ignoredProjects.addAll(listOf("sample", "composeApp", ))
+    ignoredProjects.addAll(listOf("sample", "composeApp"))
 }
 
 spotless {
@@ -27,5 +27,3 @@ spotless {
         ktlint("1.5.0")
     }
 }
-
-

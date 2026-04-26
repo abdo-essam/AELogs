@@ -48,7 +48,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(projects.logs)
-                        implementation(libs.runtime)
+            implementation(libs.runtime)
             implementation(libs.foundation)
             implementation(libs.material3)
             implementation(libs.ui)

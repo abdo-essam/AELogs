@@ -13,8 +13,8 @@ import com.ae.logs.core.LocalAELogsController
 import com.ae.logs.core.UIPlugin
 import com.ae.logs.ui.AELogsContainer
 import com.ae.logs.ui.AELogsFloatingButton
-import com.ae.logs.ui.theme.AELogsTheme
 import com.ae.logs.ui.theme.AELogsSpacing
+import com.ae.logs.ui.theme.AELogsTheme
 
 /**
  * Top-level composable wrapper that enables the AELogs overlay.
