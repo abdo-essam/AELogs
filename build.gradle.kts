@@ -12,7 +12,7 @@ plugins {
 }
 
 apiValidation {
-    ignoredProjects.addAll(listOf("sample", "composeApp", "devlens-core", "devlens-ui", "devlens-logs"))
+    ignoredProjects.addAll(listOf("sample", "composeApp", ))
 }
 
 spotless {
@@ -27,3 +27,5 @@ spotless {
         ktlint("1.5.0")
     }
 }
+
+

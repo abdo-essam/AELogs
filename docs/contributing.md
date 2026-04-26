@@ -1,4 +1,4 @@
-# Contributing to AEDevLens
+# Contributing to AELogs
 
 First off, thank you for considering contributing! 🎉
 
@@ -28,8 +28,8 @@ By participating, you agree to uphold this code.
 
 ```bash
 # Clone the repository
-git clone https://github.com/abdo-essam/AEDevLens.git
-cd AEDevLens
+git clone https://github.com/abdo-essam/AELogs.git
+cd AELogs
 
 # Build the project
 ./gradlew build
@@ -109,9 +109,9 @@ ci: add iOS build to CI pipeline
 ## Architecture Overview
 ```text
 ┌─────────────────────────────────────────┐
-│              AEDevLensProvider           │  ← Compose entry point
+│              AELogsProvider           │  ← Compose entry point
 ├─────────────────────────────────────────┤
-│              AEDevLens                  │  ← Core engine
+│              AELogs                  │  ← Core engine
 ├──────────┬──────────┬───────────────────┤
 │ LogsPlugin│ (Your   │  DataPlugin       │  ← Plugin system
 │ (UIPlugin)│  Plugin) │  (headless)       │

@@ -5,7 +5,7 @@ set -euo pipefail
 
 VERSION=${1:?Usage: ./scripts/publish.sh <version>}
 
-echo "🚀 Releasing AEDevLens v$VERSION"
+echo "🚀 Releasing AELogs v$VERSION"
 echo "================================="
 
 # 1. Validate
@@ -72,4 +72,4 @@ echo "   1. Run full CI"
 echo "   2. Publish to Maven Central"
 echo "   3. Create GitHub Release with changelog"
 echo ""
-echo "   Monitor: https://github.com/abdo-essam/AEDevLens/actions"
+echo "   Monitor: https://github.com/abdo-essam/AELogs/actions"

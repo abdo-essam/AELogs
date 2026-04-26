@@ -5,7 +5,7 @@
         android:name=".SampleApp"
         android:allowBackup="true"
         android:icon="@android:drawable/ic_dialog_info"
-        android:label="AEDevLens Sample"
+        android:label="AELogs Sample"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
         <activity

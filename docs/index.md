@@ -1,8 +1,8 @@
-# AEDevLens
+# AELogs
 
 **Extensible on-device dev tools for Kotlin Multiplatform.**
 
-AEDevLens is a lightweight, plugin-based developer tools library for KMP apps. It provides a beautiful Compose UI overlay for inspecting logs, network traffic, and more — all without leaving the app.
+AELogs is a lightweight, plugin-based developer tools library for KMP apps. It provides a beautiful Compose UI overlay for inspecting logs, network traffic, and more — all without leaving the app.
 
 ## Features
 

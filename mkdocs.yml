@@ -1,9 +1,9 @@
-site_name: AEDevLens
-site_url: https://abdo-essam.github.io/AEDevLens/
+site_name: AELogs
+site_url: https://abdo-essam.github.io/AELogs/
 site_description: Extensible on-device dev tools for Kotlin Multiplatform
 site_author: Abdo Essam
-repo_url: https://github.com/abdo-essam/AEDevLens
-repo_name: abdo-essam/AEDevLens
+repo_url: https://github.com/abdo-essam/AELogs
+repo_name: abdo-essam/AELogs
 edit_uri: edit/main/docs/
 
 theme:

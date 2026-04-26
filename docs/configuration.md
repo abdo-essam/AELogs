@@ -1,12 +1,12 @@
 # Configuration
 
-Configure AEDevLens structure via `DevLensSetup.init()` and behaviour via `DevLensUiConfig`.
+Configure AELogs structure via `AELogsSetup.init()` and behaviour via `AELogsUiConfig`.
 
 ## Options
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `enabled` | `Boolean` | `false` | Enable or disable the overlay entirely (passed into `AEDevLensProvider`) |
+| `enabled` | `Boolean` | `false` | Enable or disable the overlay entirely (passed into `AELogsProvider`) |
 | `showFloatingButton` | `Boolean` | `true` | Show floating bug button overlay |
 | `enableLongPress` | `Boolean` | `true` | Show panel on 3-finger long press |
 
@@ -14,15 +14,15 @@ Configure AEDevLens structure via `DevLensSetup.init()` and behaviour via `DevLe
 
 ```kotlin
 // Data config
-DevLensSetup.init(
-    config = DevLensConfig(maxLogEntries = 1000)
+AELogsSetup.init(
+    config = AELogsConfig(maxLogEntries = 1000)
 )
 
 // UI config
-AEDevLensProvider(
-    inspector = AEDevLens.default,
+AELogsProvider(
+    inspector = AELogs.default,
     enabled = BuildConfig.DEBUG,
-    uiConfig = DevLensUiConfig(
+    uiConfig = AELogsUiConfig(
         showFloatingButton = true,
         enableLongPress = true
     )

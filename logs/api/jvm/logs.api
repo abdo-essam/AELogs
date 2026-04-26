@@ -1,0 +1,6 @@
+public final class com/ae/logs/AELogsSetup {
+	public static final field INSTANCE Lcom/ae/logs/AELogsSetup;
+	public final fun init (Lcom/ae/logs/AELogsConfig;Ljava/util/List;)Lcom/ae/logs/AELogs;
+	public static synthetic fun init$default (Lcom/ae/logs/AELogsSetup;Lcom/ae/logs/AELogsConfig;Ljava/util/List;ILjava/lang/Object;)Lcom/ae/logs/AELogs;
+}
+

@@ -1,6 +1,6 @@
 # Creating Custom Plugins
 
-AEDevLens is designed to be extended. You can create two types of plugins:
+AELogs is designed to be extended. You can create two types of plugins:
 
 ## Plugin Types
 
@@ -23,20 +23,20 @@ class FeatureFlagsPlugin : UIPlugin {
     private val _badgeCount = MutableStateFlow<Int?>(null)
     override val badgeCount: StateFlow<Int?> = _badgeCount
     
-    private var inspector: AEDevLens? = null
+    private var inspector: AELogs? = null
     
     // Called once when installed
-    override fun onAttach(inspector: AEDevLens) {
+    override fun onAttach(inspector: AELogs) {
         this.inspector = inspector
         _badgeCount.value = getFlags().size
     }
     
-    // Called when DevLens panel opens
+    // Called when AELogs panel opens
     override fun onOpen() {
         refreshFlags()
     }
     
-    // Called when DevLens panel closes
+    // Called when AELogs panel closes
     override fun onClose() {
         // Pause expensive operations
     }
@@ -52,7 +52,7 @@ class FeatureFlagsPlugin : UIPlugin {
         inspector = null
     }
     
-    // Main content rendered in the DevLens panel
+    // Main content rendered in the AELogs panel
     @Composable
     override fun Content(modifier: Modifier) {
         val flags = remember { getFlags() }
@@ -91,11 +91,11 @@ class FeatureFlagsPlugin : UIPlugin {
 ### Step 2: Install the Plugin
 
 ```kotlin
-DevLensSetup.init(plugins = listOf(LogsPlugin(), FeatureFlagsPlugin()))
+AELogsSetup.init(plugins = listOf(LogsPlugin(), FeatureFlagsPlugin()))
 ```
 
 ### Step 3: Done!
-Your plugin now appears as a tab in the DevLens panel.
+Your plugin now appears as a tab in the AELogs panel.
 
 ## Creating a Data Plugin
 
@@ -107,7 +107,7 @@ class PerformancePlugin : DataPlugin {
     private val _metrics = MutableStateFlow<List<Metric>>(emptyList())
     val metrics: StateFlow<List<Metric>> = _metrics.asStateFlow()
     
-    override fun onAttach(inspector: AEDevLens) {
+    override fun onAttach(inspector: AELogs) {
         startCollecting()
     }
     
@@ -131,7 +131,7 @@ perfPlugin?.recordMetric("api_call", 250L)
 install() → onAttach()
                 ↓
          ┌→ onOpen()  ←┐
-         │      ↓       │   (user opens/closes DevLens)
+         │      ↓       │   (user opens/closes AELogs)
          └─ onClose() ──┘
                 ↓
            onDetach()  ← uninstall()

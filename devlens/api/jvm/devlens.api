@@ -1,6 +1,0 @@
-public final class com/ae/devlens/DevLensSetup {
-	public static final field INSTANCE Lcom/ae/devlens/DevLensSetup;
-	public final fun init (Lcom/ae/devlens/DevLensConfig;Ljava/util/List;)Lcom/ae/devlens/AEDevLens;
-	public static synthetic fun init$default (Lcom/ae/devlens/DevLensSetup;Lcom/ae/devlens/DevLensConfig;Ljava/util/List;ILjava/lang/Object;)Lcom/ae/devlens/AEDevLens;
-}
-

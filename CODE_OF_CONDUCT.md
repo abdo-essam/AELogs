@@ -29,7 +29,7 @@ Examples of unacceptable behavior:
 ## Enforcement
 
 Instances of abusive behavior may be reported to the project team at
-devlens@ae.com. All complaints will be reviewed and investigated.
+logs@ae.com. All complaints will be reviewed and investigated.
 
 ## Attribution
 

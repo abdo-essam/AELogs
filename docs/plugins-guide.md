@@ -1,6 +1,6 @@
 # Plugins Overview
 
-AEDevLens uses a plugin architecture. Each plugin adds a tab to the DevLens overlay.
+AELogs uses a plugin architecture. Each plugin adds a tab to the AELogs overlay.
 
 ## Built-in Plugins
 
@@ -21,7 +21,7 @@ Background data collector with no UI. Feeds data to a `UIPlugin`.
 ## Installing Plugins
 
 ```kotlin
-DevLensSetup.init(
+AELogsSetup.init(
     plugins = listOf(
         LogsPlugin(),
         NetworkPlugin(),

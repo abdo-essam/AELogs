@@ -24,9 +24,9 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(project(":devlens")) // core + ui + logs aggregator
-            implementation(project(":devlens-network")) // NetworkPlugin
-            implementation(project(":devlens-analytics")) // AnalyticsPlugin
+            implementation(project(":logs")) // core + ui + logs aggregator
+            implementation(project(":logs-network")) // NetworkPlugin
+            implementation(project(":logs-analytics")) // AnalyticsPlugin
             implementation(libs.runtime)
             implementation(libs.foundation)
             implementation(libs.material3)
@@ -41,7 +41,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.ae.devlens.sample"
+    namespace = "com.ae.logs.sample"
     compileSdk =
         libs.versions.android.compileSdk
             .get()
@@ -50,7 +50,7 @@ android {
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
 
     defaultConfig {
-        applicationId = "com.ae.devlens.sample"
+        applicationId = "com.ae.logs.sample"
         minSdk =
             libs.versions.android.minSdk
                 .get()

@@ -1,17 +1,17 @@
 # Logging Integrations
 
-AEDevLens works with **any** logging library. Just forward logs to `AEDevLens.default.log()`.
+AELogs works with **any** logging library. Just forward logs to `AELogs.default.log()`.
 
 ## Kermit
 
 ```kotlin
 import co.touchlab.kermit.LogWriter
 import co.touchlab.kermit.Severity
-import com.ae.devlens.AEDevLens
-import com.ae.devlens.plugins.logs.model.LogSeverity
+import com.ae.logs.AELogs
+import com.ae.logs.plugins.logs.model.LogSeverity
 
-class DevLensKermitWriter(
-    private val inspector: AEDevLens = AEDevLens.default
+class AELogsKermitWriter(
+    private val inspector: AELogs = AELogs.default
 ) : LogWriter() {
     override fun log(
         severity: Severity,
@@ -20,7 +20,7 @@ class DevLensKermitWriter(
         throwable: Throwable?
     ) {
         inspector.log(
-            severity = severity.toDevLensLogSeverity(),
+            severity = severity.toAELogsLogSeverity(),
             tag = tag,
             message = buildString {
                 append(message)
@@ -30,7 +30,7 @@ class DevLensKermitWriter(
     }
 }
 
-private fun Severity.toDevLensLogSeverity(): LogSeverity = when (this) {
+private fun Severity.toAELogsLogSeverity(): LogSeverity = when (this) {
     Severity.Verbose -> LogSeverity.VERBOSE
     Severity.Debug -> LogSeverity.DEBUG
     Severity.Info -> LogSeverity.INFO
@@ -40,7 +40,7 @@ private fun Severity.toDevLensLogSeverity(): LogSeverity = when (this) {
 }
 
 // Setup
-Logger.addLogWriter(DevLensKermitWriter())
+Logger.addLogWriter(AELogsKermitWriter())
 ```
 
 ## Napier
@@ -48,11 +48,11 @@ Logger.addLogWriter(DevLensKermitWriter())
 ```kotlin
 import io.github.aakira.napier.Antilog
 import io.github.aakira.napier.LogLevel
-import com.ae.devlens.AEDevLens
-import com.ae.devlens.plugins.logs.model.LogSeverity
+import com.ae.logs.AELogs
+import com.ae.logs.plugins.logs.model.LogSeverity
 
-class DevLensNapierAntilog(
-    private val inspector: AEDevLens = AEDevLens.default
+class AELogsNapierAntilog(
+    private val inspector: AELogs = AELogs.default
 ) : Antilog() {
     override fun performLog(
         priority: LogLevel,
@@ -61,7 +61,7 @@ class DevLensNapierAntilog(
         message: String?
     ) {
         inspector.log(
-            severity = priority.toDevLensLogSeverity(),
+            severity = priority.toAELogsLogSeverity(),
             tag = tag ?: "Napier",
             message = buildString {
                 message?.let { append(it) }
@@ -71,7 +71,7 @@ class DevLensNapierAntilog(
     }
 }
 
-private fun LogLevel.toDevLensLogSeverity(): LogSeverity = when (this) {
+private fun LogLevel.toAELogsLogSeverity(): LogSeverity = when (this) {
     LogLevel.VERBOSE -> LogSeverity.VERBOSE
     LogLevel.DEBUG -> LogSeverity.DEBUG
     LogLevel.INFO -> LogSeverity.INFO
@@ -81,22 +81,22 @@ private fun LogLevel.toDevLensLogSeverity(): LogSeverity = when (this) {
 }
 
 // Setup
-Napier.base(DevLensNapierAntilog())
+Napier.base(AELogsNapierAntilog())
 ```
 
 ## Timber (Android)
 
 ```kotlin
 import timber.log.Timber
-import com.ae.devlens.AEDevLens
-import com.ae.devlens.plugins.logs.model.LogSeverity
+import com.ae.logs.AELogs
+import com.ae.logs.plugins.logs.model.LogSeverity
 
-class DevLensTimberTree(
-    private val inspector: AEDevLens = AEDevLens.default
+class AELogsTimberTree(
+    private val inspector: AELogs = AELogs.default
 ) : Timber.Tree() {
     override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
         inspector.log(
-            severity = priority.toDevLensLogSeverity(),
+            severity = priority.toAELogsLogSeverity(),
             tag = tag ?: "Timber",
             message = buildString {
                 append(message)
@@ -106,7 +106,7 @@ class DevLensTimberTree(
     }
 }
 
-private fun Int.toDevLensLogSeverity(): LogSeverity = when (this) {
+private fun Int.toAELogsLogSeverity(): LogSeverity = when (this) {
     android.util.Log.VERBOSE -> LogSeverity.VERBOSE
     android.util.Log.DEBUG -> LogSeverity.DEBUG
     android.util.Log.INFO -> LogSeverity.INFO
@@ -117,31 +117,31 @@ private fun Int.toDevLensLogSeverity(): LogSeverity = when (this) {
 }
 
 // Setup
-Timber.plant(DevLensTimberTree())
+Timber.plant(AELogsTimberTree())
 ```
 
 ## KotlinLogging / SLF4J
 
 ```kotlin
 import org.slf4j.event.Level
-import com.ae.devlens.AEDevLens
-import com.ae.devlens.plugins.logs.model.LogSeverity
+import com.ae.logs.AELogs
+import com.ae.logs.plugins.logs.model.LogSeverity
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.AppenderBase
 
-class DevLensSlf4jAppender(
-    private val inspector: AEDevLens = AEDevLens.default
+class AELogsSlf4jAppender(
+    private val inspector: AELogs = AELogs.default
 ) : AppenderBase<ILoggingEvent>() {
     override fun append(event: ILoggingEvent) {
         inspector.log(
-            severity = event.level.toDevLensLogSeverity(),
+            severity = event.level.toAELogsLogSeverity(),
             tag = event.loggerName.substringAfterLast('.'),
             message = event.formattedMessage
         )
     }
 }
 
-private fun Level.toDevLensLogSeverity(): LogSeverity = when (this) {
+private fun Level.toAELogsLogSeverity(): LogSeverity = when (this) {
     Level.TRACE -> LogSeverity.VERBOSE
     Level.DEBUG -> LogSeverity.DEBUG
     Level.INFO -> LogSeverity.INFO
@@ -155,14 +155,14 @@ private fun Level.toDevLensLogSeverity(): LogSeverity = when (this) {
 ```kotlin
 import io.ktor.client.*
 import io.ktor.client.plugins.logging.*
-import com.ae.devlens.AEDevLens
-import com.ae.devlens.plugins.logs.model.LogSeverity
+import com.ae.logs.AELogs
+import com.ae.logs.plugins.logs.model.LogSeverity
 
 val client = HttpClient {
     install(Logging) {
         logger = object : Logger {
             override fun log(message: String) {
-                AEDevLens.default.log(
+                AELogs.default.log(
                     severity = LogSeverity.DEBUG,
                     tag = "HTTP",
                     message = message
@@ -178,7 +178,7 @@ val client = HttpClient {
 
 ```kotlin
 // Just call log() directly — no bridge needed
-val inspector = AEDevLens.default
+val inspector = AELogs.default
 
 inspector.log(LogSeverity.INFO, "MyApp", "App started")
 inspector.log(LogSeverity.ERROR, "Auth", "Login failed: $error")

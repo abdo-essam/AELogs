@@ -25,14 +25,11 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "AEDevLens"
+rootProject.name = "AELogs"
 
-include(":devlens-core")
-include(":devlens-ui")
-include(":devlens-logs")
-include(":devlens-network")
-include(":devlens-analytics")
-include(":devlens")
+include(":logs-network")
+include(":logs-analytics")
+include(":logs")
 include(":sample:composeApp")
 
 // Build cache

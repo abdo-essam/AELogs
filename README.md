@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="docs/assets/logo.png" width="600" alt="AEDevLens Banner" />
+  <img src="docs/assets/logo.png" width="600" alt="AELogs Banner" />
 </p>
 
-<h1 align="center">AEDevLens</h1>
+<h1 align="center">AELogs</h1>
 
 <p align="center">
   <strong>Extensible on-device dev tools for Kotlin Multiplatform</strong>
@@ -11,20 +11,20 @@
 </p>
 
 <p align="center">
-  <a href="https://central.sonatype.com/artifact/io.github.abdo-essam/devlens">
-    <img src="https://img.shields.io/maven-central/v/io.github.abdo-essam/devlens?style=flat-square&color=BF3547" alt="Maven Central" />
+  <a href="https://central.sonatype.com/artifact/io.github.abdo-essam/logs">
+    <img src="https://img.shields.io/maven-central/v/io.github.abdo-essam/logs?style=flat-square&color=BF3547" alt="Maven Central" />
   </a>
-  <a href="https://github.com/abdo-essam/AEDevLens/actions/workflows/ci.yml">
-    <img src="https://img.shields.io/github/actions/workflow/status/abdo-essam/AEDevLens/ci.yml?branch=main&style=flat-square" alt="CI" />
+  <a href="https://github.com/abdo-essam/AELogs/actions/workflows/ci.yml">
+    <img src="https://img.shields.io/github/actions/workflow/status/abdo-essam/AELogs/ci.yml?branch=main&style=flat-square" alt="CI" />
   </a>
-  <a href="https://codecov.io/gh/abdo-essam/AEDevLens">
-    <img src="https://img.shields.io/codecov/c/github/abdo-essam/AEDevLens?style=flat-square&color=00B894" alt="Code Coverage" />
+  <a href="https://codecov.io/gh/abdo-essam/AELogs">
+    <img src="https://img.shields.io/codecov/c/github/abdo-essam/AELogs?style=flat-square&color=00B894" alt="Code Coverage" />
   </a>
   <a href="https://kotlin.github.io/binary-compatibility-validator/">
     <img src="https://img.shields.io/badge/API-stable-blue?style=flat-square" alt="API Stability" />
   </a>
   <a href="LICENSE">
-    <img src="https://img.shields.io/github/license/abdo-essam/AEDevLens?style=flat-square" alt="License" />
+    <img src="https://img.shields.io/github/license/abdo-essam/AELogs?style=flat-square" alt="License" />
   </a>
   <a href="https://kotlinlang.org">
     <img src="https://img.shields.io/badge/Kotlin-2.3.0-7F52FF?style=flat-square&logo=kotlin" alt="Kotlin" />
@@ -37,7 +37,7 @@
   <a href="#-quick-start">Quick Start</a> •
   <a href="#-plugins">Plugins</a> •
   <a href="#-custom-plugins">Custom Plugins</a> •
-  <a href="https://abdo-essam.github.io/AEDevLens/">Documentation</a>
+  <a href="https://abdo-essam.github.io/AELogs/">Documentation</a>
 </p>
 
 ---
@@ -63,7 +63,7 @@
 
 ## 📦 Installation
 
-AEDevLens is fully modularized. Include only the plugins you need to keep your app light!
+AELogs is fully modularized. Include only the plugins you need to keep your app light!
 
 ### Kotlin Multiplatform
 
@@ -73,28 +73,28 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             // Default setup: Core UI + LogsPlugin
-            implementation("io.github.abdo-essam:devlens:1.0.0")
+            implementation("io.github.abdo-essam:logs:1.0.0")
             
             // Optional Plugins
-            implementation("io.github.abdo-essam:devlens-network:1.0.0")
-            implementation("io.github.abdo-essam:devlens-analytics:1.0.0")
+            implementation("io.github.abdo-essam:logs-network:1.0.0")
+            implementation("io.github.abdo-essam:logs-analytics:1.0.0")
         }
     }
 }
 ```
 
-> **🔥 True Modularity**: Worried about APK/bundle size? You can drop the `LogsPlugin` entirely! Just remove the `devlens` dependency and import `devlens-network:1.0.0` or `devlens-analytics:1.0.0` directly. Because each acts completely independently and transitively exports `devlens-core` and `devlens-ui`, your app stays incredibly lightweight!
+> **🔥 True Modularity**: Worried about APK/bundle size? You can drop the `LogsPlugin` entirely! Just remove the `logs` dependency and import `logs-network:1.0.0` or `logs-analytics:1.0.0` directly. Because each acts completely independently and transitively exports `logs-core` and `logs-ui`, your app stays incredibly lightweight!
 
 ### Version Catalog
 
 ```toml
 [versions]
-devlens = "1.0.0"
+logs = "1.0.0"
 
 [libraries]
-devlens-core      = { module = "io.github.abdo-essam:devlens", version.ref = "devlens" }
-devlens-network   = { module = "io.github.abdo-essam:devlens-network", version.ref = "devlens" }
-devlens-analytics = { module = "io.github.abdo-essam:devlens-analytics", version.ref = "devlens" }
+logs-core      = { module = "io.github.abdo-essam:logs", version.ref = "logs" }
+logs-network   = { module = "io.github.abdo-essam:logs-network", version.ref = "logs" }
+logs-analytics = { module = "io.github.abdo-essam:logs-analytics", version.ref = "logs" }
 ```
 
 ## 🚀 Quick Start
@@ -104,7 +104,7 @@ devlens-analytics = { module = "io.github.abdo-essam:devlens-analytics", version
 Best called early in your platform-specific entry points (e.g. `Application.onCreate` for Android, or main `ViewController` for iOS):
 
 ```kotlin
-DevLensSetup.init(
+AELogsSetup.init(
     plugins = listOf(
         LogsPlugin(),      // Default built-in logs
         NetworkPlugin(),   // Network inspector
@@ -118,10 +118,10 @@ DevLensSetup.init(
 ```kotlin
 @Composable
 fun App(debugMode: Boolean) {
-    AEDevLensProvider(
-        inspector = AEDevLens.default,
+    AELogsProvider(
+        inspector = AELogs.default,
         enabled = debugMode, // ← disables UI overhead in release builds
-        uiConfig = DevLensUiConfig(
+        uiConfig = AELogsUiConfig(
             showFloatingButton = true, // Enables the 'bug' overlay button
             enableLongPress = true,    // Show panel on 3-finger long press
         )
@@ -139,8 +139,8 @@ Use the global static APIs corresponding to your installed plugins:
 
 ```kotlin
 // 1. Logs API
-DevLens.i("HomeScreen", "App launched!")
-DevLens.e("Database", "Failed to clear cache", exception)
+AELogs.i("HomeScreen", "App launched!")
+AELogs.e("Database", "Failed to clear cache", exception)
 
 // 2. Network API
 NetworkApi.logRequest(method = "GET", url = "https://api.example.com/users", headers = mapOf("Auth" to "Bearer 123"))
@@ -150,20 +150,20 @@ NetworkApi.logResponse(url = "https://api.example.com/users", statusCode = 200, 
 AnalyticsApi.logEvent("item_added_to_cart", properties = mapOf("id" to "123", "price" to "29.99"))
 ```
 
-### 4. Open DevLens
+### 4. Open AELogs
 
 Three ways to open the inspector:
 1. Tap the floating **bug button** (bottom-right corner)
 2. Long-press with multiple fingers anywhere on screen (if enabled)
-3. Programmatically: `LocalAEDevLensController.current.show()`
+3. Programmatically: `LocalAELogsController.current.show()`
 
 ## 🧩 Modularity & Available Plugins
 
 | Module / Plugin | Class | Description |
 |--------|------|-------------|
-| `:devlens` | `LogsPlugin` | Log viewer with severity filters (ALL / VERBOSE / DEBUG / INFO / WARN / ERROR) |
-| `:devlens-network` | `NetworkPlugin` | HTTP inspector with method badges, status filtering (2xx / 4xx / 5xx) and full body view |
-| `:devlens-analytics` | `AnalyticsPlugin` | Analytics tracker separating Screens / Events with expandable properties |
+| `:logs` | `LogsPlugin` | Log viewer with severity filters (ALL / VERBOSE / DEBUG / INFO / WARN / ERROR) |
+| `:logs-network` | `NetworkPlugin` | HTTP inspector with method badges, status filtering (2xx / 4xx / 5xx) and full body view |
+| `:logs-analytics` | `AnalyticsPlugin` | Analytics tracker separating Screens / Events with expandable properties |
 
 ## 🔨 Custom Plugins
 
@@ -178,7 +178,7 @@ class FeatureFlagsPlugin : UIPlugin {
     private val _badgeCount = MutableStateFlow<Int?>(null)
     override val badgeCount: StateFlow<Int?> = _badgeCount
 
-    override fun onAttach(inspector: AEDevLens) {
+    override fun onAttach(inspector: AELogs) {
         // Initialize your plugin
     }
 
@@ -194,20 +194,20 @@ class FeatureFlagsPlugin : UIPlugin {
 }
 
 // Install it
-DevLensSetup.init(plugins = listOf(LogsPlugin(), FeatureFlagsPlugin()))
+AELogsSetup.init(plugins = listOf(LogsPlugin(), FeatureFlagsPlugin()))
 ```
 
-📖 See the [Custom Plugins Guide](https://abdo-essam.github.io/AEDevLens/custom-plugins) for the full API reference.
+📖 See the [Custom Plugins Guide](https://abdo-essam.github.io/AELogs/custom-plugins) for the full API reference.
 
 ## 🔗 Logging Integrations
 
-AEDevLens works seamlessly with your existing logging infrastructures (like Kermit or Napier). Just forward your logs to the APIs.
+AELogs works seamlessly with your existing logging infrastructures (like Kermit or Napier). Just forward your logs to the APIs.
 
 ```kotlin
-class DevLensKermitWriter : LogWriter() {
+class AELogsKermitWriter : LogWriter() {
     override fun log(severity: Severity, message: String, tag: String, throwable: Throwable?) {
-        DevLens.log(
-            severity = severity.toDevLensLogSeverity(),
+        AELogs.log(
+            severity = severity.toAELogsLogSeverity(),
             tag = tag,
             message = buildString {
                 append(message)
@@ -218,7 +218,7 @@ class DevLensKermitWriter : LogWriter() {
 }
 ```
 
-📖 See the [Logging Integrations Guide](https://abdo-essam.github.io/AEDevLens/integrations) for more examples.
+📖 See the [Logging Integrations Guide](https://abdo-essam.github.io/AELogs/integrations) for more examples.
 
 ## 🏗️ Architecture
 
@@ -226,9 +226,9 @@ The SDK follows an encapsulated `Model-Store-API-UI` pattern, making plugins 100
 
 ```text
 ┌─────────────────────────────────────────────────┐
-│              AEDevLensProvider                   │  Compose wrapper
+│              AELogsProvider                   │  Compose wrapper
 │  ┌───────────────────────────────────────────┐  │
-│  │            AEDevLens (Core)               │  │  Plugin engine
+│  │            AELogs (Core)               │  │  Plugin engine
 │  │  ┌─────────┐ ┌─────────┐ ┌────────────┐  │  │
 │  │  │  Logs   │ │ Network │ │ Analytics  │  │  │  Plugins
 │  │  │ Plugin  │ │ Plugin  │ │  Plugin    │  │  │
@@ -255,8 +255,8 @@ The SDK follows an encapsulated `Model-Store-API-UI` pattern, making plugins 100
 Contributions are welcome! Please read the [Contributing Guide](CONTRIBUTING.md) first.
 
 ```bash
-git clone https://github.com/abdo-essam/AEDevLens.git
-cd AEDevLens
+git clone https://github.com/abdo-essam/AELogs.git
+cd AELogs
 ./gradlew build
 ./gradlew allTests
 ```
