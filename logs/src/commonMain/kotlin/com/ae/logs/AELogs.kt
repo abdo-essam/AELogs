@@ -7,6 +7,7 @@ import com.ae.logs.core.bus.AppStoppedEvent
 import com.ae.logs.core.bus.EventBus
 import com.ae.logs.core.bus.PanelClosedEvent
 import com.ae.logs.core.bus.PanelOpenedEvent
+import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.flow.StateFlow
 
 /**
@@ -21,23 +22,26 @@ import kotlinx.coroutines.flow.StateFlow
  * └── AELogsConfig  — global configuration
  * ```
  *
- * ## Setup (fluent builder style)
+ * ## Setup — single entry point
  * ```kotlin
- * val inspector = AELogs.create(AELogsConfig())
- *     .install(LogsPlugin(maxEntries = 1000))
- *     .install(NetworkPlugin())
- *     .install(CrashPlugin())
+ * // In Application.onCreate()
+ * AELogs.init(LogsPlugin(), NetworkPlugin(), AnalyticsPlugin())
  * ```
  *
- * ## Simple setup (default instance + auto-install)
+ * ## Zero-config
  * ```kotlin
- * val inspector = AELogs.createDefault()   // from :logs aggregator
+ * AELogs.init()
+ * ```
+ *
+ * ## Accessing plugin APIs after init
+ * ```kotlin
+ * val networkApi = AELogs.plugin<NetworkPlugin>()?.api
  * ```
  *
  * ## App lifecycle integration
  * ```kotlin
- * inspector.notifyStart()   // call from onStart()
- * inspector.notifyStop()    // call from onStop()
+ * AELogs.default.notifyStart()   // call from onStart()
+ * AELogs.default.notifyStop()    // call from onStop()
  * ```
  */
 public class AELogs private constructor(
@@ -146,25 +150,98 @@ public class AELogs private constructor(
         eventBus.publish(AllDataClearedEvent)
     }
 
-    // ── Companion (factory) ───────────────────────────────────────────────────
+    // ── Companion (factory & singleton) ──────────────────────────────────────
 
     public companion object {
-        /**
-         * Shared default instance for apps that only need one inspector.
-         *
-         * Call [install] on this instance on app startup, or use
-         * `AELogs.createDefault()` from the `:logs` aggregator for
-         * a pre-configured instance with [LogsPlugin] included.
-         */
-        public val default: AELogs by lazy { create() }
+        private val _default = atomic<AELogs?>(null)
 
         /**
-         * Create a new isolated [AELogs] instance with custom configuration.
+         * The shared default [AELogs] instance.
          *
-         * Prefer the fluent style:
+         * Requires [init] to have been called first — throws [IllegalStateException]
+         * with a clear message if accessed before initialisation.
+         *
          * ```kotlin
-         * val inspector = AELogs.create(AELogsConfig())
-         *     .install(LogsPlugin(maxEntries = 1000))
+         * // Always call init first:
+         * AELogs.init(LogsPlugin())
+         *
+         * // Then access the instance anywhere:
+         * val instance = AELogs.default
+         * ```
+         */
+        public val default: AELogs
+            get() = _default.value ?: error(
+                "AELogs has not been initialised. " +
+                    "Call AELogs.init() in Application.onCreate() before accessing AELogs.default.",
+            )
+
+        /**
+         * Null-safe internal accessor used by log extensions so they silently
+         * no-op if [init] has not been called yet — consistent with how
+         * Timber and similar libraries behave before a tree is planted.
+         */
+        internal fun defaultOrNull(): AELogs? = _default.value
+
+        /**
+         * Initialise AELogs and configure the shared [default] instance.
+         *
+         * **Idempotent** — safe to call multiple times; only the first call
+         * creates and configures the instance. Subsequent calls return the
+         * already-initialised [default] immediately.
+         *
+         * ```kotlin
+         * // Zero-config
+         * AELogs.init()
+         *
+         * // With plugins
+         * AELogs.init(LogsPlugin(), NetworkPlugin(), AnalyticsPlugin())
+         *
+         * // With custom config
+         * AELogs.init(LogsPlugin(), config = AELogsConfig())
+         * ```
+         *
+         * @param plugins  Plugins to install on the shared instance.
+         * @param config   Core configuration (only applied on first call).
+         * @return The shared [default] instance.
+         */
+        public fun init(
+            vararg plugins: AELogsPlugin,
+            config: AELogsConfig = AELogsConfig(),
+        ): AELogs {
+            // Fast path: already initialised
+            _default.value?.let { return it }
+
+            val instance = AELogs(config)
+            plugins.forEach { instance.install(it) }
+
+            // CAS guarantees only one winner on concurrent calls; the loser
+            // discards its instance and returns the already-set singleton.
+            return if (_default.compareAndSet(null, instance)) instance else _default.value!!
+        }
+
+        /**
+         * Look up a plugin on the [default] instance by type.
+         *
+         * Returns `null` if [init] has not been called or if the plugin
+         * is not installed — never throws.
+         *
+         * ```kotlin
+         * val networkApi = AELogs.plugin<NetworkPlugin>()?.api
+         * ```
+         */
+        public inline fun <reified T : AELogsPlugin> plugin(): T? =
+            defaultOrNull()?.getPlugin<T>()
+
+        /**
+         * Create a new **isolated** [AELogs] instance with custom configuration.
+         *
+         * Use for advanced scenarios (e.g. tests, embedded SDKs) where a
+         * separate instance is required. For the common case, prefer [init]
+         * which configures the shared singleton.
+         *
+         * ```kotlin
+         * val testInstance = AELogs.create()
+         *     .install(LogsPlugin())
          * ```
          */
         public fun create(config: AELogsConfig = AELogsConfig()): AELogs = AELogs(config)

@@ -21,7 +21,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.ae.logs.AELogs
 import com.ae.logs.AELogsProvider
 import com.ae.logs.AELogsUiConfig
 import com.ae.logs.sample.ui.analytics.AnalyticsScreen
@@ -50,7 +49,6 @@ private val TABS =
 fun App(debugMode: Boolean = false) {
     SampleTheme {
         AELogsProvider(
-            inspector = AELogs.default,
             uiConfig =
                 AELogsUiConfig(
                     showFloatingButton = true,

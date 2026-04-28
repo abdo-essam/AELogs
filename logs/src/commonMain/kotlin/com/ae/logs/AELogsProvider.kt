@@ -19,28 +19,24 @@ import com.ae.logs.ui.theme.AELogsTheme
 /**
  * Top-level composable wrapper that enables the AELogs overlay.
  *
- * Wrap your entire app content with this composable.
+ * Wrap your entire app content with this composable. Reads from [AELogs.default],
+ * which must have been initialised via [AELogs.install] before composition begins.
  *
  * ```kotlin
  * @Composable
  * fun App() {
- *     AELogsProvider(
- *         inspector = AELogs.default,
- *         enabled = BuildConfig.DEBUG,
- *     ) {
+ *     AELogsProvider(enabled = BuildConfig.DEBUG) {
  *         MaterialTheme { MainNavigation() }
  *     }
  * }
  * ```
  *
- * @param inspector     The [AELogs] instance to observe.
- * @param uiConfig      UI-specific configuration (button visibility, theme, etc.).
- * @param enabled       Set to `false` in release builds for zero overhead.
- * @param content       Your app's content.
+ * @param uiConfig  UI-specific configuration (button visibility, theme, etc.).
+ * @param enabled   Set to `false` in release builds for zero overhead.
+ * @param content   Your app's content.
  */
 @Composable
 public fun AELogsProvider(
-    inspector: AELogs = AELogs.default,
     uiConfig: AELogsUiConfig = AELogsUiConfig(),
     enabled: Boolean = true,
     content: @Composable () -> Unit,
@@ -49,6 +45,8 @@ public fun AELogsProvider(
         content()
         return
     }
+
+    val inspector = AELogs.default
 
     val controller = remember { AELogsController() }
     val isVisible by controller.isVisible.collectAsState()
