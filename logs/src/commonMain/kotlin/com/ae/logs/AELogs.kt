@@ -170,10 +170,11 @@ public class AELogs private constructor(
          * ```
          */
         public val default: AELogs
-            get() = _default.value ?: error(
-                "AELogs has not been initialised. " +
-                    "Call AELogs.init() in Application.onCreate() before accessing AELogs.default.",
-            )
+            get() =
+                _default.value ?: error(
+                    "AELogs has not been initialised. " +
+                        "Call AELogs.init() in Application.onCreate() before accessing AELogs.default.",
+                )
 
         /**
          * Null-safe internal accessor used by log extensions so they silently
@@ -230,8 +231,7 @@ public class AELogs private constructor(
          * val networkApi = AELogs.plugin<NetworkPlugin>()?.api
          * ```
          */
-        public inline fun <reified T : AELogsPlugin> plugin(): T? =
-            defaultOrNull()?.getPlugin<T>()
+        public inline fun <reified T : AELogsPlugin> plugin(): T? = defaultOrNull()?.getPlugin<T>()
 
         /**
          * Create a new **isolated** [AELogs] instance with custom configuration.
