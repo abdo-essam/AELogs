@@ -12,6 +12,7 @@ import com.ae.logs.plugins.logs.store.LogStore
  * ```kotlin
  * val api = inspector.getPlugin<LogsPlugin>()?.api
  * api?.log(LogSeverity.INFO, "MyTag", "Something happened")
+ * api?.e("MyTag", "Oops", throwable)   // stack trace appended automatically
  * ```
  */
 public class LogsApi internal constructor(
@@ -20,43 +21,43 @@ public class LogsApi internal constructor(
     /**
      * Record a log entry.
      *
+     * If [throwable] is non-null its stack trace is appended to [message]
+     * automatically — callers never have to format it themselves.
+     *
      * Safe to call from any thread. Immediately emits to the log viewer.
      */
     public fun log(
         severity: LogSeverity,
         tag: String,
         message: String,
+        throwable: Throwable? = null,
     ) {
-        store.log(severity, tag, message)
+        val fullMessage = if (throwable != null) "$message\n${throwable.stackTraceToString()}" else message
+        store.log(severity, tag, fullMessage)
     }
 
     /** Convenience shortcut for [LogSeverity.VERBOSE] logs. */
-    public fun v(
-        tag: String,
-        message: String,
-    ): Unit = log(LogSeverity.VERBOSE, tag, message)
+    public fun v(tag: String, message: String, throwable: Throwable? = null): Unit =
+        log(LogSeverity.VERBOSE, tag, message, throwable)
 
     /** Convenience shortcut for [LogSeverity.DEBUG] logs. */
-    public fun d(
-        tag: String,
-        message: String,
-    ): Unit = log(LogSeverity.DEBUG, tag, message)
+    public fun d(tag: String, message: String, throwable: Throwable? = null): Unit =
+        log(LogSeverity.DEBUG, tag, message, throwable)
 
     /** Convenience shortcut for [LogSeverity.INFO] logs. */
-    public fun i(
-        tag: String,
-        message: String,
-    ): Unit = log(LogSeverity.INFO, tag, message)
+    public fun i(tag: String, message: String, throwable: Throwable? = null): Unit =
+        log(LogSeverity.INFO, tag, message, throwable)
 
     /** Convenience shortcut for [LogSeverity.WARN] logs. */
-    public fun w(
-        tag: String,
-        message: String,
-    ): Unit = log(LogSeverity.WARN, tag, message)
+    public fun w(tag: String, message: String, throwable: Throwable? = null): Unit =
+        log(LogSeverity.WARN, tag, message, throwable)
 
     /** Convenience shortcut for [LogSeverity.ERROR] logs. */
-    public fun e(
-        tag: String,
-        message: String,
-    ): Unit = log(LogSeverity.ERROR, tag, message)
+    public fun e(tag: String, message: String, throwable: Throwable? = null): Unit =
+        log(LogSeverity.ERROR, tag, message, throwable)
+
+    /** Convenience shortcut for [LogSeverity.ASSERT] ("What a Terrible Failure") logs. */
+    public fun wtf(tag: String, message: String, throwable: Throwable? = null): Unit =
+        log(LogSeverity.ASSERT, tag, message, throwable)
 }
+

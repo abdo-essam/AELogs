@@ -104,12 +104,10 @@ logs-analytics = { module = "io.github.abdo-essam:logs-analytics", version.ref =
 Best called early in your platform-specific entry points (e.g. `Application.onCreate` for Android, or main `ViewController` for iOS):
 
 ```kotlin
-AELogsSetup.init(
-    plugins = listOf(
-        LogsPlugin(),      // Default built-in logs
-        NetworkPlugin(),   // Network inspector
-        AnalyticsPlugin()  // Analytics tracker
-    )
+AELogs.init(
+    LogsPlugin(),      // Built-in log viewer
+    NetworkPlugin(),   // Network inspector
+    AnalyticsPlugin()  // Analytics tracker
 )
 ```
 
@@ -119,7 +117,6 @@ AELogsSetup.init(
 @Composable
 fun App(debugMode: Boolean) {
     AELogsProvider(
-        inspector = AELogs.default,
         enabled = debugMode, // ← disables UI overhead in release builds
         uiConfig = AELogsUiConfig(
             showFloatingButton = true, // Enables the 'bug' overlay button
@@ -133,20 +130,52 @@ fun App(debugMode: Boolean) {
 }
 ```
 
-### 3. Log Data to Plugins
+### 3. Log — primary API (`AELog`)
 
-Use the global static APIs corresponding to your installed plugins:
+`AELog` is a discoverable object modelled after Android's built-in `Log` class.
+Just type `AELog.` and the IDE lists every method — no extension hunting required:
 
 ```kotlin
-// 1. Logs API
-AELogs.i("HomeScreen", "App launched!")
-AELogs.e("Database", "Failed to clear cache", exception)
+AELog.v("Auth", "Token checked")
+AELog.d("Auth", "Token refreshed")
+AELog.i("HomeScreen", "App launched!")
+AELog.w("Auth", "Session expiring soon")
+AELog.e("Database", "Failed to clear cache", exception) // stack trace auto-appended
+AELog.wtf("Auth", "Unexpected state")
+```
 
-// 2. Network API
+> All calls are **silent no-ops** if `AELogs.init()` has not been called yet — safe in shared modules that run before app startup.
+
+#### Tagged logger — eliminate tag repetition (recommended for classes)
+
+Create one `TaggedLogger` per class. The tag is set once and applied to every call:
+
+```kotlin
+class AuthViewModel {
+    // ✅ Tag declared once — never repeated
+    private val log = AELog.logger("AuthViewModel")
+    // or: private val log = AELogs.logger("AuthViewModel")
+
+    fun login() {
+        log.d("Login started")
+        log.i("OTP verified")
+        log.e("Token refresh failed", throwable)
+    }
+}
+```
+
+#### Companion shorthands (alternative — same result)
+
+```kotlin
+// If you already have AELogs imported, these are identical to AELog.*
+AELogs.d("Auth", "Token refreshed")
+AELogs.e("Database", "Failed to clear cache", exception)
+```
+
+```kotlin
+// Network & Analytics APIs
 NetworkApi.logRequest(method = "GET", url = "https://api.example.com/users", headers = mapOf("Auth" to "Bearer 123"))
 NetworkApi.logResponse(url = "https://api.example.com/users", statusCode = 200, responseBody = "{ \"count\": 2 }")
-
-// 3. Analytics API
 AnalyticsApi.logEvent("item_added_to_cart", properties = mapOf("id" to "123", "price" to "29.99"))
 ```
 
@@ -178,8 +207,8 @@ class FeatureFlagsPlugin : UIPlugin {
     private val _badgeCount = MutableStateFlow<Int?>(null)
     override val badgeCount: StateFlow<Int?> = _badgeCount
 
-    override fun onAttach(inspector: AELogs) {
-        // Initialize your plugin
+    override fun onAttach(context: PluginContext) {
+        // Initialize your plugin (observe context.scope, context.eventBus, etc.)
     }
 
     @Composable
@@ -194,7 +223,7 @@ class FeatureFlagsPlugin : UIPlugin {
 }
 
 // Install it
-AELogsSetup.init(plugins = listOf(LogsPlugin(), FeatureFlagsPlugin()))
+AELogs.init(LogsPlugin(), FeatureFlagsPlugin())
 ```
 
 📖 See the [Custom Plugins Guide](https://abdo-essam.github.io/AELogs/custom-plugins) for the full API reference.
@@ -206,13 +235,12 @@ AELogs works seamlessly with your existing logging infrastructures (like Kermit 
 ```kotlin
 class AELogsKermitWriter : LogWriter() {
     override fun log(severity: Severity, message: String, tag: String, throwable: Throwable?) {
+        // Pass throwable directly — stack trace is appended automatically by AELogs
         AELogs.log(
             severity = severity.toAELogsLogSeverity(),
             tag = tag,
-            message = buildString {
-                append(message)
-                throwable?.let { append("\n${it.stackTraceToString()}") }
-            }
+            message = message,
+            throwable = throwable,
         )
     }
 }

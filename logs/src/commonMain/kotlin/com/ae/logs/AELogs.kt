@@ -22,26 +22,58 @@ import kotlinx.coroutines.flow.StateFlow
  * └── AELogsConfig  — global configuration
  * ```
  *
- * ## Setup — single entry point
+ * ## 1. Setup — single entry point
  * ```kotlin
  * // In Application.onCreate()
  * AELogs.init(LogsPlugin(), NetworkPlugin(), AnalyticsPlugin())
  * ```
  *
- * ## Zero-config
+ * ## 2. Log — primary API ([AELog] object)
+ *
+ * The recommended way to log. [AELog] is a discoverable object modelled after
+ * Android's built-in `Log` class — just type `AELog.` and the IDE lists every
+ * method:
+ *
  * ```kotlin
- * AELogs.init()
+ * AELog.d("Auth", "Token refreshed")
+ * AELog.e("Network", "Request failed", throwable)
  * ```
  *
- * ## Accessing plugin APIs after init
+ * ## 3. Log — tagged logger (eliminates tag repetition)
+ *
+ * Create one logger per class via [AELog.logger] or [AELogs.Companion.logger]:
+ *
  * ```kotlin
- * val networkApi = AELogs.plugin<NetworkPlugin>()?.api
+ * class AuthViewModel {
+ *     private val log = AELog.logger("AuthViewModel")
+ *
+ *     fun login() {
+ *         log.d("Login started")          // tag is baked in
+ *         log.e("Failed", throwable)       // tag is baked in
+ *     }
+ * }
  * ```
  *
- * ## App lifecycle integration
+ * ## 4. Log — companion shorthands (alternative)
+ *
+ * For callers that already import `AELogs`, the companion extensions work too:
+ *
+ * ```kotlin
+ * AELogs.d("Tag", "debug")              // identical to AELog.d()
+ * AELogs.e("Tag", "error", throwable)   // stack trace auto-appended
+ * ```
+ *
+ * All logging calls are **silent no-ops** if [init] has not been called yet.
+ *
+ * ## 5. App lifecycle integration
  * ```kotlin
  * AELogs.default.notifyStart()   // call from onStart()
  * AELogs.default.notifyStop()    // call from onStop()
+ * ```
+ *
+ * ## Advanced — accessing plugin APIs directly
+ * ```kotlin
+ * val networkApi = AELogs.plugin<NetworkPlugin>()?.api
  * ```
  */
 public class AELogs private constructor(
