@@ -180,6 +180,7 @@ public class AELogs private constructor(
          * no-op if [init] has not been called yet — consistent with how
          * Timber and similar libraries behave before a tree is planted.
          */
+        @PublishedApi
         internal fun defaultOrNull(): AELogs? = _default.value
 
         /**

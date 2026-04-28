@@ -17,6 +17,7 @@ public final class com/ae/logs/AELogs {
 public final class com/ae/logs/AELogs$Companion {
 	public final fun create (Lcom/ae/logs/AELogsConfig;)Lcom/ae/logs/AELogs;
 	public static synthetic fun create$default (Lcom/ae/logs/AELogs$Companion;Lcom/ae/logs/AELogsConfig;ILjava/lang/Object;)Lcom/ae/logs/AELogs;
+	public final fun defaultOrNull ()Lcom/ae/logs/AELogs;
 	public final fun getDefault ()Lcom/ae/logs/AELogs;
 	public final fun init ([Lcom/ae/logs/core/AELogsPlugin;Lcom/ae/logs/AELogsConfig;)Lcom/ae/logs/AELogs;
 	public static synthetic fun init$default (Lcom/ae/logs/AELogs$Companion;[Lcom/ae/logs/core/AELogsPlugin;Lcom/ae/logs/AELogsConfig;ILjava/lang/Object;)Lcom/ae/logs/AELogs;
@@ -31,7 +32,6 @@ public final class com/ae/logs/AELogsProviderKt {
 	public static final fun AELogsProvider (Lcom/ae/logs/AELogsUiConfig;ZLkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
 	public static final fun getUiPlugins (Lcom/ae/logs/AELogs;)Ljava/util/List;
 }
-
 
 public final class com/ae/logs/AELogsUiConfig {
 	public static final field $stable I
