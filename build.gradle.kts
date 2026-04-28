@@ -1,3 +1,13 @@
+buildscript {
+    dependencies {
+        classpath("org.ow2.asm:asm:9.7.1")
+        classpath("org.ow2.asm:asm-tree:9.7.1")
+        classpath("org.ow2.asm:asm-analysis:9.7.1")
+        classpath("org.ow2.asm:asm-commons:9.7.1")
+        classpath("org.ow2.asm:asm-util:9.7.1")
+    }
+}
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform) apply false
     alias(libs.plugins.androidKotlinMultiplatformLibrary) apply false

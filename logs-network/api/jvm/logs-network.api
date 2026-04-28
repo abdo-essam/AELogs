@@ -88,6 +88,7 @@ public final class com/ae/logs/plugins/network/model/NetworkFilter : java/lang/E
 }
 
 public final class com/ae/logs/plugins/network/model/NetworkMethod : java/lang/Enum {
+	public static final field Companion Lcom/ae/logs/plugins/network/model/NetworkMethod$Companion;
 	public static final field DELETE Lcom/ae/logs/plugins/network/model/NetworkMethod;
 	public static final field GET Lcom/ae/logs/plugins/network/model/NetworkMethod;
 	public static final field HEAD Lcom/ae/logs/plugins/network/model/NetworkMethod;
@@ -99,6 +100,10 @@ public final class com/ae/logs/plugins/network/model/NetworkMethod : java/lang/E
 	public final fun getLabel ()Ljava/lang/String;
 	public static fun valueOf (Ljava/lang/String;)Lcom/ae/logs/plugins/network/model/NetworkMethod;
 	public static fun values ()[Lcom/ae/logs/plugins/network/model/NetworkMethod;
+}
+
+public final class com/ae/logs/plugins/network/model/NetworkMethod$Companion {
+	public final fun fromString (Ljava/lang/String;)Lcom/ae/logs/plugins/network/model/NetworkMethod;
 }
 
 public final class com/ae/logs/plugins/network/ui/ComposableSingletons$NetworkContentKt {

@@ -1,0 +1,10 @@
+public final class com/ae/logs/plugins/network/interceptor/AELogsOkHttpInterceptor : okhttp3/Interceptor {
+	public static final field Companion Lcom/ae/logs/plugins/network/interceptor/AELogsOkHttpInterceptor$Companion;
+	public static final field MAX_BODY_BYTES J
+	public fun <init> ()V
+	public fun intercept (Lokhttp3/Interceptor$Chain;)Lokhttp3/Response;
+}
+
+public final class com/ae/logs/plugins/network/interceptor/AELogsOkHttpInterceptor$Companion {
+}
+

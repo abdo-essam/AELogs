@@ -1,0 +1,4 @@
+public final class com/ae/logs/plugins/network/interceptor/AELogsKtorPluginKt {
+	public static final fun getAELogsKtorPlugin ()Lio/ktor/client/plugins/api/ClientPlugin;
+}
+

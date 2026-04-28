@@ -14,11 +14,11 @@ repositories {
 }
 
 kotlin {
-    jvmToolchain(23)
+    jvmToolchain(21)
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_23)
+            jvmTarget.set(JvmTarget.JVM_21)
         }
     }
 
@@ -66,8 +66,8 @@ android {
         versionName = "1.0"
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_23
-        targetCompatibility = JavaVersion.VERSION_23
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
     buildFeatures {
         buildConfig = true // Required in AGP 8+ — disabled by default
