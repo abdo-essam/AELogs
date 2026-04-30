@@ -28,39 +28,30 @@ import kotlinx.coroutines.flow.StateFlow
  * AELogs.init(LogsPlugin(), NetworkPlugin(), AnalyticsPlugin())
  * ```
  *
- * ## 2. Log — primary API ([AELog] object)
+ * ## 2. Log — primary API ([AELogger] object)
  *
- * The recommended way to log. [AELog] is a discoverable object modelled after
- * Android's built-in `Log` class — just type `AELog.` and the IDE lists every
+ * The recommended way to log. [AELogger] is a discoverable object modelled after
+ * Android's built-in `Log` class — just type `AELogger.` and the IDE lists every
  * method:
  *
  * ```kotlin
- * AELog.d("Auth", "Token refreshed")
- * AELog.e("Network", "Request failed", throwable)
+ * AELogger.d("Auth", "Token refreshed")
+ * AELogger.e("Network", "Request failed", throwable)
  * ```
  *
  * ## 3. Log — tagged logger (eliminates tag repetition)
  *
- * Create one logger per class via [AELog.logger] or [AELogs.Companion.logger]:
+ * Create one logger per class via [AELogger.logger]:
  *
  * ```kotlin
  * class AuthViewModel {
- *     private val log = AELog.logger("AuthViewModel")
+ *     private val log = AELogger.logger("AuthViewModel")
  *
  *     fun login() {
  *         log.d("Login started")          // tag is baked in
  *         log.e("Failed", throwable)       // tag is baked in
  *     }
  * }
- * ```
- *
- * ## 4. Log — companion shorthands (alternative)
- *
- * For callers that already import `AELogs`, the companion extensions work too:
- *
- * ```kotlin
- * AELogs.d("Tag", "debug")              // identical to AELog.d()
- * AELogs.e("Tag", "error", throwable)   // stack trace auto-appended
  * ```
  *
  * All logging calls are **silent no-ops** if [init] has not been called yet.
@@ -77,7 +68,7 @@ import kotlinx.coroutines.flow.StateFlow
  * ```
  */
 public class AELogs private constructor(
-    config: AELogsConfig,
+    public val config: AELogsConfig,
 ) {
     // ── Sub-systems ───────────────────────────────────────────────────────────
 
@@ -135,16 +126,13 @@ public class AELogs private constructor(
      */
     public inline fun <reified T : AELogsPlugin> getPlugin(): T? = plugins.value.filterIsInstance<T>().firstOrNull()
 
-    /** Get a registered plugin by its stable string ID. */
-    public fun getPluginById(id: String): AELogsPlugin? = pluginManager.getPluginById(id)
-
     // ── Lifecycle notifications ───────────────────────────────────────────────
 
     /**
      * Notify all plugins the host app has moved to the **foreground**.
      * Publishes [AppStartedEvent] to [eventBus].
      */
-    public fun notifyStart() {
+    internal fun notifyStart() {
         pluginManager.forEach { it.onStart() }
         eventBus.publish(AppStartedEvent)
     }
@@ -153,7 +141,7 @@ public class AELogs private constructor(
      * Notify all plugins the host app has moved to the **background**.
      * Publishes [AppStoppedEvent] to [eventBus].
      */
-    public fun notifyStop() {
+    internal fun notifyStop() {
         pluginManager.forEach { it.onStop() }
         eventBus.publish(AppStoppedEvent)
     }
@@ -162,7 +150,7 @@ public class AELogs private constructor(
      * Notify all plugins the AELogs UI panel has been **opened**.
      * Publishes [PanelOpenedEvent] to [eventBus].
      */
-    public fun notifyOpen() {
+    internal fun notifyOpen() {
         pluginManager.forEach { it.onOpen() }
         eventBus.publish(PanelOpenedEvent)
     }
@@ -171,7 +159,7 @@ public class AELogs private constructor(
      * Notify all plugins the AELogs UI panel has been **closed**.
      * Publishes [PanelClosedEvent] to [eventBus].
      */
-    public fun notifyClose() {
+    internal fun notifyClose() {
         pluginManager.forEach { it.onClose() }
         eventBus.publish(PanelClosedEvent)
     }
@@ -246,11 +234,39 @@ public class AELogs private constructor(
             _default.value?.let { return it }
 
             val instance = AELogs(config)
-            plugins.forEach { instance.install(it) }
 
             // CAS guarantees only one winner on concurrent calls; the loser
             // discards its instance and returns the already-set singleton.
-            return if (_default.compareAndSet(null, instance)) instance else _default.value!!
+            if (_default.compareAndSet(null, instance)) {
+                plugins.forEach { instance.install(it) }
+                return instance
+            } else {
+                return _default.value!!
+            }
+        }
+
+        /**
+         * Global toggle to enable or disable logging.
+         * If `false`, all `AELogger.*` calls become silent no-ops, and network interceptors bypass recording.
+         * Default: `true`.
+         */
+        public var isEnabled: Boolean = true
+
+        /**
+         * Export data from all installed plugins as a formatted string.
+         * Useful for attaching dev logs to crash reports.
+         */
+        public fun export(): String {
+            val sb = StringBuilder()
+            defaultOrNull()?.plugins?.value?.forEach { plugin ->
+                val exportedData = plugin.export()
+                if (exportedData.isNotBlank()) {
+                    sb.append("--- ${plugin.name} ---\n")
+                    sb.append(exportedData)
+                    sb.append("\n\n")
+                }
+            }
+            return sb.toString().trim()
         }
 
         /**
@@ -271,12 +287,7 @@ public class AELogs private constructor(
          * Use for advanced scenarios (e.g. tests, embedded SDKs) where a
          * separate instance is required. For the common case, prefer [init]
          * which configures the shared singleton.
-         *
-         * ```kotlin
-         * val testInstance = AELogs.create()
-         *     .install(LogsPlugin())
-         * ```
          */
-        public fun create(config: AELogsConfig = AELogsConfig()): AELogs = AELogs(config)
+        internal fun create(config: AELogsConfig = AELogsConfig()): AELogs = AELogs(config)
     }
 }

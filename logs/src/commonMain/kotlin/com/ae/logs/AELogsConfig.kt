@@ -1,5 +1,9 @@
 package com.ae.logs
 
+import com.ae.logs.plugins.logs.model.LogSeverity
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+
 /**
  * Configuration for a [AELogs] instance.
  *
@@ -10,6 +14,12 @@ package com.ae.logs
  * AELogs.create(AELogsConfig())
  * ```
  */
-public class AELogsConfig {
-    // Reserved for future core configuration
-}
+public data class AELogsConfig(
+    val isEnabled: Boolean = true,
+    val minSeverity: LogSeverity = LogSeverity.VERBOSE,
+    val dispatcher: CoroutineDispatcher = Dispatchers.Default,
+    val platformLogSink: PlatformLogSink = PlatformLogSink.Default,
+    val errorHandler: (Throwable) -> Unit = { 
+        platformLogSink.log(LogSeverity.ERROR, "AELogs", "Plugin error", it) 
+    }
+)

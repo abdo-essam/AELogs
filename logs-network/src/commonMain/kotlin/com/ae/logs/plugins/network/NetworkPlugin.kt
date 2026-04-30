@@ -57,8 +57,8 @@ public class NetworkPlugin(
     override val name: String = "Network"
     override val icon: ImageVector = Icons.Default.Wifi
 
-    private val _badgeCount = MutableStateFlow<Int?>(null)
-    override val badgeCount: StateFlow<Int?> = _badgeCount
+    private val _badgeCount = MutableStateFlow(0)
+    override val badgeCount: StateFlow<Int> = _badgeCount
 
     private val store = NetworkStore(capacity = maxEntries)
     private var viewModel: NetworkViewModel? = null
@@ -71,14 +71,23 @@ public class NetworkPlugin(
         // Badge tracks live entry count
         context.scope.launch {
             store.entries.collect { entries ->
-                _badgeCount.value = entries.size.takeIf { it > 0 }
+                _badgeCount.value = entries.size
             }
         }
     }
 
     override fun onClear() {
         store.clear()
-        _badgeCount.value = null
+    }
+
+    override fun export(): String {
+        return store.entries.value.joinToString("\n\n") { entry ->
+            "${entry.method.name} ${entry.url} - ${entry.statusCode ?: "PENDING"}\n" +
+            "Duration: ${entry.durationMs ?: "?"}ms\n" +
+            "Request: ${entry.requestHeaders}\nBody: ${entry.requestBody}\n" +
+            "Response: ${entry.responseHeaders}\nBody: ${entry.responseBody}" +
+            (if (entry.error != null) "\nError: ${entry.error}" else "")
+        }
     }
 
     @Composable

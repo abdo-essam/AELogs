@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.ae.logs.core.PluginContext
 import com.ae.logs.core.UIPlugin
+import com.ae.logs.core.bus.subscribe
 import com.ae.logs.plugins.logs.store.LogStore
 import com.ae.logs.plugins.logs.ui.LogsContent
 import com.ae.logs.plugins.logs.ui.LogsViewModel
@@ -64,8 +65,8 @@ public class LogsPlugin(
     /** Public write API — use this to send logs to the viewer. */
     public val api: LogsApi = LogsApi(logStore)
 
-    private val _badgeCount = MutableStateFlow<Int?>(null)
-    override val badgeCount: StateFlow<Int?> = _badgeCount
+    private val _badgeCount = MutableStateFlow(0)
+    override val badgeCount: StateFlow<Int> = _badgeCount
 
     private var viewModel: LogsViewModel? = null
 
@@ -78,13 +79,12 @@ public class LogsPlugin(
 
         context.scope.launch {
             logStore.logsFlow.collect { logs ->
-                _badgeCount.value = if (logs.isEmpty()) null else logs.size
+                _badgeCount.value = logs.size
             }
         }
 
         context.scope.launch {
-            context.eventBus.events
-                .filterIsInstance<com.ae.logs.core.bus.RegisterLogTagEvent>()
+            context.eventBus.subscribe<com.ae.logs.core.bus.RegisterLogTagEvent>()
                 .collect { event ->
                     com.ae.logs.plugins.logs.model.LogTagRegistry
                         .register(event.tag, event.badgeLabel)
@@ -111,81 +111,17 @@ public class LogsPlugin(
         )
     }
 
+    override fun export(): String {
+        return logStore.logsFlow.value.joinToString("\n") { log ->
+            "[${log.severity.name}] ${log.tag}: ${log.message}"
+        }
+    }
+
     public companion object {
         public const val ID: String = "ae_logs_logs"
     }
 }
 
-// ── Convenience extensions ────────────────────────────────────────────────────
-
-/**
- * Log a message to the built-in [LogsPlugin].
- *
- * If [throwable] is non-null its stack trace is appended automatically.
- * No-op if [LogsPlugin] is not installed.
- */
-public fun com.ae.logs.AELogs.log(
-    severity: com.ae.logs.plugins.logs.model.LogSeverity,
-    tag: String,
-    message: String,
-    throwable: Throwable? = null,
-) {
-    getPlugin<LogsPlugin>()?.api?.log(severity, tag, message, throwable)
-}
-
-// ── Static shorthands on AELogs.Companion ────────────────────────────────────
-//
-// These mirror the instance extensions above so callers can write:
-//   AELogs.d("Tag", "msg")            — zero ceremony, no instance needed
-//   AELogs.e("Tag", "msg", throwable) — stack trace appended by LogsApi
-//
-// All methods are silent no-ops when AELogs.init() has not been called yet,
-// matching the behaviour of Timber before a Tree is planted.
-
-public fun com.ae.logs.AELogs.Companion.v(
-    tag: String,
-    message: String,
-    throwable: Throwable? = null,
-) {
-    defaultOrNull()?.log(com.ae.logs.plugins.logs.model.LogSeverity.VERBOSE, tag, message, throwable)
-}
-
-public fun com.ae.logs.AELogs.Companion.d(
-    tag: String,
-    message: String,
-    throwable: Throwable? = null,
-) {
-    defaultOrNull()?.log(com.ae.logs.plugins.logs.model.LogSeverity.DEBUG, tag, message, throwable)
-}
-
-public fun com.ae.logs.AELogs.Companion.i(
-    tag: String,
-    message: String,
-    throwable: Throwable? = null,
-) {
-    defaultOrNull()?.log(com.ae.logs.plugins.logs.model.LogSeverity.INFO, tag, message, throwable)
-}
-
-public fun com.ae.logs.AELogs.Companion.w(
-    tag: String,
-    message: String,
-    throwable: Throwable? = null,
-) {
-    defaultOrNull()?.log(com.ae.logs.plugins.logs.model.LogSeverity.WARN, tag, message, throwable)
-}
-
-public fun com.ae.logs.AELogs.Companion.e(
-    tag: String,
-    message: String,
-    throwable: Throwable? = null,
-) {
-    defaultOrNull()?.log(com.ae.logs.plugins.logs.model.LogSeverity.ERROR, tag, message, throwable)
-}
-
-public fun com.ae.logs.AELogs.Companion.wtf(
-    tag: String,
-    message: String,
-    throwable: Throwable? = null,
-) {
-    defaultOrNull()?.log(com.ae.logs.plugins.logs.model.LogSeverity.ASSERT, tag, message, throwable)
-}
+/** Type-safe accessor for the [LogsApi] on the default [com.ae.logs.AELogs] instance. */
+public val com.ae.logs.AELogs.Companion.logs: LogsApi?
+    get() = plugin<LogsPlugin>()?.api

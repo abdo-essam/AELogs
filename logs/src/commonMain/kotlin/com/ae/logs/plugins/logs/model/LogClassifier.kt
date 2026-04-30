@@ -2,20 +2,21 @@ package com.ae.logs.plugins.logs.model
 
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
+import kotlinx.atomicfu.update
 
 public object LogTagRegistry {
-    private val tags = mutableMapOf<String, String>()
+    private val tags = kotlinx.atomicfu.atomic(emptyMap<String, String>())
 
     public fun register(
         tag: String,
         label: String,
     ) {
-        tags[tag] = label
+        tags.update { it + (tag to label) }
     }
 
-    public fun isRegistered(tag: String): Boolean = tags.containsKey(tag)
+    public fun isRegistered(tag: String): Boolean = tags.value.containsKey(tag)
 
-    public fun getLabel(tag: String): String? = tags[tag]
+    public fun getLabel(tag: String): String? = tags.value[tag]
 }
 
 private val PRETTY_JSON =

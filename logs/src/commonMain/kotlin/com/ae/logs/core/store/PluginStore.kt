@@ -71,12 +71,8 @@ public class PluginStore<T>(
         item: T,
     ) {
         synchronized(this) {
-            val current = _dataFlow.value
-            if (index !in current.indices) return
-
-            ring.clear()
-            val updated = current.toMutableList().also { it[index] = item }
-            updated.forEach { ring.add(it) }
+            if (index !in 0 until ring.count) return
+            ring.replace(index, item)
             _dataFlow.value = ring.toList()
         }
     }
@@ -94,9 +90,27 @@ public class PluginStore<T>(
             val index = current.indexOfFirst(predicate)
             if (index == -1) return
 
-            ring.clear()
-            val updated = current.toMutableList().also { it[index] = transform(it[index]) }
-            updated.forEach { ring.add(it) }
+            ring.replace(index, transform(current[index]))
+            _dataFlow.value = ring.toList()
+        }
+    }
+
+    /**
+     * Atomically find an item using [predicate] and replace it with [item].
+     * If not found, add the [item].
+     */
+    public fun addOrReplace(
+        predicate: (T) -> Boolean,
+        item: T,
+    ) {
+        synchronized(this) {
+            val current = _dataFlow.value
+            val index = current.indexOfFirst(predicate)
+            if (index == -1) {
+                ring.add(item)
+            } else {
+                ring.replace(index, item)
+            }
             _dataFlow.value = ring.toList()
         }
     }

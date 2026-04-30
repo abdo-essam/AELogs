@@ -7,7 +7,7 @@ package com.ae.logs.core.store
  * All operations are O(1) amortized.
  *
  * **Not thread-safe on its own.** Wrap calls inside [PluginStore]
- * which uses [kotlinx.coroutines.flow.MutableStateFlow.update] (CAS-based)
+ * which uses [kotlinx.atomicfu.locks.synchronized]
  * to guarantee thread safety across all KMP targets.
  *
  * @param capacity Maximum number of items to hold. Must be > 0.
@@ -56,6 +56,16 @@ public class RingBuffer<T>(
         buffer.fill(null)
         head = 0
         size = 0
+    }
+
+    /**
+     * Replace the item at the logical [index] (0 is oldest).
+     */
+    public fun replace(index: Int, item: T) {
+        if (index !in 0 until size) throw IndexOutOfBoundsException("Index $index out of bounds for size $size")
+        val start = if (size < capacity) 0 else head
+        val realIndex = (start + index) % capacity
+        buffer[realIndex] = item
     }
 
     /** Current number of stored items. */

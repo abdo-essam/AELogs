@@ -28,11 +28,11 @@ public data class AELogsUiConfig(
     val floatingButtonAlignment: Alignment = Alignment.BottomEnd,
     /**
      * Bottom offset for the floating button — useful to clear nav bars or bottom bars.
-     * Default: 80.dp (roughly matches a standard bottom navigation bar height).
+     * Default: 0.dp.
      */
-    val floatingButtonOffset: Dp = 80.dp,
-    /** Enable long-press anywhere on screen to open the panel. Default: `true`. */
-    val enableLongPress: Boolean = true,
+    val floatingButtonOffset: Dp = 0.dp,
+    /** Enable long-press anywhere on screen to open the panel. Default: `false`. */
+    val enableLongPress: Boolean = false,
     /**
      * Custom Material3 [ColorScheme] for the AELogs UI.
      * `null` uses the built-in brand theme.

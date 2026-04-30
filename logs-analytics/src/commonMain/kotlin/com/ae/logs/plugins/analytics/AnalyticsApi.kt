@@ -20,13 +20,15 @@ public class AnalyticsApi internal constructor(
      * Track a custom event.
      * @param name       Event name, e.g. `"button_tap"`.
      * @param properties Arbitrary key-value metadata.
-     * @param source     Optional adapter label (e.g. `"Firebase"`).
+     * @param source     Optional adapter label.
      */
     public fun track(
         name: String,
-        properties: Map<String, String> = emptyMap(),
-        source: String? = null,
-    ): Unit =
+        properties: Map<String, Any> = emptyMap(),
+        source: com.ae.logs.plugins.analytics.model.AdapterSource? = null,
+    ) {
+        if (!com.ae.logs.AELogs.isEnabled) return
+        
         store.record(
             AnalyticsEvent(
                 id = generateId(),
@@ -36,11 +38,12 @@ public class AnalyticsApi internal constructor(
                 source = source,
             ),
         )
+    }
 
     /** Convenience shorthand for screen-view events. */
     public fun screen(
         screenName: String,
-        properties: Map<String, String> = emptyMap(),
+        properties: Map<String, Any> = emptyMap(),
     ): Unit = track("screen_view", properties + mapOf("screen" to screenName))
 
     /** Clear all recorded events. */

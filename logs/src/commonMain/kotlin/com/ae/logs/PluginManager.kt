@@ -11,7 +11,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.updateAndGet
 import kotlin.reflect.KClass
+import kotlinx.atomicfu.update as atomicUpdate
+import kotlinx.atomicfu.getAndUpdate as atomicGetAndUpdate
 
 /**
  * Manages the full lifecycle of registered [AELogsPlugin]s.
@@ -39,23 +42,18 @@ internal class PluginManager(
     val plugins: StateFlow<List<AELogsPlugin>> = _plugins.asStateFlow()
 
     /** Per-plugin coroutine scopes, keyed by plugin id. */
-    private val scopes = mutableMapOf<String, CoroutineScope>()
+    private val scopes = kotlinx.atomicfu.atomic(emptyMap<String, CoroutineScope>())
 
     // ── Registration ──────────────────────────────────────────────────────────
 
     fun install(plugin: AELogsPlugin) {
-        var attached = false
-        _plugins.update { current ->
-            if (current.any { it.id == plugin.id }) {
-                current
-            } else {
-                attached = true
-                current + plugin
-            }
-        }
-        if (attached) {
-            val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
-            scopes[plugin.id] = scope
+        val wasAdded = _plugins.updateAndGet { current ->
+            if (current.any { it.id == plugin.id }) current else current + plugin
+        }.contains(plugin)
+
+        if (wasAdded && !scopes.value.containsKey(plugin.id)) {
+            val scope = CoroutineScope(SupervisorJob() + config.dispatcher)
+            scopes.atomicUpdate { it + (plugin.id to scope) }
             safeCall(plugin.id) { plugin.onAttach(buildContext(scope)) }
         }
     }
@@ -68,7 +66,8 @@ internal class PluginManager(
             current.filter { it.id != pluginId }
         }
         detached?.let { plugin ->
-            scopes.remove(plugin.id)?.cancel()
+            val removedScope = scopes.atomicGetAndUpdate { it - plugin.id }[plugin.id]
+            removedScope?.cancel()
             safeCall(plugin.id) { plugin.onDetach() }
         }
     }
@@ -104,7 +103,9 @@ internal class PluginManager(
             block: () -> Unit,
         ) {
             runCatching { block() }
-                .onFailure { /* TODO: route to configurable error handler */ }
+                .onFailure { error -> 
+                    AELogs.defaultOrNull()?.config?.errorHandler?.invoke(error)
+                }
         }
     }
 }

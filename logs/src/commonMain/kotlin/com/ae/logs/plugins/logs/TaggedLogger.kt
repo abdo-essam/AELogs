@@ -5,7 +5,7 @@ import com.ae.logs.AELogs
 /**
  * A pre-tagged logger that eliminates tag repetition on every call.
  *
- * Create one per class via [AELogs.logger] or [com.ae.logs.AELog.logger]:
+ * Create one per class via [AELogs.logger] or [com.ae.logs.AELogger.logger]:
  *
  * ```kotlin
  * class AuthViewModel {
@@ -29,37 +29,37 @@ public class TaggedLogger(
     public fun v(
         message: String,
         throwable: Throwable? = null,
-    ): Unit = AELogs.v(tag, message, throwable)
+    ): Unit { AELogs.logs?.log(com.ae.logs.plugins.logs.model.LogSeverity.VERBOSE, tag, message, throwable) }
 
     /** Log a [com.ae.logs.plugins.logs.model.LogSeverity.DEBUG] message. */
     public fun d(
         message: String,
         throwable: Throwable? = null,
-    ): Unit = AELogs.d(tag, message, throwable)
+    ): Unit { AELogs.logs?.log(com.ae.logs.plugins.logs.model.LogSeverity.DEBUG, tag, message, throwable) }
 
     /** Log a [com.ae.logs.plugins.logs.model.LogSeverity.INFO] message. */
     public fun i(
         message: String,
         throwable: Throwable? = null,
-    ): Unit = AELogs.i(tag, message, throwable)
+    ): Unit { AELogs.logs?.log(com.ae.logs.plugins.logs.model.LogSeverity.INFO, tag, message, throwable) }
 
     /** Log a [com.ae.logs.plugins.logs.model.LogSeverity.WARN] message. */
     public fun w(
         message: String,
         throwable: Throwable? = null,
-    ): Unit = AELogs.w(tag, message, throwable)
+    ): Unit { AELogs.logs?.log(com.ae.logs.plugins.logs.model.LogSeverity.WARN, tag, message, throwable) }
 
     /** Log a [com.ae.logs.plugins.logs.model.LogSeverity.ERROR] message. */
     public fun e(
         message: String,
         throwable: Throwable? = null,
-    ): Unit = AELogs.e(tag, message, throwable)
+    ): Unit { AELogs.logs?.log(com.ae.logs.plugins.logs.model.LogSeverity.ERROR, tag, message, throwable) }
 
     /** Log a [com.ae.logs.plugins.logs.model.LogSeverity.ASSERT] ("What a Terrible Failure") message. */
     public fun wtf(
         message: String,
         throwable: Throwable? = null,
-    ): Unit = AELogs.wtf(tag, message, throwable)
+    ): Unit { AELogs.logs?.log(com.ae.logs.plugins.logs.model.LogSeverity.ASSERT, tag, message, throwable) }
 }
 
 // ── Factory ───────────────────────────────────────────────────────────────────

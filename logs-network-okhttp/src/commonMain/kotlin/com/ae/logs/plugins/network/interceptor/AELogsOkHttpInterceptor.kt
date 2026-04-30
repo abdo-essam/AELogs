@@ -50,8 +50,19 @@ import java.io.IOException
  * If [NetworkPlugin] is not installed or [AELogs.init] has not been called,
  * [intercept] delegates straight to `chain.proceed()` with zero overhead.
  */
-public class AELogsOkHttpInterceptor : Interceptor {
+public class AELogsOkHttpInterceptor(
+    public val maxBodyBytes: Long = 250_000L,
+    public val redactHeaders: Set<String> = emptySet(),
+) : Interceptor {
+    private fun Map<String, String>.redact(): Map<String, String> {
+        if (redactHeaders.isEmpty()) return this
+        return mapValues { (key, value) ->
+            if (redactHeaders.any { it.equals(key, ignoreCase = true) }) "***" else value
+        }
+    }
+
     override fun intercept(chain: Interceptor.Chain): Response {
+        if (!AELogs.isEnabled) return chain.proceed(chain.request())
         val api = AELogs.plugin<NetworkPlugin>()?.api
         val request = chain.request()
 
@@ -75,7 +86,7 @@ public class AELogsOkHttpInterceptor : Interceptor {
             id = id,
             url = request.url.toString(),
             method = NetworkMethod.fromString(request.method),
-            headers = request.headers.toMap(),
+            headers = request.headers.toMap().redact(),
             body = requestBody,
         )
 
@@ -86,13 +97,13 @@ public class AELogsOkHttpInterceptor : Interceptor {
             // peekBody() clones the internal source — the live response stream is NOT consumed
             val responseBody =
                 runCatching {
-                    response.peekBody(MAX_BODY_BYTES).string()
+                    response.peekBody(maxBodyBytes).string()
                 }.getOrNull()
 
             api.response(
                 id = id,
                 statusCode = response.code,
-                headers = response.headers.toMap(),
+                headers = response.headers.toMap().redact(),
                 body = responseBody,
                 durationMs = durationMs,
             )
@@ -101,16 +112,5 @@ public class AELogsOkHttpInterceptor : Interceptor {
             api.error(id, e.message ?: "Connection failed")
             throw e
         }
-    }
-
-    public companion object {
-        /**
-         * Maximum response body bytes captured by [okhttp3.Response.peekBody].
-         * Bodies larger than this are truncated at the byte boundary.
-         *
-         * Default: **250 KB** — large enough for typical REST payloads without
-         * risking OOM on large binary responses.
-         */
-        public const val MAX_BODY_BYTES: Long = 250_000L
     }
 }

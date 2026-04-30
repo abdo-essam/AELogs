@@ -36,8 +36,8 @@ public class AnalyticsPlugin(
     override val name: String = "Analytics"
     override val icon: ImageVector = Icons.Default.Analytics
 
-    private val _badgeCount = MutableStateFlow<Int?>(null)
-    override val badgeCount: StateFlow<Int?> = _badgeCount
+    private val _badgeCount = MutableStateFlow(0)
+    override val badgeCount: StateFlow<Int> = _badgeCount
 
     private val store = AnalyticsStore(capacity = maxEntries)
     private var viewModel: AnalyticsViewModel? = null
@@ -48,25 +48,22 @@ public class AnalyticsPlugin(
     override fun onAttach(context: PluginContext) {
         viewModel = AnalyticsViewModel(store, context.scope)
 
-        // Register tag with logs plugin dynamically
-        context.scope.launch {
-            context.eventBus.publish(
-                com.ae.logs.core.bus
-                    .RegisterLogTagEvent("Analytics", "Analytics"),
-            )
-        }
-
         // Update badge count whenever events change
         context.scope.launch {
             store.events.collect { events ->
-                _badgeCount.value = events.size.takeIf { it > 0 }
+                _badgeCount.value = events.size
             }
         }
     }
 
     override fun onClear() {
         store.clear()
-        _badgeCount.value = null
+    }
+
+    override fun export(): String {
+        return store.events.value.joinToString("\n") { event ->
+            "Event: ${event.name} | Source: ${event.source?.sourceName} | Time: ${event.timestamp}\nProperties: ${event.properties}"
+        }
     }
 
     @Composable

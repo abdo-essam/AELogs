@@ -19,15 +19,8 @@ internal class NetworkStore(
     val entries: StateFlow<List<NetworkEntry>> = store.dataFlow
 
     /** Record a new request or replace an existing one by ID (for in-flight updates). */
-    fun record(entry: NetworkEntry) {
-        val current = store.dataFlow.value
-        val idx = current.indexOfFirst { it.id == entry.id }
-        if (idx == -1) {
-            store.add(entry)
-        } else {
-            // Replace existing entry (e.g. request → response received)
-            store.replace(idx, entry)
-        }
+    fun recordOrReplace(entry: NetworkEntry) {
+        store.addOrReplace({ it.id == entry.id }, entry)
     }
 
     /** Update an existing entry atomically by ID. No-op if ID is not found. */

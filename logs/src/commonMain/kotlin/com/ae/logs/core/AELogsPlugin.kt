@@ -31,22 +31,7 @@ public interface AELogsPlugin {
     /** Display name shown in tabs and headers */
     public val name: String
 
-    /**
-     * Badge count displayed on the plugin tab.
-     *
-     * - `null` → no badge rendered
-     * - `0`    → badge shown with "0"
-     *
-     * Always back this with a stable property — never return a new
-     * [MutableStateFlow] from the getter, or UI collectors will miss updates.
-     *
-     * ```kotlin
-     * private val _badgeCount = MutableStateFlow<Int?>(null)
-     * override val badgeCount: StateFlow<Int?> = _badgeCount
-     * ```
-     */
-    public val badgeCount: StateFlow<Int?>
-        get() = NoBadge
+
 
     /**
      * Called once when the plugin is registered.
@@ -74,11 +59,11 @@ public interface AELogsPlugin {
     /** Called when the user requests a full data wipe. */
     public fun onClear() {}
 
-    public companion object {
-        /**
-         * Shared no-op badge flow returned by the default [badgeCount] getter.
-         * Safe to share — it is never mutated.
-         */
-        public val NoBadge: StateFlow<Int?> = MutableStateFlow(null)
-    }
+    /**
+     * Export the plugin's data as a formatted string.
+     * Use this to attach data to bug reports or logs.
+     */
+    public fun export(): String = ""
+
+
 }

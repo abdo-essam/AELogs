@@ -126,7 +126,7 @@ fun AnalyticsScreen() {
                                     "currency" to "USD",
                                     "items_count" to "3",
                                 ),
-                                source = "Firebase",
+                                source = com.ae.logs.plugins.analytics.model.DefaultAdapterSource.FIREBASE,
                             )
                         }
                         EventButton("refund") {

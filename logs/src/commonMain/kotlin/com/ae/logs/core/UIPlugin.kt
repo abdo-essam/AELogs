@@ -4,6 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 
+import kotlinx.coroutines.flow.StateFlow
+
 /**
  * A plugin that provides a visible tab/panel in the AELogs UI.
  *
@@ -13,6 +15,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 public interface UIPlugin : AELogsPlugin {
     /** Icon displayed on the plugin's tab in the AELogs panel. */
     public val icon: ImageVector
+
+    /** 
+     * Badge count shown on the plugin's tab. 
+     * A value <= 0 means no badge is shown.
+     */
+    public val badgeCount: StateFlow<Int>
 
     /** The plugin's main UI content, rendered inside the AELogs panel body. */
     @Composable

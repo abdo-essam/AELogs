@@ -270,7 +270,7 @@ private fun AnalyticsEventDetails(
                         color = MaterialTheme.colorScheme.primary,
                     )
                     Text(
-                        it,
+                        it.sourceName,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
@@ -381,7 +381,7 @@ private fun Long.toFullTimeLabel(): String {
 private fun AnalyticsEvent.toClipboardText(): String =
     buildString {
         appendLine("Event: $name")
-        source?.let { appendLine("Source: $it") }
+        source?.let { appendLine("Source: ${it.sourceName}") }
         appendLine("Time: ${timestamp.toFullTimeLabel()}")
         if (properties.isNotEmpty()) {
             appendLine("Properties:")

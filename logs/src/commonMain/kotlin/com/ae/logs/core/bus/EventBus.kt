@@ -3,6 +3,7 @@ package com.ae.logs.core.bus
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.filterIsInstance
 
 /**
  * Lightweight, coroutine-based publish/subscribe event bus for cross-plugin communication.
@@ -62,3 +63,14 @@ public class EventBus {
         _events.emit(event)
     }
 }
+
+/**
+ * Convenience extension to subscribe to a specific event type.
+ *
+ * ```kotlin
+ * context.eventBus.subscribe<MyCustomEvent>()
+ *     .collect { event -> handleEvent(event) }
+ * ```
+ */
+public inline fun <reified T : AELogsEvent> EventBus.subscribe(): kotlinx.coroutines.flow.Flow<T> =
+    events.filterIsInstance<T>()

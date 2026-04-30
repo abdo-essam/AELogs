@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import com.ae.logs.core.AELogsController
+import com.ae.logs.core.AELogsPlugin
 import com.ae.logs.core.LocalAELogsController
 import com.ae.logs.core.UIPlugin
 import com.ae.logs.ui.AELogsContainer
@@ -17,36 +18,64 @@ import com.ae.logs.ui.theme.AELogsSpacing
 import com.ae.logs.ui.theme.AELogsTheme
 
 /**
- * Top-level composable wrapper that enables the AELogs overlay.
- *
- * Wrap your entire app content with this composable. Reads from [AELogs.default],
- * which must have been initialised via [AELogs.install] before composition begins.
+ * Top-level composable wrapper that enables the AELogs overlay and initialises it.
  *
  * ```kotlin
  * @Composable
  * fun App() {
- *     AELogsProvider(enabled = BuildConfig.DEBUG) {
+ *     AELogsProvider(
+ *         plugins = listOf(LogsPlugin(), NetworkPlugin(), AnalyticsPlugin()),
+ *         enabled = BuildConfig.DEBUG
+ *     ) {
  *         MaterialTheme { MainNavigation() }
  *     }
  * }
  * ```
+ */
+@Composable
+public fun AELogsProvider(
+    plugins: List<AELogsPlugin>,
+    uiConfig: AELogsUiConfig = AELogsUiConfig(),
+    config: AELogsConfig = AELogsConfig(),
+    enabled: Boolean = true,
+    content: @Composable () -> Unit,
+) {
+    if (enabled) {
+        AELogs.init(*plugins.toTypedArray(), config = config)
+    }
+
+    AELogsProvider(
+        instance = if (enabled) AELogs.defaultOrNull() else null,
+        uiConfig = uiConfig,
+        enabled = enabled,
+        content = content
+    )
+}
+
+/**
+ * Top-level composable wrapper that enables the AELogs overlay.
  *
+ * Wrap your entire app content with this composable.
+ * If [instance] is null, this acts as a transparent pass-through.
+ *
+ * @param instance  The [AELogs] instance to connect to. Defaults to [AELogs.defaultOrNull].
  * @param uiConfig  UI-specific configuration (button visibility, theme, etc.).
  * @param enabled   Set to `false` in release builds for zero overhead.
  * @param content   Your app's content.
  */
 @Composable
 public fun AELogsProvider(
+    instance: AELogs? = AELogs.defaultOrNull(),
     uiConfig: AELogsUiConfig = AELogsUiConfig(),
     enabled: Boolean = true,
     content: @Composable () -> Unit,
 ) {
-    if (!enabled) {
+    if (!enabled || instance == null) {
         content()
         return
     }
 
-    val inspector = AELogs.default
+    val inspector = instance
 
     val controller = remember { AELogsController() }
     val isVisible by controller.isVisible.collectAsState()

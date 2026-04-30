@@ -28,7 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.ae.logs.AELogs
+import com.ae.logs.AELogger
 import com.ae.logs.plugins.logs.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -66,26 +66,26 @@ fun LogsScreen() {
                         LogLevelButton(
                             "VERBOSE",
                             Color(0xFF9E9E9E),
-                        ) { AELogs.v("Sample", "Verbose — lowest priority, for granular tracing") }
+                        ) { AELogger.v("Sample", "Verbose — lowest priority, for granular tracing") }
                         LogLevelButton(
                             "DEBUG",
                             Color(0xFF4CAF50),
-                        ) { AELogs.d("Sample", "Debug — useful during development") }
+                        ) { AELogger.d("Sample", "Debug — useful during development") }
                         LogLevelButton(
                             "INFO",
                             Color(0xFF2196F3),
-                        ) { AELogs.i("Sample", "Info — general informational message") }
+                        ) { AELogger.i("Sample", "Info — general informational message") }
                         LogLevelButton(
                             "WARN",
                             Color(0xFFFFC107),
-                        ) { AELogs.w("Sample", "Warn — something unexpected but recoverable") }
+                        ) { AELogger.w("Sample", "Warn — something unexpected but recoverable") }
                         LogLevelButton("ERROR", Color(0xFFF44336)) {
-                            AELogs.e("Sample", "Error — something failed!", RuntimeException("Sample error"))
+                            AELogger.e("Sample", "Error — something failed!", RuntimeException("Sample error"))
                         }
                         LogLevelButton(
                             "ASSERT",
                             Color(0xFF9C27B0),
-                        ) { AELogs.wtf("Sample", "WTF — this should never happen!") }
+                        ) { AELogger.wtf("Sample", "WTF — this should never happen!") }
                     }
                 }
             }
@@ -102,7 +102,7 @@ fun LogsScreen() {
                             onClick = {
                                 repeat(
                                     20,
-                                ) { i -> AELogs.d("Batch", "Entry #${i + 1} — stress test 20 logs") }
+                                ) { i -> AELogger.d("Batch", "Entry #${i + 1} — stress test 20 logs") }
                             },
                             modifier = Modifier.fillMaxWidth(),
                         ) { Text("Send 20 logs") }
@@ -111,18 +111,18 @@ fun LogsScreen() {
                             onClick = {
                                 repeat(
                                     100,
-                                ) { i -> AELogs.d("BigBatch", "Entry #${i + 1} — stress test 100 logs") }
+                                ) { i -> AELogger.d("BigBatch", "Entry #${i + 1} — stress test 100 logs") }
                             },
                             modifier = Modifier.fillMaxWidth(),
                         ) { Text("Send 100 logs (ring buffer test)") }
 
                         OutlinedButton(
                             onClick = {
-                                AELogs.d("Multi", "Step 1: starting operation")
-                                AELogs.i("Multi", "Step 2: fetching data")
-                                AELogs.w("Multi", "Step 3: slow response detected")
-                                AELogs.e("Multi", "Step 4: fallback triggered")
-                                AELogs.i("Multi", "Step 5: recovered successfully")
+                                AELogger.d("Multi", "Step 1: starting operation")
+                                AELogger.i("Multi", "Step 2: fetching data")
+                                AELogger.w("Multi", "Step 3: slow response detected")
+                                AELogger.e("Multi", "Step 4: fallback triggered")
+                                AELogger.i("Multi", "Step 5: recovered successfully")
                             },
                             modifier = Modifier.fillMaxWidth(),
                         ) { Text("Simulate 5-step operation") }
@@ -144,25 +144,25 @@ private fun QuickLogRow() {
                 modifier = Modifier.weight(1f),
                 icon = { Icon(Icons.Default.BugReport, null, tint = Color(0xFF4CAF50)) },
                 label = "Debug",
-            ) { AELogs.d("Quick", "Quick debug") }
+            ) { AELogger.d("Quick", "Quick debug") }
 
             QuickIconButton(
                 modifier = Modifier.weight(1f),
                 icon = { Icon(Icons.Default.Info, null, tint = Color(0xFF2196F3)) },
                 label = "Info",
-            ) { AELogs.i("Quick", "Quick info") }
+            ) { AELogger.i("Quick", "Quick info") }
 
             QuickIconButton(
                 modifier = Modifier.weight(1f),
                 icon = { Icon(Icons.Default.Warning, null, tint = Color(0xFFFFC107)) },
                 label = "Warn",
-            ) { AELogs.w("Quick", "Quick warn") }
+            ) { AELogger.w("Quick", "Quick warn") }
 
             QuickIconButton(
                 modifier = Modifier.weight(1f),
                 icon = { Icon(Icons.Default.Error, null, tint = Color(0xFFF44336)) },
                 label = "Error",
-            ) { AELogs.e("Quick", "Quick error") }
+            ) { AELogger.e("Quick", "Quick error") }
         }
     }
 }

@@ -52,9 +52,23 @@ import kotlin.time.Clock
  * every hook returns immediately — the real HTTP client is never affected.
  */
 
-public val AELogsKtorPlugin: ClientPlugin<Unit> =
-    createClientPlugin("AELogsKtor") {
+public class AELogsKtorConfig {
+    public var redactHeaders: Set<String> = emptySet()
+}
+
+public val AELogsKtorPlugin: ClientPlugin<AELogsKtorConfig> =
+    createClientPlugin("AELogsKtor", ::AELogsKtorConfig) {
+        val redactHeaders = pluginConfig.redactHeaders
+
+        fun Map<String, String>.redact(): Map<String, String> {
+            if (redactHeaders.isEmpty()) return this
+            return mapValues { (key, value) ->
+                if (redactHeaders.any { it.equals(key, ignoreCase = true) }) "***" else value
+            }
+        }
+
         on(Send) { request ->
+            if (!AELogs.isEnabled) return@on proceed(request)
             val api = AELogs.plugin<NetworkPlugin>()?.api ?: return@on proceed(request)
 
             val id = api.newId()
@@ -78,7 +92,8 @@ public val AELogsKtorPlugin: ClientPlugin<Unit> =
                 headers =
                     request.headers
                         .entries()
-                        .associate { (key, values) -> key to values.joinToString(", ") },
+                        .associate { (key, values) -> key to values.joinToString(", ") }
+                        .redact(),
                 body = reqBody,
             )
 
@@ -89,12 +104,7 @@ public val AELogsKtorPlugin: ClientPlugin<Unit> =
                         .now()
                         .toEpochMilliseconds() - startMs
 
-                val resBody =
-                    try {
-                        response.response.bodyAsText()
-                    } catch (e: Exception) {
-                        "Error reading body: ${e.message}"
-                    }
+                val resBody = null
 
                 api.response(
                     id = id,
@@ -102,7 +112,8 @@ public val AELogsKtorPlugin: ClientPlugin<Unit> =
                     headers =
                         response.response.headers
                             .entries()
-                            .associate { (key, values) -> key to values.joinToString(", ") },
+                            .associate { (key, values) -> key to values.joinToString(", ") }
+                            .redact(),
                     body = resBody,
                     durationMs = durationMs,
                 )

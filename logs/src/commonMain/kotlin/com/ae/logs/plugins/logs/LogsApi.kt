@@ -32,6 +32,14 @@ public class LogsApi internal constructor(
         message: String,
         throwable: Throwable? = null,
     ) {
+        if (!com.ae.logs.AELogs.isEnabled) return
+
+        val config = com.ae.logs.AELogs.defaultOrNull()?.config
+        if (config != null && !config.isEnabled) return
+        if (config != null && severity < config.minSeverity) return
+
+        config?.platformLogSink?.log(severity, tag, message, throwable)
+
         val fullMessage = if (throwable != null) "$message\n${throwable.stackTraceToString()}" else message
         store.log(severity, tag, fullMessage)
     }

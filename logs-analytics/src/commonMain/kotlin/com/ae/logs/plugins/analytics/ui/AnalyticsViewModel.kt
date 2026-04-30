@@ -35,9 +35,9 @@ internal class AnalyticsViewModel(
                     val matchesQuery =
                         query.isBlank() ||
                             event.name.contains(query, ignoreCase = true) ||
-                            event.source?.contains(query, ignoreCase = true) == true ||
+                            event.source?.sourceName?.contains(query, ignoreCase = true) == true ||
                             event.properties.any { (k, v) ->
-                                k.contains(query, ignoreCase = true) || v.contains(query, ignoreCase = true)
+                                k.contains(query, ignoreCase = true) || v.toString().contains(query, ignoreCase = true)
                             }
                     val matchesFilter =
                         when (filter) {
