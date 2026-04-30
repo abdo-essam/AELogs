@@ -15,4 +15,6 @@ public interface PlatformLogSink {
     }
 }
 
-internal expect class DefaultPlatformLogSink() : PlatformLogSink
+internal expect class DefaultPlatformLogSink() : PlatformLogSink {
+    override fun log(severity: LogSeverity, tag: String, message: String, throwable: Throwable?)
+}
