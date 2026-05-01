@@ -13,6 +13,7 @@ import kotlin.time.Instant
  * Utility functions for log formatting and coloring.
  */
 internal object LogUtils {
+    @OptIn(kotlin.time.ExperimentalTime::class)
     fun formatTimestamp(timestamp: Long): String =
         runCatching {
             val instant = Instant.fromEpochMilliseconds(timestamp)

@@ -1,3 +1,5 @@
+@file:OptIn(kotlin.time.ExperimentalTime::class)
+
 package com.ae.logs.plugins.network
 
 import com.ae.logs.plugins.network.model.NetworkEntry

@@ -65,8 +65,12 @@ kotlin {
             implementation(libs.material3)
             implementation(libs.ui)
             implementation(libs.material.icons.extended)
-            implementation(libs.ktor.serialization.kotlinx.json)
+            implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.datetime)
+        }
+        
+        androidMain.dependencies {
+            implementation(libs.androidx.activity.compose)
         }
     }
 }

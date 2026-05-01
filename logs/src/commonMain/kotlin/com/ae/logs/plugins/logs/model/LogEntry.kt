@@ -9,6 +9,7 @@ import kotlin.time.Clock
  * This is a simple data holder. Parsing and classification logic
  * are provided via extension properties in LogClassifier.
  */
+@OptIn(kotlin.time.ExperimentalTime::class)
 @Immutable
 public data class LogEntry(
     val id: String =

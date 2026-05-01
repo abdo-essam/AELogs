@@ -122,7 +122,10 @@ AELogs.init(
 )
 ```
 
-### 2. Wrap Your App with UI Provider
+### 2. Launch the UI
+
+#### For Jetpack Compose Apps
+Wrap your main content:
 
 ```kotlin
 @Composable
@@ -139,6 +142,17 @@ fun App(debugMode: Boolean) {
         }
     }
 }
+```
+
+#### For Traditional View-Based Android Apps (XML)
+No need to add Compose to your app! Just launch the built-in activity anywhere (like a developer menu button):
+
+```kotlin
+import com.ae.logs.launchViewer
+import com.ae.logs.AELogs
+
+// Call from any Activity or Fragment
+AELogs.launchViewer(requireContext()) 
 ```
 
 ### 3. Log — primary API (`AELog`)

@@ -4,7 +4,7 @@ import android.util.Log
 import com.ae.logs.plugins.logs.model.LogSeverity
 
 internal actual class DefaultPlatformLogSink : PlatformLogSink {
-    override fun log(
+    actual override fun log(
         severity: LogSeverity,
         tag: String,
         message: String,
