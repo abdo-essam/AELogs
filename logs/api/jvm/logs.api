@@ -453,7 +453,7 @@ public final class com/ae/logs/ui/components/ComposableSingletons$AELogsSearchBa
 	public static final field INSTANCE Lcom/ae/logs/ui/components/ComposableSingletons$AELogsSearchBarKt;
 	public fun <init> ()V
 	public final fun getLambda$1249084034$logs ()Lkotlin/jvm/functions/Function2;
-	public final fun getLambda$536663560$logs ()Lkotlin/jvm/functions/Function2;
+	public final fun getLambda$773281385$logs ()Lkotlin/jvm/functions/Function2;
 }
 
 public final class com/ae/logs/ui/components/ComposableSingletons$AELogsViewerHeaderKt {
