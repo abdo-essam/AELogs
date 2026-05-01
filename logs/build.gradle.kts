@@ -1,6 +1,4 @@
 import com.vanniktech.maven.publish.SonatypeHost
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.composeMultiplatform)
@@ -32,7 +30,6 @@ kotlin {
             libs.versions.android.minSdk
                 .get()
                 .toInt()
-
     }
 
     listOf(
