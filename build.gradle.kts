@@ -19,6 +19,7 @@ plugins {
     alias(libs.plugins.binaryCompatibilityValidator)
     alias(libs.plugins.spotless)
     alias(libs.plugins.kover) apply false
+    alias(libs.plugins.vanniktechPublish) apply false
 }
 
 apiValidation {
