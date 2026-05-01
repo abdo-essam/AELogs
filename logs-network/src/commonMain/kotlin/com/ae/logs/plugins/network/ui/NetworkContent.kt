@@ -334,7 +334,7 @@ private fun HeadersSection(
                             text = "$key:",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(end = 4.dp)
+                            modifier = Modifier.padding(end = 4.dp),
                         )
                         Text(
                             text = value,
@@ -386,10 +386,11 @@ private fun StatusBadge(entry: NetworkEntry) {
     Text(text = text, style = MaterialTheme.typography.labelSmall, color = color)
 }
 
-private val PRETTY_JSON = Json {
-    prettyPrint = true
-    prettyPrintIndent = "  "
-}
+private val PRETTY_JSON =
+    Json {
+        prettyPrint = true
+        prettyPrintIndent = "  "
+    }
 
 @OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
 private fun String.prettyPrintJson(): String =

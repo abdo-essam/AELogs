@@ -6,7 +6,6 @@ import com.ae.logs.plugins.network.model.NetworkMethod
 import okhttp3.Interceptor
 import okhttp3.Response
 import okio.Buffer
-import java.io.IOException
 
 /**
  * OkHttp [Interceptor] that automatically records every request/response pair
@@ -56,10 +55,14 @@ public class AELogsOkHttpInterceptor(
     public val redactHeaders: Set<String> = emptySet(),
 ) : Interceptor {
     public companion object {
-        public val DEFAULT_REDACTED: Set<String> = setOf(
-            "Authorization", "Cookie", "Set-Cookie",
-            "Proxy-Authorization", "X-Api-Key",
-        )
+        public val DEFAULT_REDACTED: Set<String> =
+            setOf(
+                "Authorization",
+                "Cookie",
+                "Set-Cookie",
+                "Proxy-Authorization",
+                "X-Api-Key",
+            )
     }
 
     private fun Map<String, String>.redact(): Map<String, String> {
@@ -93,21 +96,22 @@ public class AELogsOkHttpInterceptor(
 
         // Read request body without consuming it (OkHttp bodies are single-read streams)
         val body = request.body
-        val requestBody = if (body != null && !body.isOneShot()) {
-            if (shouldCaptureBody(body.contentType()?.toString())) {
-                runCatching {
-                    val buffer = Buffer()
-                    body.writeTo(buffer)
-                    buffer.readUtf8()
-                }.getOrNull()
+        val requestBody =
+            if (body != null && !body.isOneShot()) {
+                if (shouldCaptureBody(body.contentType()?.toString())) {
+                    runCatching {
+                        val buffer = Buffer()
+                        body.writeTo(buffer)
+                        buffer.readUtf8()
+                    }.getOrNull()
+                } else {
+                    "<binary or unsupported, ${body.contentLength()} bytes>"
+                }
+            } else if (body != null) {
+                "<one-shot body>"
             } else {
-                "<binary or unsupported, ${body.contentLength()} bytes>"
+                null
             }
-        } else if (body != null) {
-            "<one-shot body>"
-        } else {
-            null
-        }
 
         api.request(
             id = id,
@@ -123,14 +127,15 @@ public class AELogsOkHttpInterceptor(
             val durationMs = (System.nanoTime() - startNs) / 1_000_000
 
             // peekBody() clones the internal source — the live response stream is NOT consumed
-            val responseBody = if (shouldCaptureBody(response.body?.contentType()?.toString())) {
-                runCatching {
-                    response.peekBody(maxResponseBodyBytes).string()
-                }.getOrNull()
-            } else {
-                val len = response.body?.contentLength() ?: -1
-                if (len > 0) "<binary or unsupported, $len bytes>" else "<binary or unsupported>"
-            }
+            val responseBody =
+                if (shouldCaptureBody(response.body?.contentType()?.toString())) {
+                    runCatching {
+                        response.peekBody(maxResponseBodyBytes).string()
+                    }.getOrNull()
+                } else {
+                    val len = response.body?.contentLength() ?: -1
+                    if (len > 0) "<binary or unsupported, $len bytes>" else "<binary or unsupported>"
+                }
 
             api.response(
                 id = id,

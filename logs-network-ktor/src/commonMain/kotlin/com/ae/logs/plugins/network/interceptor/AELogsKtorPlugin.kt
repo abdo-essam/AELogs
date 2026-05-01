@@ -10,7 +10,6 @@ import io.ktor.client.plugins.api.Send
 import io.ktor.client.plugins.api.createClientPlugin
 import io.ktor.http.content.ByteArrayContent
 import io.ktor.http.content.TextContent
-import kotlin.time.Clock
 
 /**
  * Ktor [io.ktor.client.HttpClient] plugin that automatically records every
@@ -54,10 +53,14 @@ import kotlin.time.Clock
  */
 
 public class AELogsKtorConfig {
-    public var redactHeaders: Set<String> = setOf(
-        "Authorization", "Cookie", "Set-Cookie",
-        "Proxy-Authorization", "X-Api-Key"
-    )
+    public var redactHeaders: Set<String> =
+        setOf(
+            "Authorization",
+            "Cookie",
+            "Set-Cookie",
+            "Proxy-Authorization",
+            "X-Api-Key",
+        )
     public var maxRequestBodyBytes: Long = 250_000L
     public var maxResponseBodyBytes: Long = 250_000L
     public var excludeUrls: List<Regex> = emptyList()
@@ -86,25 +89,28 @@ public val AELogsKtorPlugin: ClientPlugin<AELogsKtorConfig> =
         on(Send) { request ->
             if (!AELogs.isEnabled) return@on proceed(request)
             val api = AELogs.plugin<NetworkPlugin>()?.api ?: return@on proceed(request)
-            
+
             val urlString = request.url.buildString()
             if (excludeUrls.any { it.matches(urlString) }) return@on proceed(request)
 
             val id = api.newId()
-            val startMark = kotlin.time.TimeSource.Monotonic.markNow()
+            val startMark =
+                kotlin.time.TimeSource.Monotonic
+                    .markNow()
 
             val contentType = request.headers["Content-Type"]
-            val reqBody = if (shouldCaptureBody(contentType)) {
-                when (val content = request.body) {
-                    is TextContent -> content.text
-                    is ByteArrayContent -> content.bytes().decodeToString()
-                    is String -> content
-                    else -> "<streamed or unknown body>"
+            val reqBody =
+                if (shouldCaptureBody(contentType)) {
+                    when (val content = request.body) {
+                        is TextContent -> content.text
+                        is ByteArrayContent -> content.bytes().decodeToString()
+                        is String -> content
+                        else -> "<streamed or unknown body>"
+                    }
+                } else {
+                    val len = request.headers["Content-Length"]
+                    if (len != null) "<binary or unsupported, $len bytes>" else "<binary or unsupported>"
                 }
-            } else {
-                val len = request.headers["Content-Length"]
-                if (len != null) "<binary or unsupported, $len bytes>" else "<binary or unsupported>"
-            }
 
             api.request(
                 id = id,
