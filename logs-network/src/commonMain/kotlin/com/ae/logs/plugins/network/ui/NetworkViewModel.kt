@@ -36,15 +36,15 @@ internal class NetworkViewModel(
                         query.isBlank() ||
                             entry.url.contains(query, ignoreCase = true) ||
                             entry.method.label.contains(query, ignoreCase = true) ||
-                            entry.statusCode?.toString()?.contains(query) == true
+                            entry.statusCode?.toString()?.contains(query) == true ||
+                            entry.requestBody?.contains(query, ignoreCase = true) == true ||
+                            entry.responseBody?.contains(query, ignoreCase = true) == true
                     val matchesFilter =
                         when (filter) {
                             NetworkFilter.ALL -> true
                             NetworkFilter.PENDING -> entry.isPending
                             NetworkFilter.SUCCESS -> entry.isSuccess
-                            NetworkFilter.CLIENT_ERROR -> entry.statusCode != null && entry.statusCode in 400..499
-                            NetworkFilter.SERVER_ERROR -> entry.statusCode != null && entry.statusCode >= 500
-                            NetworkFilter.FAILED -> entry.error != null
+                            NetworkFilter.ERRORS -> entry.isError
                         }
                     matchesQuery && matchesFilter
                 }

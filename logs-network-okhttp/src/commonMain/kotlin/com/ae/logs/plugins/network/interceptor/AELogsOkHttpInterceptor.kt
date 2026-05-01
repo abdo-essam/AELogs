@@ -51,14 +51,33 @@ import java.io.IOException
  * [intercept] delegates straight to `chain.proceed()` with zero overhead.
  */
 public class AELogsOkHttpInterceptor(
-    public val maxBodyBytes: Long = 250_000L,
+    public val maxRequestBodyBytes: Long = 250_000L,
+    public val maxResponseBodyBytes: Long = 250_000L,
     public val redactHeaders: Set<String> = emptySet(),
 ) : Interceptor {
+    public companion object {
+        public val DEFAULT_REDACTED: Set<String> = setOf(
+            "Authorization", "Cookie", "Set-Cookie",
+            "Proxy-Authorization", "X-Api-Key",
+        )
+    }
+
     private fun Map<String, String>.redact(): Map<String, String> {
         if (redactHeaders.isEmpty()) return this
         return mapValues { (key, value) ->
             if (redactHeaders.any { it.equals(key, ignoreCase = true) }) "***" else value
         }
+    }
+
+    private fun okhttp3.Headers.toMultiMap(): Map<String, String> =
+        names().associateWith { name -> values(name).joinToString(", ") }
+
+    private fun shouldCaptureBody(contentType: String?): Boolean {
+        if (contentType == null) return false
+        return contentType.startsWith("text/", ignoreCase = true) ||
+            contentType.contains("json", ignoreCase = true) ||
+            contentType.contains("xml", ignoreCase = true) ||
+            contentType.contains("form-urlencoded", ignoreCase = true)
     }
 
     override fun intercept(chain: Interceptor.Chain): Response {
@@ -70,47 +89,60 @@ public class AELogsOkHttpInterceptor(
         if (api == null) return chain.proceed(request)
 
         val id = api.newId()
-        val startMs = System.currentTimeMillis()
+        val startNs = System.nanoTime()
 
         // Read request body without consuming it (OkHttp bodies are single-read streams)
-        val requestBody =
-            runCatching {
-                request.body?.let { body ->
+        val body = request.body
+        val requestBody = if (body != null && !body.isOneShot()) {
+            if (shouldCaptureBody(body.contentType()?.toString())) {
+                runCatching {
                     val buffer = Buffer()
                     body.writeTo(buffer)
                     buffer.readUtf8()
-                }
-            }.getOrNull()
+                }.getOrNull()
+            } else {
+                "<binary or unsupported, ${body.contentLength()} bytes>"
+            }
+        } else if (body != null) {
+            "<one-shot body>"
+        } else {
+            null
+        }
 
         api.request(
             id = id,
             url = request.url.toString(),
             method = NetworkMethod.fromString(request.method),
-            headers = request.headers.toMap().redact(),
+            rawMethod = request.method,
+            headers = request.headers.toMultiMap().redact(),
             body = requestBody,
         )
 
         return try {
             val response = chain.proceed(request)
-            val durationMs = System.currentTimeMillis() - startMs
+            val durationMs = (System.nanoTime() - startNs) / 1_000_000
 
             // peekBody() clones the internal source — the live response stream is NOT consumed
-            val responseBody =
+            val responseBody = if (shouldCaptureBody(response.body?.contentType()?.toString())) {
                 runCatching {
-                    response.peekBody(maxBodyBytes).string()
+                    response.peekBody(maxResponseBodyBytes).string()
                 }.getOrNull()
+            } else {
+                val len = response.body?.contentLength() ?: -1
+                if (len > 0) "<binary or unsupported, $len bytes>" else "<binary or unsupported>"
+            }
 
             api.response(
                 id = id,
                 statusCode = response.code,
-                headers = response.headers.toMap().redact(),
+                headers = response.headers.toMultiMap().redact(),
                 body = responseBody,
                 durationMs = durationMs,
             )
             response
-        } catch (e: IOException) {
-            api.error(id, e.message ?: "Connection failed")
-            throw e
+        } catch (t: Throwable) {
+            api.error(id, t.message ?: t::class.simpleName ?: "Unknown error")
+            throw t
         }
     }
 }

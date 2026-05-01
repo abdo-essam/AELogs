@@ -40,6 +40,7 @@ public class NetworkApi internal constructor(
         id: String,
         url: String,
         method: NetworkMethod,
+        rawMethod: String = method.name,
         headers: Map<String, String> = emptyMap(),
         body: String? = null,
     ) {
@@ -49,6 +50,7 @@ public class NetworkApi internal constructor(
                 id = id,
                 url = url,
                 method = method,
+                rawMethod = rawMethod,
                 requestHeaders = headers,
                 requestBody = body,
                 timestamp = Clock.System.now().toEpochMilliseconds(),
@@ -90,7 +92,7 @@ public class NetworkApi internal constructor(
     }
 
     /** Record a complete request + response entry in one call. */
-    public fun recordOrReplace(entry: NetworkEntry) {
+    internal fun recordOrReplace(entry: NetworkEntry) {
         if (!com.ae.logs.AELogs.isEnabled) return
         store.recordOrReplace(entry)
     }
@@ -109,12 +111,13 @@ public class NetworkApi internal constructor(
     public inline fun <T> recordCall(
         url: String,
         method: NetworkMethod,
+        rawMethod: String = method.name,
         headers: Map<String, String> = emptyMap(),
         body: String? = null,
         block: () -> NetworkResult<T>,
     ): T {
         val id = newId()
-        request(id, url, method, headers, body)
+        request(id, url, method, rawMethod, headers, body)
         val start = Clock.System.now().toEpochMilliseconds()
 
         return try {

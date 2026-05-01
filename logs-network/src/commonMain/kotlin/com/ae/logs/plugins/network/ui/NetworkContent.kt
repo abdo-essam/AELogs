@@ -53,6 +53,8 @@ import com.ae.logs.ui.components.AELogsFilterChips
 import com.ae.logs.ui.components.AELogsSearchBar
 import com.ae.logs.ui.components.AELogsViewerHeader
 import com.ae.logs.ui.theme.AELogsSpacing
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
 
 // ── Filter labels list (order must match NetworkFilter.entries) ───────────────
 private val FILTER_LABELS = NetworkFilter.entries.map { it.label }
@@ -170,7 +172,7 @@ private fun NetworkEntryItem(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             // Method badge
-            MethodBadge(entry.method.label)
+            MethodBadge(entry.rawMethod)
             Spacer(Modifier.width(AELogsSpacing.x2))
 
             // URL + timestamp
@@ -250,24 +252,18 @@ private fun NetworkEntryDetails(
                 DetailSection("URL", entry.url)
                 // Request headers
                 if (entry.requestHeaders.isNotEmpty()) {
-                    DetailSection(
-                        "Request Headers",
-                        entry.requestHeaders.entries.joinToString("\n") { "${it.key}: ${it.value}" },
-                    )
+                    HeadersSection("Request Headers", entry.requestHeaders)
                 }
                 // Request body
-                entry.requestBody?.let { DetailSection("Request Body", it) }
+                entry.requestBody?.let { DetailSection("Request Body", it.prettyPrintJson()) }
                 // Status
                 entry.statusCode?.let { DetailSection("Status", it.toString()) }
                 // Response headers
                 if (entry.responseHeaders.isNotEmpty()) {
-                    DetailSection(
-                        "Response Headers",
-                        entry.responseHeaders.entries.joinToString("\n") { "${it.key}: ${it.value}" },
-                    )
+                    HeadersSection("Response Headers", entry.responseHeaders)
                 }
                 // Response body
-                entry.responseBody?.let { DetailSection("Response Body", it) }
+                entry.responseBody?.let { DetailSection("Response Body", it.prettyPrintJson()) }
                 // Error
                 entry.error?.let { DetailSection("Error", it) }
                 // Duration
@@ -319,6 +315,39 @@ private fun DetailSection(
     }
 }
 
+@Composable
+private fun HeadersSection(
+    label: String,
+    headers: Map<String, String>,
+) {
+    Column(modifier = Modifier.padding(bottom = AELogsSpacing.x2).fillMaxWidth()) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.primary,
+        )
+        androidx.compose.foundation.text.selection.SelectionContainer {
+            Column(modifier = Modifier.padding(top = 4.dp)) {
+                headers.forEach { (key, value) ->
+                    Row(modifier = Modifier.padding(bottom = 2.dp)) {
+                        Text(
+                            text = "$key:",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(end = 4.dp)
+                        )
+                        Text(
+                            text = value,
+                            style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
 // ── Badges ────────────────────────────────────────────────────────────────────
 
 @Composable
@@ -349,11 +378,25 @@ private fun StatusBadge(entry: NetworkEntry) {
         when {
             entry.isPending -> MaterialTheme.colorScheme.onSurfaceVariant
             entry.isSuccess -> Color(0xFF4CAF50)
+            entry.statusCode != null && entry.statusCode in 300..399 -> Color(0xFF9C27B0)
+            entry.statusCode != null && entry.statusCode in 100..199 -> Color(0xFF2196F3)
             entry.isError -> MaterialTheme.colorScheme.error
             else -> Color(0xFFFFC107)
         }
     Text(text = text, style = MaterialTheme.typography.labelSmall, color = color)
 }
+
+private val PRETTY_JSON = Json {
+    prettyPrint = true
+    prettyPrintIndent = "  "
+}
+
+@OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
+private fun String.prettyPrintJson(): String =
+    runCatching {
+        val jsonElement = PRETTY_JSON.parseToJsonElement(this)
+        PRETTY_JSON.encodeToString(JsonElement.serializer(), jsonElement)
+    }.getOrDefault(this)
 
 // ── Empty placeholder ─────────────────────────────────────────────────────────
 

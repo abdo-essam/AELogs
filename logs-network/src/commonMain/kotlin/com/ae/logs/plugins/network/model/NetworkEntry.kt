@@ -9,6 +9,7 @@ public data class NetworkEntry(
     val id: String,
     val url: String,
     val method: NetworkMethod,
+    val rawMethod: String = method.name,
     /** `null` while the request is in-flight. */
     val statusCode: Int? = null,
     val requestBody: String? = null,
