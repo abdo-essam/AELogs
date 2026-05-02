@@ -21,6 +21,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import com.ae.log.AELogProvider
 import com.ae.log.AELogUiConfig
 import com.ae.log.sample.ui.analytics.AnalyticsScreen
@@ -47,16 +48,19 @@ private val TABS =
 
 @Composable
 fun App(debugMode: Boolean = false) {
+    var selectedTab by rememberSaveable { mutableIntStateOf(0) }
+
+    SampleState.initialize()
     SampleTheme {
         AELogProvider(
             uiConfig =
                 AELogUiConfig(
                     showFloatingButton = true,
-                    enableLongPress = true,
+                    enableLongPress = false, // disabled to test if it's blocking clicks
+                    floatingButtonOffset = 160.dp,
                 ),
             enabled = debugMode,
         ) {
-            var selectedTab by rememberSaveable { mutableIntStateOf(0) }
 
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
@@ -67,15 +71,15 @@ fun App(debugMode: Boolean = false) {
                     )
                 },
             ) { innerPadding ->
-                when (selectedTab) {
-                    0 -> LogScreen()
-                    1 -> NetworkScreen()
-                    2 -> AnalyticsScreen()
-                }
-                // Apply inner padding so content isn't hidden behind nav bar
                 androidx.compose.foundation.layout.Box(
-                    modifier = Modifier.padding(innerPadding),
-                )
+                    modifier = Modifier.padding(innerPadding).fillMaxSize()
+                ) {
+                    when (selectedTab) {
+                        0 -> LogScreen()
+                        1 -> NetworkScreen()
+                        2 -> AnalyticsScreen()
+                    }
+                }
             }
         }
     }

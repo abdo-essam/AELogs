@@ -1,7 +1,12 @@
 package com.ae.log.sample
 
+import com.ae.log.AELog
+import com.ae.log.plugins.analytics.AnalyticsPlugin
 import com.ae.log.plugins.analytics.AnalyticsTracker
+import com.ae.log.plugins.log.LogPlugin
+import com.ae.log.plugins.network.NetworkPlugin
 import com.ae.log.plugins.network.NetworkRecorder
+import com.ae.log.plugins.network.interceptor.AELogKtorInterceptor
 import io.ktor.client.HttpClient
 
 /**
@@ -21,4 +26,24 @@ object SampleState {
      * Every call made through this client is automatically captured by [NetworkPlugin].
      */
     var httpClient: HttpClient? = null
+    private var isInitialized = false
+
+    fun initialize() {
+        if (isInitialized) return
+        isInitialized = true
+
+        AELog.init(
+            LogPlugin(),
+            NetworkPlugin(),
+            AnalyticsPlugin(),
+        )
+
+        networkApi = AELog.plugin<NetworkPlugin>()?.recorder
+        analyticsApi = AELog.plugin<AnalyticsPlugin>()?.tracker
+
+        httpClient =
+            HttpClient {
+                install(AELogKtorInterceptor)
+            }
+    }
 }

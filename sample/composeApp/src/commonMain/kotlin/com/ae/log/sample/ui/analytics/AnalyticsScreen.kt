@@ -121,7 +121,7 @@ fun AnalyticsScreen() {
                             tracker?.track(
                                 "purchase",
                                 mapOf(
-                                    "transaction_id" to "txn_${System.currentTimeMillis()}",
+                                    "transaction_id" to "txn_${(0..1000).random()}",
                                     "value" to "149.99",
                                     "currency" to "USD",
                                     "items_count" to "3",

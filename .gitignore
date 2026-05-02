@@ -39,3 +39,26 @@ secret_key.txt
 secret.properties
 /.vscode/settings.json
 /AI_SKILLS.md
+
+# iOS / Xcode
+# Commit: sample/iosApp/iosApp.xcodeproj/project.pbxproj
+# Commit: sample/iosApp/iosApp.xcodeproj/project.xcworkspace/contents.xcworkspacedata
+# Commit: sample/iosApp/ContentView.swift, iOSApp.swift
+# Commit: sample/generate_ios_project.rb
+# Commit: sample/composeApp/src/iosMain/
+xcuserdata/
+*.xcuserstate
+*.xccheckout
+*.moved-aside
+DerivedData/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+Timeline.xctimeline
+playground.xcworkspace
+.build/
+
+# Xcode workspace user data (keep contents.xcworkspacedata)
+sample/iosApp/iosApp.xcodeproj/project.xcworkspace/xcuserdata/
+sample/iosApp/iosApp.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
