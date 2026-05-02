@@ -208,7 +208,7 @@ private fun NetworkEntryItem(
                 Text(
                     text = displayUrl,
                     style = MaterialTheme.typography.bodySmall,
-                    maxLines = 1,
+                    maxLines = 3,
                     overflow = TextOverflow.Ellipsis,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
@@ -306,6 +306,11 @@ private fun NetworkEntryDetails(
                         }
                         1 -> {
                             // Request
+                            DetailSection("URL", entry.url)
+                            val queryParams = entry.url.extractQueryParams()
+                            if (queryParams.isNotEmpty()) {
+                                HeadersSection("Query Parameters", queryParams)
+                            }
                             if (entry.requestHeaders.isNotEmpty()) {
                                 HeadersSection("Headers", entry.requestHeaders)
                             }
@@ -529,6 +534,23 @@ private fun String.prettyPrintJson(): String =
         val jsonElement = PRETTY_JSON.parseToJsonElement(this)
         PRETTY_JSON.encodeToString(JsonElement.serializer(), jsonElement)
     }.getOrDefault(this)
+
+private fun String.extractQueryParams(): Map<String, String> {
+    val queryPart = this.substringAfter('?', "").substringBefore('#')
+    if (queryPart.isEmpty()) return emptyMap()
+    
+    val params = mutableMapOf<String, String>()
+    queryPart.split('&').forEach { param ->
+        val parts = param.split('=', limit = 2)
+        if (parts.isNotEmpty() && parts[0].isNotEmpty()) {
+            params[parts[0]] = parts.getOrNull(1)?.let {
+                // simple URL decoding for query params display
+                it.replace("+", " ").replace("%20", " ") // A very basic decode, you can improve if needed
+            } ?: ""
+        }
+    }
+    return params
+}
 
 // ── Empty placeholder ─────────────────────────────────────────────────────────
 
