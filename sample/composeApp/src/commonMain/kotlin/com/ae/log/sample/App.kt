@@ -61,7 +61,6 @@ fun App(debugMode: Boolean = false) {
                 ),
             enabled = debugMode,
         ) {
-
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
                 bottomBar = {
@@ -72,7 +71,7 @@ fun App(debugMode: Boolean = false) {
                 },
             ) { innerPadding ->
                 androidx.compose.foundation.layout.Box(
-                    modifier = Modifier.padding(innerPadding).fillMaxSize()
+                    modifier = Modifier.padding(innerPadding).fillMaxSize(),
                 ) {
                     when (selectedTab) {
                         0 -> LogScreen()
