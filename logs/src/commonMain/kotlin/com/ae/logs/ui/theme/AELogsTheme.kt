@@ -11,9 +11,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 // ── Brand Colors ──────────────────────────────────────────────────────────────
-private val AELogsPrimary = Color(0xFFBF3547)
-private val AELogsPrimaryDark = Color(0xFFD46A78)
-private val AELogsError = Color(0xFFE53935)
+private val AELogsPrimary = Color(0xFF000000)
+private val AELogsPrimaryDark = Color(0xFFE0E0E0) // Retained but unused
+private val AELogsError = Color(0xFFD32F2F)
 private val AELogsOnPrimary = Color.White
 
 // ── Light Scheme ──────────────────────────────────────────────────────────────
@@ -21,21 +21,21 @@ private val LightColorScheme =
     lightColorScheme(
         primary = AELogsPrimary,
         onPrimary = AELogsOnPrimary,
-        primaryContainer = Color(0xFFEDE7F6),
-        onPrimaryContainer = Color(0xFF1A0056),
-        secondary = Color(0xFF00B894),
+        primaryContainer = Color(0xFFE0E0E0),
+        onPrimaryContainer = Color(0xFF000000),
+        secondary = Color(0xFF424242),
         onSecondary = Color.White,
         surface = Color(0xFFFFFFFF),
-        onSurface = Color(0xFF1A1A2E),
+        onSurface = Color(0xFF121212),
         surfaceVariant = Color(0xFFF5F5F5),
-        onSurfaceVariant = Color(0xFF49454F),
-        outline = Color(0xFFDDDDDD),
-        outlineVariant = Color(0xFFEEEEEE),
+        onSurfaceVariant = Color(0xFF424242),
+        outline = Color(0xFFBDBDBD),
+        outlineVariant = Color(0xFFE0E0E0),
         error = AELogsError,
         onError = Color.White,
-        background = Color(0xFFF8F9FA),
-        onBackground = Color(0xFF1A1A2E),
-        inverseSurface = Color(0xFF2D2D3F),
+        background = Color(0xFFFAFAFA),
+        onBackground = Color(0xFF121212),
+        inverseSurface = Color(0xFF121212),
         inverseOnSurface = Color(0xFFF5F5F5),
         scrim = Color(0x52000000),
     )
