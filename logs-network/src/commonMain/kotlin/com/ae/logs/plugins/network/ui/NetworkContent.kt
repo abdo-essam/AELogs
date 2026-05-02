@@ -451,7 +451,7 @@ private fun BodySection(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(8.dp))
-                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                .background(MaterialTheme.colorScheme.surface)
                 .padding(8.dp)
                 .horizontalScroll(rememberScrollState())
         ) {
