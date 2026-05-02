@@ -59,7 +59,7 @@ import kotlinx.atomicfu.atomic
  *
  * ## Advanced — accessing plugin APIs directly
  * ```kotlin
- * val networkApi = AELog.plugin<NetworkPlugin>()?.api
+ * val networkApi = AELog.plugin<NetworkPlugin>()?.recorder
  * ```
  */
 public class AELog private constructor(
@@ -185,7 +185,7 @@ public class AELog private constructor(
          * is not installed — never throws.
          *
          * ```kotlin
-         * val networkApi = AELog.plugin<NetworkPlugin>()?.api
+         * val networkApi = AELog.plugin<NetworkPlugin>()?.recorder
          * ```
          */
         public inline fun <reified T : AELogPlugin> plugin(): T? = defaultOrNull()?.plugins?.getPlugin(T::class)
@@ -258,7 +258,7 @@ public class AELog private constructor(
         // ── Tagged logger factory ─────────────────────────────────────────────────
 
         /**
-         * Create a [com.ae.log.plugins.log.TaggedLogger] pre-bound to [tag].
+         * Create a [com.ae.log.plugins.log.Logger] pre-bound to [tag].
          *
          * ```kotlin
          * private val log = AELog.logger("AuthViewModel")
@@ -266,8 +266,8 @@ public class AELog private constructor(
          * log.e("Failed", throwable)
          * ```
          */
-        public fun logger(tag: String): com.ae.log.plugins.log.TaggedLogger =
+        public fun logger(tag: String): com.ae.log.plugins.log.Logger =
             com.ae.log.plugins.log
-                .TaggedLogger(tag)
+                .Logger(tag)
     }
 }

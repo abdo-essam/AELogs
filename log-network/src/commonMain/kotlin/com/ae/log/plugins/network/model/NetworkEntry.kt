@@ -18,7 +18,7 @@ public data class NetworkEntry(
     val responseHeaders: Map<String, String> = emptyMap(),
     /** `null` while the request is in-flight. */
     val durationMs: Long? = null,
-    /** Set by [com.ae.log.plugins.network.NetworkApi] at record time (epoch millis). */
+    /** Set by [com.ae.log.plugins.network.NetworkRecorder] at record time (epoch millis). */
     val timestamp: Long,
     /** Populated when the request fails with a connection/timeout error. */
     val error: String? = null,

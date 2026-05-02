@@ -88,12 +88,12 @@ public val AELogKtorInterceptor: ClientPlugin<AELogKtorConfig> =
 
         on(Send) { request ->
             if (!AELog.isEnabled) return@on proceed(request)
-            val api = AELog.plugin<NetworkPlugin>()?.api ?: return@on proceed(request)
+            val recorder = AELog.plugin<NetworkPlugin>()?.recorder ?: return@on proceed(request)
 
             val urlString = request.url.buildString()
             if (excludeUrls.any { it.matches(urlString) }) return@on proceed(request)
 
-            val id = api.newId()
+            val id = recorder.newId()
             val startMark =
                 kotlin.time.TimeSource.Monotonic
                     .markNow()
@@ -112,7 +112,7 @@ public val AELogKtorInterceptor: ClientPlugin<AELogKtorConfig> =
                     if (len != null) "<binary or unsupported, $len bytes>" else "<binary or unsupported>"
                 }
 
-            api.request(
+            recorder.request(
                 id = id,
                 url = request.url.buildString(),
                 method = NetworkMethod.fromString(request.method.value),
@@ -131,7 +131,7 @@ public val AELogKtorInterceptor: ClientPlugin<AELogKtorConfig> =
 
                 val resBody = null // To avoid consuming stream, use ResponseObserver plugin instead.
 
-                api.response(
+                recorder.response(
                     id = id,
                     statusCode = response.response.status.value,
                     headers =
@@ -144,7 +144,7 @@ public val AELogKtorInterceptor: ClientPlugin<AELogKtorConfig> =
                 )
                 return@on response
             } catch (t: Throwable) {
-                api.error(id = id, message = t.message ?: t::class.simpleName ?: "Unknown error")
+                recorder.error(id = id, message = t.message ?: t::class.simpleName ?: "Unknown error")
                 throw t
             }
         }

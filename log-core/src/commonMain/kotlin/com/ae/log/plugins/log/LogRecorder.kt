@@ -5,7 +5,7 @@ package com.ae.log.plugins.log
 import com.ae.log.plugins.log.model.LogSeverity
 import kotlin.time.Clock
 
-public class LogApi internal constructor(
+public class LogRecorder internal constructor(
     private val store: LogStore,
     private val clock: Clock = Clock.System,
     private val idGenerator: () -> String = {

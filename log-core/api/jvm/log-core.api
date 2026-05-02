@@ -21,7 +21,7 @@ public final class com/ae/log/AELog$Companion {
 	public final fun init ([Lcom/ae/log/core/AELogPlugin;Lcom/ae/log/AELogConfig;)Lcom/ae/log/AELog;
 	public static synthetic fun init$default (Lcom/ae/log/AELog$Companion;[Lcom/ae/log/core/AELogPlugin;Lcom/ae/log/AELogConfig;ILjava/lang/Object;)Lcom/ae/log/AELog;
 	public final fun isEnabled ()Z
-	public final fun logger (Ljava/lang/String;)Lcom/ae/log/plugins/log/TaggedLogger;
+	public final fun logger (Ljava/lang/String;)Lcom/ae/log/plugins/log/Logger;
 	public final fun setEnabled (Z)V
 	public final fun v (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
 	public static synthetic fun v$default (Lcom/ae/log/AELog$Companion;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)V
@@ -288,22 +288,22 @@ public final class com/ae/log/core/utils/IdGenerator {
 	public final fun generateId ()Ljava/lang/String;
 }
 
-public final class com/ae/log/plugins/log/LogApi {
+public final class com/ae/log/plugins/log/LogRecorder {
 	public static final field $stable I
 	public final fun d (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
-	public static synthetic fun d$default (Lcom/ae/log/plugins/log/LogApi;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)V
+	public static synthetic fun d$default (Lcom/ae/log/plugins/log/LogRecorder;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)V
 	public final fun e (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
-	public static synthetic fun e$default (Lcom/ae/log/plugins/log/LogApi;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)V
+	public static synthetic fun e$default (Lcom/ae/log/plugins/log/LogRecorder;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)V
 	public final fun i (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
-	public static synthetic fun i$default (Lcom/ae/log/plugins/log/LogApi;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)V
+	public static synthetic fun i$default (Lcom/ae/log/plugins/log/LogRecorder;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)V
 	public final fun log (Lcom/ae/log/plugins/log/model/LogSeverity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
-	public static synthetic fun log$default (Lcom/ae/log/plugins/log/LogApi;Lcom/ae/log/plugins/log/model/LogSeverity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)V
+	public static synthetic fun log$default (Lcom/ae/log/plugins/log/LogRecorder;Lcom/ae/log/plugins/log/model/LogSeverity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)V
 	public final fun v (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
-	public static synthetic fun v$default (Lcom/ae/log/plugins/log/LogApi;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)V
+	public static synthetic fun v$default (Lcom/ae/log/plugins/log/LogRecorder;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)V
 	public final fun w (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
-	public static synthetic fun w$default (Lcom/ae/log/plugins/log/LogApi;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)V
+	public static synthetic fun w$default (Lcom/ae/log/plugins/log/LogRecorder;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)V
 	public final fun wtf (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
-	public static synthetic fun wtf$default (Lcom/ae/log/plugins/log/LogApi;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)V
+	public static synthetic fun wtf$default (Lcom/ae/log/plugins/log/LogRecorder;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)V
 }
 
 public final class com/ae/log/plugins/log/LogPlugin : com/ae/log/core/UIPlugin {
@@ -317,7 +317,7 @@ public final class com/ae/log/plugins/log/LogPlugin : com/ae/log/core/UIPlugin {
 	public fun HeaderActions (Landroidx/compose/runtime/Composer;I)V
 	public fun HeaderContent (Landroidx/compose/runtime/Composer;I)V
 	public fun export ()Ljava/lang/String;
-	public final fun getApi ()Lcom/ae/log/plugins/log/LogApi;
+	public final fun getApi ()Lcom/ae/log/plugins/log/LogRecorder;
 	public fun getBadgeCount ()Lkotlinx/coroutines/flow/StateFlow;
 	public fun getIcon ()Landroidx/compose/ui/graphics/vector/ImageVector;
 	public fun getId ()Ljava/lang/String;
@@ -335,29 +335,29 @@ public final class com/ae/log/plugins/log/LogPlugin$Companion {
 }
 
 public final class com/ae/log/plugins/log/LogPluginKt {
-	public static final fun getLog (Lcom/ae/log/AELog$Companion;)Lcom/ae/log/plugins/log/LogApi;
+	public static final fun getLog (Lcom/ae/log/AELog$Companion;)Lcom/ae/log/plugins/log/LogRecorder;
 }
 
-public final class com/ae/log/plugins/log/TaggedLogger {
+public final class com/ae/log/plugins/log/Logger {
 	public static final field $stable I
 	public fun <init> (Ljava/lang/String;)V
 	public final fun d (Ljava/lang/String;Ljava/lang/Throwable;)V
-	public static synthetic fun d$default (Lcom/ae/log/plugins/log/TaggedLogger;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)V
+	public static synthetic fun d$default (Lcom/ae/log/plugins/log/Logger;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)V
 	public final fun e (Ljava/lang/String;Ljava/lang/Throwable;)V
-	public static synthetic fun e$default (Lcom/ae/log/plugins/log/TaggedLogger;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)V
+	public static synthetic fun e$default (Lcom/ae/log/plugins/log/Logger;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)V
 	public final fun getTag ()Ljava/lang/String;
 	public final fun i (Ljava/lang/String;Ljava/lang/Throwable;)V
-	public static synthetic fun i$default (Lcom/ae/log/plugins/log/TaggedLogger;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)V
+	public static synthetic fun i$default (Lcom/ae/log/plugins/log/Logger;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)V
 	public final fun v (Ljava/lang/String;Ljava/lang/Throwable;)V
-	public static synthetic fun v$default (Lcom/ae/log/plugins/log/TaggedLogger;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)V
+	public static synthetic fun v$default (Lcom/ae/log/plugins/log/Logger;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)V
 	public final fun w (Ljava/lang/String;Ljava/lang/Throwable;)V
-	public static synthetic fun w$default (Lcom/ae/log/plugins/log/TaggedLogger;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)V
+	public static synthetic fun w$default (Lcom/ae/log/plugins/log/Logger;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)V
 	public final fun wtf (Ljava/lang/String;Ljava/lang/Throwable;)V
-	public static synthetic fun wtf$default (Lcom/ae/log/plugins/log/TaggedLogger;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)V
+	public static synthetic fun wtf$default (Lcom/ae/log/plugins/log/Logger;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)V
 }
 
-public final class com/ae/log/plugins/log/TaggedLoggerKt {
-	public static final fun logger (Lcom/ae/log/AELog$Companion;Ljava/lang/String;)Lcom/ae/log/plugins/log/TaggedLogger;
+public final class com/ae/log/plugins/log/LoggerKt {
+	public static final fun logger (Lcom/ae/log/AELog$Companion;Ljava/lang/String;)Lcom/ae/log/plugins/log/Logger;
 }
 
 public final class com/ae/log/plugins/log/model/LogClassifierKt {

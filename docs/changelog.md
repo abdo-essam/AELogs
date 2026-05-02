@@ -28,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Configurable floating debug button and multi-finger long-press triggers
 - Expanded Request/Response details view with JSON payloads in `NetworkPlugin`
 - FlowRow property chips in `AnalyticsPlugin`
-- Safe global static APIs (`AELog.i`, `NetworkApi`, `AnalyticsApi`)
+- Safe global static APIs (`AELog.i`, `NetworkRecorder`, `AnalyticsTracker`)
 
 ### Architecture
 - fully reactive `Model-Store-API-UI` pattern

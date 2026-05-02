@@ -21,8 +21,8 @@ class SampleApp : Application() {
         )
 
         // 2. Store plugin API references for use in commonMain screens
-        SampleState.networkApi = AELog.plugin<NetworkPlugin>()?.api
-        SampleState.analyticsApi = AELog.plugin<AnalyticsPlugin>()?.api
+        SampleState.networkApi = AELog.plugin<NetworkPlugin>()?.recorder
+        SampleState.analyticsApi = AELog.plugin<AnalyticsPlugin>()?.tracker
 
         // 3. Create a real Ktor client backed by OkHttp.
         //    AELogKtorInterceptor intercepts every request/response automatically —

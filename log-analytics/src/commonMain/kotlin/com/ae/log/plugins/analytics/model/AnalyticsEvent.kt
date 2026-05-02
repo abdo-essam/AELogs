@@ -11,7 +11,7 @@ public data class AnalyticsEvent(
     val name: String,
     /** Arbitrary key-value properties. */
     val properties: Map<String, Any> = emptyMap(),
-    /** Set by [com.ae.log.plugins.analytics.AnalyticsApi] at track time (epoch millis). */
+    /** Set by [com.ae.log.plugins.analytics.AnalyticsTracker] at track time (epoch millis). */
     val timestamp: Long,
     /** Optional source adapter name to prevent drift (e.g. `"Firebase"`, `"Mixpanel"`). */
     val source: AdapterSource? = null,

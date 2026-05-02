@@ -169,7 +169,7 @@ AELog.wtf("Auth", "Unexpected state")
 
 #### Tagged logger — eliminate tag repetition (recommended for classes)
 
-Create one `TaggedLogger` per class. The tag is set once and applied to every call:
+Create one `Logger` per class. The tag is set once and applied to every call:
 
 ```kotlin
 class AuthViewModel {
@@ -195,9 +195,9 @@ AELog.e("Database", "Failed to clear cache", exception)
 
 ```kotlin
 // Network & Analytics APIs
-NetworkApi.logRequest(method = "GET", url = "https://api.example.com/users", headers = mapOf("Auth" to "Bearer 123"))
-NetworkApi.logResponse(url = "https://api.example.com/users", statusCode = 200, responseBody = "{ \"count\": 2 }")
-AnalyticsApi.logEvent("item_added_to_cart", properties = mapOf("id" to "123", "price" to "29.99"))
+NetworkRecorder.logRequest(method = "GET", url = "https://api.example.com/users", headers = mapOf("Auth" to "Bearer 123"))
+NetworkRecorder.logResponse(url = "https://api.example.com/users", statusCode = 200, responseBody = "{ \"count\": 2 }")
+AnalyticsTracker.logEvent("item_added_to_cart", properties = mapOf("id" to "123", "price" to "29.99"))
 ```
 
 ### 4. Open AELog

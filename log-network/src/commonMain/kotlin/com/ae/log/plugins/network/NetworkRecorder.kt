@@ -19,17 +19,17 @@ import kotlin.time.Clock
  * Use this API directly only for custom or unsupported HTTP clients:
  *
  * ```kotlin
- * val api = AELog.plugin<NetworkPlugin>()?.api ?: return
+ * val recorder = AELog.plugin<NetworkPlugin>()?.recorder ?: return
  * val id  = api.newId()
  *
- * api.request(id, "https://api.example.com/users", NetworkMethod.GET)
+ * recorder.request(id, "https://api.example.com/users", NetworkMethod.GET)
  * // … perform the request …
- * api.response(id, statusCode = 200, body = body, durationMs = elapsed)
+ * recorder.response(id, statusCode = 200, body = body, durationMs = elapsed)
  * // or on failure:
  * api.error(id, "Connection timed out")
  * ```
  */
-public class NetworkApi internal constructor(
+public class NetworkRecorder internal constructor(
     private val store: NetworkStore,
     @PublishedApi internal val clock: Clock = Clock.System,
     private val idGenerator: () -> String = {
@@ -149,7 +149,7 @@ public class NetworkApi internal constructor(
 }
 
 /**
- * Return type for [NetworkApi.recordCall] which encapsulates the raw network details
+ * Return type for [NetworkRecorder.recordCall] which encapsulates the raw network details
  * alongside the parsed or domain value.
  */
 public class NetworkResult<out T>(

@@ -22,7 +22,7 @@ import com.ae.log.AELog
  *
  * @param tag The tag that will be prepended to every log entry.
  */
-public class TaggedLogger(
+public class Logger(
     public val tag: String,
 ) {
     /** Log a [com.ae.log.plugins.log.model.LogSeverity.VERBOSE] message. */
@@ -77,7 +77,7 @@ public class TaggedLogger(
 // ── Factory ───────────────────────────────────────────────────────────────────
 
 /**
- * Creates a [TaggedLogger] pre-bound to [tag].
+ * Creates a [Logger] pre-bound to [tag].
  *
  * ```kotlin
  * // At class level — tag is set once, used everywhere
@@ -87,4 +87,4 @@ public class TaggedLogger(
  * log.e("Failed", throwable)
  * ```
  */
-public fun AELog.Companion.logger(tag: String): TaggedLogger = TaggedLogger(tag)
+public fun AELog.Companion.logger(tag: String): Logger = Logger(tag)

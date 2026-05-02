@@ -85,13 +85,13 @@ public class AELogOkHttpInterceptor(
 
     override fun intercept(chain: Interceptor.Chain): Response {
         if (!AELog.isEnabled) return chain.proceed(chain.request())
-        val api = AELog.plugin<NetworkPlugin>()?.api
+        val recorder = AELog.plugin<NetworkPlugin>()?.recorder
         val request = chain.request()
 
         // Fast path — plugin not installed, stay completely out of the way
-        if (api == null) return chain.proceed(request)
+        if (recorder == null) return chain.proceed(request)
 
-        val id = api.newId()
+        val id = recorder.newId()
         val startNs = System.nanoTime()
 
         // Read request body without consuming it (OkHttp bodies are single-read streams)
@@ -113,7 +113,7 @@ public class AELogOkHttpInterceptor(
                 null
             }
 
-        api.request(
+        recorder.request(
             id = id,
             url = request.url.toString(),
             method = NetworkMethod.fromString(request.method),
@@ -137,7 +137,7 @@ public class AELogOkHttpInterceptor(
                     if (len > 0) "<binary or unsupported, $len bytes>" else "<binary or unsupported>"
                 }
 
-            api.response(
+            recorder.response(
                 id = id,
                 statusCode = response.code,
                 headers = response.headers.toMultiMap().redact(),
@@ -146,7 +146,7 @@ public class AELogOkHttpInterceptor(
             )
             response
         } catch (t: Throwable) {
-            api.error(id, t.message ?: t::class.simpleName ?: "Unknown error")
+            recorder.error(id, t.message ?: t::class.simpleName ?: "Unknown error")
             throw t
         }
     }

@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
  *
  * ## Recording events:
  * ```kotlin
- * val analytics = AELog.default.getPlugin<AnalyticsPlugin>()?.api
+ * val analytics = AELog.default.getPlugin<AnalyticsPlugin>()?.tracker
  * analytics?.track("button_tap", mapOf("screen" to "home"))
  * analytics?.screen("ProductDetail", mapOf("productId" to "123"))
  * ```
@@ -45,7 +45,7 @@ public class AnalyticsPlugin(
     private var viewModel: AnalyticsViewModel? = null
 
     /** Public API for recording events from your analytics adapters. */
-    public val api: AnalyticsApi = AnalyticsApi(store)
+    public val tracker: AnalyticsTracker = AnalyticsTracker(store)
 
     override fun onAttach(context: PluginContext) {
         viewModel = AnalyticsViewModel(store, context.scope)
@@ -78,6 +78,6 @@ public class AnalyticsPlugin(
     }
 }
 
-/** Type-safe accessor for the [AnalyticsApi] on the default [com.ae.log.AELog] instance. */
-public val com.ae.log.AELog.Companion.analytics: AnalyticsApi?
-    get() = plugin<AnalyticsPlugin>()?.api
+/** Type-safe accessor for the [AnalyticsTracker] on the default [com.ae.log.AELog] instance. */
+public val com.ae.log.AELog.Companion.analytics: AnalyticsTracker?
+    get() = plugin<AnalyticsPlugin>()?.tracker

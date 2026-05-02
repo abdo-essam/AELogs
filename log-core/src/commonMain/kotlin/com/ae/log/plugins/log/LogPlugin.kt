@@ -54,7 +54,7 @@ public typealias LogStore = PluginStore<LogEntry>
  * ```kotlin
  * inspector.log(LogSeverity.INFO, "MyTag", "Something happened")
  * // or directly through the plugin:
- * inspector.getPlugin<LogPlugin>()?.api?.i("MyTag", "Something happened")
+ * inspector.getPlugin<LogPlugin>()?.recorder?.i("MyTag", "Something happened")
  * ```
  */
 public class LogPlugin(
@@ -67,7 +67,7 @@ public class LogPlugin(
     internal val logStore = PluginStore<LogEntry>(capacity = maxEntries)
 
     /** Public write API — use this to send logs to the viewer. */
-    public val api: LogApi = LogApi(logStore)
+    public val recorder: LogRecorder = LogRecorder(logStore)
 
     private val _badgeCount = MutableStateFlow(0)
     override val badgeCount: StateFlow<Int> = _badgeCount
@@ -126,6 +126,6 @@ public class LogPlugin(
     }
 }
 
-/** Type-safe accessor for the [LogApi] on the default [com.ae.log.AELog] instance. */
-public val com.ae.log.AELog.Companion.log: LogApi?
-    get() = plugin<LogPlugin>()?.api
+/** Type-safe accessor for the [LogRecorder] on the default [com.ae.log.AELog] instance. */
+public val com.ae.log.AELog.Companion.log: LogRecorder?
+    get() = plugin<LogPlugin>()?.recorder

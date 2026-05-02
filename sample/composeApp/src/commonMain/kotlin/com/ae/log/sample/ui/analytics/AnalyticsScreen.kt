@@ -19,14 +19,14 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.ae.log.plugins.analytics.AnalyticsApi
+import com.ae.log.plugins.analytics.AnalyticsTracker
 import com.ae.log.sample.SampleState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnalyticsScreen() {
     // Access via SampleState — no reified inline needed
-    val api: AnalyticsApi? = SampleState.analyticsApi
+    val tracker: AnalyticsTracker? = SampleState.analyticsApi
 
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
@@ -55,10 +55,10 @@ fun AnalyticsScreen() {
                 ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         EventButton("screen_view: Home") {
-                            api?.screen("HomeScreen", mapOf("source" to "bottom_nav"))
+                            tracker?.screen("HomeScreen", mapOf("source" to "bottom_nav"))
                         }
                         EventButton("screen_view: Product Detail") {
-                            api?.screen(
+                            tracker?.screen(
                                 "ProductDetailScreen",
                                 mapOf(
                                     "product_id" to "prod_42",
@@ -67,7 +67,7 @@ fun AnalyticsScreen() {
                             )
                         }
                         EventButton("screen_view: Checkout") {
-                            api?.screen("CheckoutScreen", mapOf("items_count" to "3"))
+                            tracker?.screen("CheckoutScreen", mapOf("items_count" to "3"))
                         }
                     }
                 }
@@ -79,7 +79,7 @@ fun AnalyticsScreen() {
                 ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         EventButton("button_tap: Add to Cart") {
-                            api?.track(
+                            tracker?.track(
                                 "button_tap",
                                 mapOf(
                                     "id" to "add_to_cart",
@@ -89,13 +89,13 @@ fun AnalyticsScreen() {
                             )
                         }
                         EventButton("button_tap: Buy Now") {
-                            api?.track("button_tap", mapOf("id" to "buy_now", "screen" to "product_detail"))
+                            tracker?.track("button_tap", mapOf("id" to "buy_now", "screen" to "product_detail"))
                         }
                         EventButton("swipe: Dismiss Recommendation") {
-                            api?.track("swipe", mapOf("direction" to "left", "target" to "recommendation_card"))
+                            tracker?.track("swipe", mapOf("direction" to "left", "target" to "recommendation_card"))
                         }
                         EventButton("long_press: Save Item") {
-                            api?.track("long_press", mapOf("target" to "product_card", "product_id" to "prod_42"))
+                            tracker?.track("long_press", mapOf("target" to "product_card", "product_id" to "prod_42"))
                         }
                     }
                 }
@@ -107,7 +107,7 @@ fun AnalyticsScreen() {
                 ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         EventButton("add_to_cart") {
-                            api?.track(
+                            tracker?.track(
                                 "add_to_cart",
                                 mapOf(
                                     "product_id" to "prod_42",
@@ -118,7 +118,7 @@ fun AnalyticsScreen() {
                             )
                         }
                         EventButton("purchase (Firebase source)") {
-                            api?.track(
+                            tracker?.track(
                                 "purchase",
                                 mapOf(
                                     "transaction_id" to "txn_${System.currentTimeMillis()}",
@@ -130,7 +130,7 @@ fun AnalyticsScreen() {
                             )
                         }
                         EventButton("refund") {
-                            api?.track(
+                            tracker?.track(
                                 "refund",
                                 mapOf(
                                     "order_id" to "ord_123",
@@ -149,10 +149,10 @@ fun AnalyticsScreen() {
                 ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         EventButton("search") {
-                            api?.track("search", mapOf("query" to "kotlin multiplatform", "results" to "127"))
+                            tracker?.track("search", mapOf("query" to "kotlin multiplatform", "results" to "127"))
                         }
                         EventButton("share") {
-                            api?.track(
+                            tracker?.track(
                                 "share",
                                 mapOf(
                                     "content_type" to "product",
@@ -162,7 +162,7 @@ fun AnalyticsScreen() {
                             )
                         }
                         EventButton("notification_opened") {
-                            api?.track("notification_opened", mapOf("campaign" to "summer_sale", "variant" to "A"))
+                            tracker?.track("notification_opened", mapOf("campaign" to "summer_sale", "variant" to "A"))
                         }
                     }
                 }
@@ -175,11 +175,11 @@ fun AnalyticsScreen() {
                     Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             OutlinedButton(
-                                onClick = { repeat(10) { i -> api?.track("batch_event", mapOf("index" to "$i")) } },
+                                onClick = { repeat(10) { i -> tracker?.track("batch_event", mapOf("index" to "$i")) } },
                                 modifier = Modifier.weight(1f),
                             ) { Text("10 events") }
                             OutlinedButton(
-                                onClick = { repeat(50) { i -> api?.track("batch_event", mapOf("index" to "$i")) } },
+                                onClick = { repeat(50) { i -> tracker?.track("batch_event", mapOf("index" to "$i")) } },
                                 modifier = Modifier.weight(1f),
                             ) { Text("50 events") }
                         }

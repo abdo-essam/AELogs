@@ -10,12 +10,12 @@ import kotlin.time.Clock
  * Public write-only API for [AnalyticsPlugin].
  *
  * ```kotlin
- * val analytics = AELog.default.getPlugin<AnalyticsPlugin>()?.api
+ * val analytics = AELog.default.getPlugin<AnalyticsPlugin>()?.tracker
  * analytics?.track("button_tap", mapOf("screen" to "home", "id" to "cta_buy"))
  * analytics?.screen("ProductDetail", mapOf("productId" to "123"))
  * ```
  */
-public class AnalyticsApi internal constructor(
+public class AnalyticsTracker internal constructor(
     private val store: AnalyticsStore,
     private val clock: Clock = Clock.System,
     private val idGenerator: () -> String = { generateId() },

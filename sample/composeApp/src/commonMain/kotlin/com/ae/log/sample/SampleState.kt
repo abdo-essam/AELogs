@@ -1,7 +1,7 @@
 package com.ae.log.sample
 
-import com.ae.log.plugins.analytics.AnalyticsApi
-import com.ae.log.plugins.network.NetworkApi
+import com.ae.log.plugins.analytics.AnalyticsTracker
+import com.ae.log.plugins.network.NetworkRecorder
 import io.ktor.client.HttpClient
 
 /**
@@ -13,8 +13,8 @@ import io.ktor.client.HttpClient
  * APIs are `null` before init — all callers guard with `?.`.
  */
 object SampleState {
-    var networkApi: NetworkApi? = null
-    var analyticsApi: AnalyticsApi? = null
+    var networkApi: NetworkRecorder? = null
+    var analyticsApi: AnalyticsTracker? = null
 
     /**
      * Real [HttpClient] created in [SampleApp] with [AELogKtorInterceptor] installed.

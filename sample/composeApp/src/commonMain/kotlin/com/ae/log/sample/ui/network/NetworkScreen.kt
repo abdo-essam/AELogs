@@ -25,7 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.ae.log.plugins.network.NetworkApi
+import com.ae.log.plugins.network.NetworkRecorder
 import com.ae.log.plugins.network.model.NetworkMethod
 import com.ae.log.sample.SampleState
 import io.ktor.client.request.get
@@ -38,7 +38,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun NetworkScreen() {
     // Access via SampleState — no reified inline needed
-    val api: NetworkApi? = SampleState.networkApi
+    val recorder: NetworkRecorder? = SampleState.networkApi
     val client = SampleState.httpClient
     val scope = rememberCoroutineScope()
 
@@ -143,8 +143,8 @@ fun NetworkScreen() {
                 }
             }
 
-            // ── Simulated calls — manual NetworkApi ───────────────────────
-            item { SectionLabel("🧪 Simulated Calls (manual NetworkApi)") }
+            // ── Simulated calls — manual NetworkRecorder ───────────────────────
+            item { SectionLabel("🧪 Simulated Calls (manual NetworkRecorder)") }
             item {
                 Text(
                     "Simulate intercepted HTTP requests",
@@ -159,9 +159,9 @@ fun NetworkScreen() {
                 ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         NetworkButton("GET  /posts/1", NetworkMethod.GET, 200) {
-                            val id = api?.newId() ?: return@NetworkButton
-                            api.request(id, "https://jsonplaceholder.typicode.com/posts/1", NetworkMethod.GET)
-                            api.response(
+                            val id = recorder?.newId() ?: return@NetworkButton
+                            recorder.request(id, "https://jsonplaceholder.typicode.com/posts/1", NetworkMethod.GET)
+                            recorder.response(
                                 id,
                                 200,
                                 """{"id":1,"userId":1,"title":"Post Title","body":"..."}""",
@@ -169,29 +169,29 @@ fun NetworkScreen() {
                             )
                         }
                         NetworkButton("POST  /users", NetworkMethod.POST, 201) {
-                            val id = api?.newId() ?: return@NetworkButton
-                            api.request(
+                            val id = recorder?.newId() ?: return@NetworkButton
+                            recorder.request(
                                 id,
                                 "https://api.example.com/users",
                                 NetworkMethod.POST,
                                 body = """{"name":"Ahmed","role":"developer"}""",
                             )
-                            api.response(id, 201, """{"id":99,"name":"Ahmed"}""", durationMs = 289)
+                            recorder.response(id, 201, """{"id":99,"name":"Ahmed"}""", durationMs = 289)
                         }
                         NetworkButton("PUT  /users/99", NetworkMethod.PUT, 200) {
-                            val id = api?.newId() ?: return@NetworkButton
-                            api.request(
+                            val id = recorder?.newId() ?: return@NetworkButton
+                            recorder.request(
                                 id,
                                 "https://api.example.com/users/99",
                                 NetworkMethod.PUT,
                                 body = """{"name":"Ahmed Essam"}""",
                             )
-                            api.response(id, 200, durationMs = 198)
+                            recorder.response(id, 200, durationMs = 198)
                         }
                         NetworkButton("DELETE  /items/42", NetworkMethod.DELETE, 204) {
-                            val id = api?.newId() ?: return@NetworkButton
-                            api.request(id, "https://api.example.com/items/42", NetworkMethod.DELETE)
-                            api.response(id, 204, durationMs = 67)
+                            val id = recorder?.newId() ?: return@NetworkButton
+                            recorder.request(id, "https://api.example.com/items/42", NetworkMethod.DELETE)
+                            recorder.response(id, 204, durationMs = 67)
                         }
                     }
                 }
@@ -203,19 +203,19 @@ fun NetworkScreen() {
                 ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         NetworkButton("GET  /missing", NetworkMethod.GET, 404) {
-                            val id = api?.newId() ?: return@NetworkButton
-                            api.request(id, "https://api.example.com/missing/resource", NetworkMethod.GET)
-                            api.response(id, 404, """{"error":"Not Found"}""", durationMs = 88)
+                            val id = recorder?.newId() ?: return@NetworkButton
+                            recorder.request(id, "https://api.example.com/missing/resource", NetworkMethod.GET)
+                            recorder.response(id, 404, """{"error":"Not Found"}""", durationMs = 88)
                         }
                         NetworkButton("POST  /auth  (no token)", NetworkMethod.POST, 401) {
-                            val id = api?.newId() ?: return@NetworkButton
-                            api.request(id, "https://api.example.com/protected", NetworkMethod.POST)
-                            api.response(id, 401, """{"error":"Unauthorized"}""", durationMs = 55)
+                            val id = recorder?.newId() ?: return@NetworkButton
+                            recorder.request(id, "https://api.example.com/protected", NetworkMethod.POST)
+                            recorder.response(id, 401, """{"error":"Unauthorized"}""", durationMs = 55)
                         }
                         NetworkButton("DELETE  /admin  (forbidden)", NetworkMethod.DELETE, 403) {
-                            val id = api?.newId() ?: return@NetworkButton
-                            api.request(id, "https://api.example.com/admin/users", NetworkMethod.DELETE)
-                            api.response(id, 403, """{"error":"Forbidden"}""", durationMs = 72)
+                            val id = recorder?.newId() ?: return@NetworkButton
+                            recorder.request(id, "https://api.example.com/admin/users", NetworkMethod.DELETE)
+                            recorder.response(id, 403, """{"error":"Forbidden"}""", durationMs = 72)
                         }
                     }
                 }
@@ -227,14 +227,14 @@ fun NetworkScreen() {
                 ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         NetworkButton("GET  /crash", NetworkMethod.GET, 500) {
-                            val id = api?.newId() ?: return@NetworkButton
-                            api.request(id, "https://api.example.com/crash", NetworkMethod.GET)
-                            api.response(id, 500, "Internal Server Error", durationMs = 1240)
+                            val id = recorder?.newId() ?: return@NetworkButton
+                            recorder.request(id, "https://api.example.com/crash", NetworkMethod.GET)
+                            recorder.response(id, 500, "Internal Server Error", durationMs = 1240)
                         }
                         NetworkButton("POST  /service  (unavailable)", NetworkMethod.POST, 503) {
-                            val id = api?.newId() ?: return@NetworkButton
-                            api.request(id, "https://api.example.com/service", NetworkMethod.POST)
-                            api.response(id, 503, durationMs = 30044)
+                            val id = recorder?.newId() ?: return@NetworkButton
+                            recorder.request(id, "https://api.example.com/service", NetworkMethod.POST)
+                            recorder.response(id, 503, durationMs = 30044)
                         }
                     }
                 }
@@ -247,8 +247,8 @@ fun NetworkScreen() {
                     Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         OutlinedButton(
                             onClick = {
-                                val id = api?.newId() ?: return@OutlinedButton
-                                api.request(id, "https://unreachable.example.com/data", NetworkMethod.GET)
+                                val id = recorder?.newId() ?: return@OutlinedButton
+                                recorder.request(id, "https://unreachable.example.com/data", NetworkMethod.GET)
                                 api.error(id, "java.net.SocketTimeoutException: timeout after 30000ms")
                             },
                             modifier = Modifier.fillMaxWidth(),
@@ -256,8 +256,8 @@ fun NetworkScreen() {
 
                         OutlinedButton(
                             onClick = {
-                                val id = api?.newId() ?: return@OutlinedButton
-                                api.request(id, "https://no-dns.invalid/path", NetworkMethod.GET)
+                                val id = recorder?.newId() ?: return@OutlinedButton
+                                recorder.request(id, "https://no-dns.invalid/path", NetworkMethod.GET)
                                 api.error(id, "java.net.UnknownHostException: Unable to resolve host")
                             },
                             modifier = Modifier.fillMaxWidth(),

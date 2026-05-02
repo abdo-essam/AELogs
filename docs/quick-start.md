@@ -39,10 +39,10 @@ AELog.i("MyScreen", "Button clicked")
 AELog.e("Database", "Failed to load configs", exception)
 
 // 2. Network
-NetworkApi.logRequest("GET", "https://api.example.com", headers = emptyMap())
+NetworkRecorder.logRequest("GET", "https://api.example.com", headers = emptyMap())
 
 // 3. Analytics
-AnalyticsApi.logEvent("user_tapped_purchase", properties = mapOf("val" to "2.99"))
+AnalyticsTracker.logEvent("user_tapped_purchase", properties = mapOf("val" to "2.99"))
 ```
 
 ## Show / Hide the Overlay
