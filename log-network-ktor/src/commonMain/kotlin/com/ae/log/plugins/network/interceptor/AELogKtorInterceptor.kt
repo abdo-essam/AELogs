@@ -8,8 +8,11 @@ import com.ae.log.plugins.network.model.NetworkMethod
 import io.ktor.client.plugins.api.ClientPlugin
 import io.ktor.client.plugins.api.Send
 import io.ktor.client.plugins.api.createClientPlugin
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.content.ByteArrayContent
 import io.ktor.http.content.TextContent
+import io.ktor.util.AttributeKey
+import kotlinx.io.readByteArray
 
 /**
  * Ktor [io.ktor.client.HttpClient] plugin that automatically records every
@@ -44,7 +47,9 @@ import io.ktor.http.content.TextContent
  * | Response headers | `response.headers` |
  * | Duration | monotonic clock delta (request → response) |
  *
- * Request and response **bodies** are not captured to avoid consuming streams.
+ * Request and response **bodies** are captured automatically up to the configured limits.
+ * Response bodies are captured using a non-destructive observer that does not consume
+ * the primary response stream.
  *
  * ## Silent no-op
  *
@@ -71,6 +76,9 @@ public val AELogKtorInterceptor: ClientPlugin<AELogKtorConfig> =
         val redactHeaders = pluginConfig.redactHeaders
         val excludeUrls = pluginConfig.excludeUrls
         val maxRequestBodyBytes = pluginConfig.maxRequestBodyBytes
+        val maxResponseBodyBytes = pluginConfig.maxResponseBodyBytes
+
+        val networkRequestIdKey = AttributeKey<String>("AELogNetworkRequestId")
 
         fun Map<String, String>.redact(): Map<String, String> {
             if (redactHeaders.isEmpty()) return this
@@ -130,32 +138,69 @@ public val AELogKtorInterceptor: ClientPlugin<AELogKtorConfig> =
                 headers =
                     request.headers
                         .entries()
-                        .associate { (key, values) -> key to values.joinToString(", ") }
+                        .associate { entry -> entry.key to entry.value.joinToString(", ") }
                         .redact(),
                 body = reqBody,
             )
 
-            try {
-                val response = proceed(request)
+                request.attributes.put(networkRequestIdKey, id)
+
+                val call =
+                    try {
+                        proceed(request)
+                    } catch (t: Throwable) {
+                        recorder.error(id = id, message = t.message ?: t::class.simpleName ?: "Unknown error")
+                        throw t
+                    }
+
                 val durationMs = startMark.elapsedNow().inWholeMilliseconds
 
-                val resBody = null // To avoid consuming stream, use ResponseObserver plugin instead.
+                // Capture response headers and status immediately
+                val headers =
+                    call.response.headers
+                        .entries()
+                        .associate { entry -> entry.key to entry.value.joinToString(", ") }
+                        .redact()
 
                 recorder.response(
                     id = id,
-                    statusCode = response.response.status.value,
-                    headers =
-                        response.response.headers
-                            .entries()
-                            .associate { (key, values) -> key to values.joinToString(", ") }
-                            .redact(),
-                    body = resBody,
+                    statusCode = call.response.status.value,
+                    headers = headers,
+                    body = null, // Will be updated by the onResponse hook if possible
                     durationMs = durationMs,
                 )
-                return@on response
-            } catch (t: Throwable) {
-                recorder.error(id = id, message = t.message ?: t::class.simpleName ?: "Unknown error")
-                throw t
+
+                return@on call
+            }
+
+        onResponse { response ->
+            if (!AELog.isEnabled) return@onResponse
+            val id = response.call.attributes.getOrNull(networkRequestIdKey) ?: return@onResponse
+            val recorder = AELog.plugin<NetworkPlugin>()?.recorder ?: return@onResponse
+
+            if (shouldCaptureBody(response.headers["Content-Type"])) {
+                runCatching {
+                    // Users should install DoubleReceive plugin to avoid consuming the stream.
+                    val bodyString =
+                        response.bodyAsText().let {
+                            if (it.length.toLong() > maxResponseBodyBytes) {
+                                it.take(maxResponseBodyBytes.toInt()) + "\n… [truncated]"
+                            } else {
+                                it
+                            }
+                        }
+
+                    recorder.response(
+                        id = id,
+                        statusCode = response.status.value,
+                        headers =
+                            response.headers.entries()
+                                .associate { entry -> entry.key to entry.value.joinToString(", ") }
+                                .redact(),
+                        body = bodyString,
+                        durationMs = -1, // Already recorded in on(Send)
+                    )
+                }
             }
         }
     }

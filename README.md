@@ -200,6 +200,49 @@ NetworkRecorder.logResponse(url = "https://api.example.com/users", statusCode = 
 AnalyticsTracker.logEvent("item_added_to_cart", properties = mapOf("id" to "123", "price" to "29.99"))
 ```
 
+### 🌐 Network Interceptors
+
+AELog provides first-class interceptors for OkHttp and Ktor.
+
+#### Security (Redaction)
+Both interceptors are **secure by default**. They automatically redact sensitive headers like `Authorization` and `Cookie` to prevent token leakage in logs.
+
+```kotlin
+// OkHttp
+val interceptor = AELogOkHttpInterceptor(
+    redactHeaders = setOf("X-Sensitive-Header") // Extends default redactions
+)
+
+// Ktor
+val client = HttpClient {
+    install(AELogKtorInterceptor) {
+        redactHeaders = setOf("X-Api-Key")
+    }
+}
+```
+
+#### Body Truncation (OOM Prevention)
+To prevent memory issues when inspecting large payloads (e.g., file uploads), bodies are automatically truncated (default 250 KB).
+
+```kotlin
+AELogOkHttpInterceptor(
+    maxRequestBodyBytes = 500_000,  // 500 KB limit
+    maxResponseBodyBytes = 1_000_000 // 1 MB limit
+)
+```
+
+#### Ktor Response Body Capture
+By default, Ktor response streams can only be read once. To enable non-destructive inspection of response bodies:
+1. **Install DoubleReceive**: It is highly recommended to install the `DoubleReceive` plugin in your `HttpClient`.
+2. **Integrated Fallback**: AELog will attempt to capture the body using `bodyAsText()`. If `DoubleReceive` is not installed, this may consume the stream—ensure your app logic is compatible or use the recommended plugin.
+
+```kotlin
+val client = HttpClient {
+    install(DoubleReceive) // Recommended for Network Plugin
+    install(AELogKtorInterceptor)
+}
+```
+
 ### 4. Open AELog
 
 Three ways to open the inspector:
