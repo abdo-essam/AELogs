@@ -51,7 +51,7 @@ fun NetworkScreen() {
                     title = "Custom Entries",
                     description = "Using AELog.network.logRequest()"
                 ) {
-                    SampleActionButton("Log 200 OK (Success)", Color(0xFF4CAF50)) {
+                    SampleActionButton("Log 200 OK", Color(0xFF4CAF50)) {
                         AELog.network.logRequest(
                             method = "GET",
                             url = "https://api.example.com/status",
@@ -66,6 +66,15 @@ fun NetworkScreen() {
                             url = "https://api.example.com/v1/auth",
                             statusCode = 404,
                             responseBody = "{\"error\": \"User not found\"}"
+                        )
+                    }
+                    Spacer(Modifier.height(8.dp))
+                    SampleActionButton("Log 500 Server Error", Color(0xFFF44336)) {
+                        AELog.network.logRequest(
+                            method = "GET",
+                            url = "https://api.example.com/crash",
+                            statusCode = 500,
+                            responseBody = "Internal Server Error"
                         )
                     }
                 }
