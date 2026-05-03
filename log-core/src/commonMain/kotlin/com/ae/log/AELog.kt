@@ -2,289 +2,151 @@ package com.ae.log
 
 import com.ae.log.core.Plugin
 import com.ae.log.core.bus.EventBus
-import com.ae.log.plugins.log.log
+import com.ae.log.core.utils.callerTag
+import com.ae.log.plugins.log.LogPlugin
 import com.ae.log.plugins.log.model.LogSeverity
 import kotlinx.atomicfu.atomic
+import kotlin.jvm.JvmStatic
 
 /**
  * AELog — Extensible on-device dev tools for Kotlin Multiplatform.
  *
- * The main entry point to the SDK. Coordinates three sub-systems:
+ * This is the primary entry point for the SDK.
  *
- * ```
- * AELog
- * ├── PluginManager  — registration, lifecycle & scope management
- * ├── EventBus       — cross-plugin pub/sub
- * └── LogConfig  — global configuration
- * ```
- *
- * ## 1. Setup — single entry point
+ * ## 1. Setup
  * ```kotlin
- * // In Application.onCreate()
- * AELog.init(LogPlugin(), NetworkPlugin(), AnalyticsPlugin())
+ * AELog.init(LogPlugin(), NetworkPlugin())
  * ```
  *
- * ## 2. Log — primary API ([AELog] object)
- *
- * The recommended way to log. [AELog] is a discoverable object modelled after
- * Android's built-in `Log` class — just type `AELog.` and the IDE lists every
- * method:
- *
+ * ## 2. Logging
  * ```kotlin
- * AELog.d("Auth", "Token refreshed")
- * AELog.e("Network", "Request failed", throwable)
- * ```
- *
- * ## 3. Log — tagged logger (eliminates tag repetition)
- *
- * Create one logger per class via [AELog.logger]:
- *
- * ```kotlin
- * class AuthViewModel {
- *     private val log = AELog.logger("AuthViewModel")
- *
- *     fun login() {
- *         log.d("Login started")          // tag is baked in
- *         log.e("Failed", throwable)       // tag is baked in
- *     }
- * }
- * ```
- *
- * All logging calls are **silent no-ops** if [init] has not been called yet.
- *
- * ## 5. App lifecycle integration
- * ```kotlin
- * AELog.default.notifyStart()   // call from onStart()
- * AELog.default.notifyStop()    // call from onStop()
- * ```
- *
- * ## Advanced — accessing plugin APIs directly
- * ```kotlin
- * val networkApi = AELog.plugin<NetworkPlugin>()?.recorder
+ * AELog.d("MyTag", "Hello World") // Explicit tag
+ * AELog.d("Hello World")         // Auto-tag (derived from class name)
  * ```
  */
-public class AELog private constructor(
-    public val config: LogConfig,
-) {
-    // ── Sub-systems ───────────────────────────────────────────────────────────
-
-    public val eventBus: EventBus = EventBus()
+public object AELog {
+    private val _instance = atomic<LogInspector?>(null)
 
     /**
-     * Manages plugin registration, lookup, and lifecycle.
+     * Internal accessor for the default inspector instance.
+     * Hidden from public autocomplete to keep the API clean.
      */
-    public val plugins: PluginManager = PluginManager(config, eventBus)
+    @PublishedApi
+    internal val instance: LogInspector? get() = _instance.value
 
     /**
-     * Manages app and UI lifecycle notifications to all installed plugins.
+     * Initialise the shared AELog instance.
+     *
+     * @param plugins Plugins to install (LogPlugin, NetworkPlugin, etc.)
+     * @param config Global configuration.
      */
-    public val lifecycle: Lifecycle = Lifecycle(plugins, eventBus)
-
-    // ── Companion (factory & singleton) ──────────────────────────────────────
-
-    public companion object {
-        private val _default = atomic<AELog?>(null)
-
-        /**
-         * The shared default [AELog] instance.
-         *
-         * Requires [init] to have been called first — throws [IllegalStateException]
-         * with a clear message if accessed before initialisation.
-         *
-         * ```kotlin
-         * // Always call init first:
-         * AELog.init(LogPlugin())
-         *
-         * // Then access the instance anywhere:
-         * val instance = AELog.default
-         * ```
-         */
-        public val default: AELog
-            get() =
-                _default.value ?: error(
-                    "AELog has not been initialised. " +
-                        "Call AELog.init() in Application.onCreate() before accessing AELog.default.",
-                )
-
-        /**
-         * Null-safe internal accessor used by log extensions so they silently
-         * no-op if [init] has not been called yet — consistent with how
-         * Timber and similar libraries behave before a tree is planted.
-         */
-        @PublishedApi
-        internal fun defaultOrNull(): AELog? = _default.value
-
-        /**
-         * Initialise AELog and configure the shared [default] instance.
-         *
-         * **Idempotent** — safe to call multiple times; only the first call
-         * creates and configures the instance. Subsequent calls return the
-         * already-initialised [default] immediately.
-         *
-         * ```kotlin
-         * // Zero-config
-         * AELog.init()
-         *
-         * // With plugins
-         * AELog.init(LogPlugin(), NetworkPlugin(), AnalyticsPlugin())
-         *
-         * // With custom config
-         * AELog.init(LogPlugin(), config = LogConfig())
-         * ```
-         *
-         * @param plugins  Plugins to install on the shared instance.
-         * @param config   Core configuration (only applied on first call).
-         * @return The shared [default] instance.
-         */
-        public fun init(
-            vararg plugins: com.ae.log.core.Plugin,
-            config: LogConfig = LogConfig(),
-        ): AELog {
-            // Fast path: already initialised
-            _default.value?.let { return it }
-
-            val instance = AELog(config)
-
-            // CAS guarantees only one winner on concurrent calls; the loser
-            // discards its instance and returns the already-set singleton.
-            if (_default.compareAndSet(null, instance)) {
-                plugins.forEach { instance.plugins.install(it) }
-                return instance
-            } else {
-                return _default.value!!
-            }
+    @JvmStatic
+    public fun init(
+        vararg plugins: Plugin,
+        config: LogConfig = LogConfig(),
+    ) {
+        _instance.value?.let { return }
+        val newInstance = LogInspector(config)
+        if (_instance.compareAndSet(null, newInstance)) {
+            plugins.forEach { newInstance.plugins.install(it) }
         }
-
-        private val _isEnabled = atomic(true)
-
-        /**
-         * Global toggle to enable or disable logging.
-         * If `false`, all `AELog.*` calls become silent no-ops, and network interceptors bypass recording.
-         * Default: `true`.
-         */
-        public var isEnabled: Boolean
-            get() = _isEnabled.value
-            set(value) {
-                _isEnabled.value = value
-            }
-
-        /**
-         * Export data from all installed plugins as a formatted string.
-         * Useful for attaching dev logs to crash reports.
-         */
-        public fun export(): String {
-            val sb = StringBuilder()
-            defaultOrNull()?.plugins?.plugins?.value?.forEach { plugin ->
-                val exportedData = plugin.export()
-                if (exportedData.isNotBlank()) {
-                    sb.append("--- ${plugin.name} ---\n")
-                    sb.append(exportedData)
-                    sb.append("\n\n")
-                }
-            }
-            return sb.toString().trim()
-        }
-
-        /** Notify start lifecycle to default instance. */
-        public fun notifyStart(): Unit = defaultOrNull()?.lifecycle?.notifyStart() ?: Unit
-
-        /** Notify stop lifecycle to default instance. */
-        public fun notifyStop(): Unit = defaultOrNull()?.lifecycle?.notifyStop() ?: Unit
-
-        /** Clear all data from all installed plugins. */
-        public fun clearAll(): Unit = defaultOrNull()?.lifecycle?.clearAll() ?: Unit
-
-        /**
-         * Look up a plugin on the [default] instance by type.
-         *
-         * Returns `null` if [init] has not been called or if the plugin
-         * is not installed — never throws.
-         *
-         * ```kotlin
-         * val networkApi = AELog.plugin<NetworkPlugin>()?.recorder
-         * ```
-         */
-        public inline fun <reified T : com.ae.log.core.Plugin> plugin(): T? =
-            defaultOrNull()?.plugins?.getPlugin(T::class)
-
-        /**
-         * Create a new **isolated** [AELog] instance with custom configuration.
-         *
-         * Use for advanced scenarios (e.g. tests, embedded SDKs) where a
-         * separate instance is required. For the common case, prefer [init]
-         * which configures the shared singleton.
-         */
-        internal fun create(config: LogConfig = LogConfig()): AELog = AELog(config)
-
-        // ── Direct shorthands — tag + message ─────────────────────────────────────
-
-        /** Log a [LogSeverity.VERBOSE] message. */
-        public fun v(
-            tag: String,
-            message: String,
-            throwable: Throwable? = null,
-        ) {
-            log?.log(LogSeverity.VERBOSE, tag, message, throwable)
-        }
-
-        /** Log a [LogSeverity.DEBUG] message. */
-        public fun d(
-            tag: String,
-            message: String,
-            throwable: Throwable? = null,
-        ) {
-            log?.log(LogSeverity.DEBUG, tag, message, throwable)
-        }
-
-        /** Log a [LogSeverity.INFO] message. */
-        public fun i(
-            tag: String,
-            message: String,
-            throwable: Throwable? = null,
-        ) {
-            log?.log(LogSeverity.INFO, tag, message, throwable)
-        }
-
-        /** Log a [LogSeverity.WARN] message. */
-        public fun w(
-            tag: String,
-            message: String,
-            throwable: Throwable? = null,
-        ) {
-            log?.log(LogSeverity.WARN, tag, message, throwable)
-        }
-
-        /** Log a [LogSeverity.ERROR] message. */
-        public fun e(
-            tag: String,
-            message: String,
-            throwable: Throwable? = null,
-        ) {
-            log?.log(LogSeverity.ERROR, tag, message, throwable)
-        }
-
-        /** Log a [LogSeverity.ASSERT] ("What a Terrible Failure") message. */
-        public fun wtf(
-            tag: String,
-            message: String,
-            throwable: Throwable? = null,
-        ) {
-            log?.log(LogSeverity.ASSERT, tag, message, throwable)
-        }
-
-        // ── Tagged logger factory ─────────────────────────────────────────────────
-
-        /**
-         * Create a [com.ae.log.plugins.log.Logger] pre-bound to [tag].
-         *
-         * ```kotlin
-         * private val log = AELog.logger("AuthViewModel")
-         * log.d("Login started")
-         * log.e("Failed", throwable)
-         * ```
-         */
-        public fun logger(tag: String): com.ae.log.plugins.log.Logger =
-            com.ae.log.plugins.log
-                .Logger(tag)
     }
+
+    private val _isEnabled = atomic(true)
+
+    /** Global toggle to enable/disable all AELog activity. */
+    @JvmStatic
+    public var isEnabled: Boolean
+        get() = _isEnabled.value
+        set(value) { _isEnabled.value = value }
+
+    /** Look up an installed plugin by type on the shared instance. */
+    public inline fun <reified T : Plugin> getPlugin(): T? =
+        instance?.plugins?.getPlugin(T::class)
+
+    /**
+     * Generic log entry point — useful for bridges and integrations.
+     * For standard app logging, prefer the shorthands like [d] or [e].
+     */
+    @JvmStatic
+    public fun log(
+        severity: LogSeverity,
+        tag: String,
+        message: String,
+        throwable: Throwable? = null,
+    ) {
+        record(severity, tag, message, throwable)
+    }
+
+    /** Export all recorded data from all plugins as a string. */
+    @JvmStatic
+    public fun export(): String = instance?.export() ?: ""
+
+    /** Clear all data from all plugins. */
+    @JvmStatic
+    public fun clearAll(): Unit = instance?.clearAll() ?: Unit
+
+    // ── Logging Methods ──────────────────────────────────────────────────────
+
+    @JvmStatic
+    public fun v(tag: String, msg: String, t: Throwable? = null): Unit = record(LogSeverity.VERBOSE, tag, msg, t)
+    @JvmStatic
+    public fun d(tag: String, msg: String, t: Throwable? = null): Unit = record(LogSeverity.DEBUG, tag, msg, t)
+    @JvmStatic
+    public fun i(tag: String, msg: String, t: Throwable? = null): Unit = record(LogSeverity.INFO, tag, msg, t)
+    @JvmStatic
+    public fun w(tag: String, msg: String, t: Throwable? = null): Unit = record(LogSeverity.WARN, tag, msg, t)
+    @JvmStatic
+    public fun e(tag: String, msg: String, t: Throwable? = null): Unit = record(LogSeverity.ERROR, tag, msg, t)
+    @JvmStatic
+    public fun wtf(tag: String, msg: String, t: Throwable? = null): Unit = record(LogSeverity.ASSERT, tag, msg, t)
+
+    @JvmStatic
+    public fun v(msg: String, t: Throwable? = null): Unit = record(LogSeverity.VERBOSE, callerTag(), msg, t)
+    @JvmStatic
+    public fun d(msg: String, t: Throwable? = null): Unit = record(LogSeverity.DEBUG, callerTag(), msg, t)
+    @JvmStatic
+    public fun i(msg: String, t: Throwable? = null): Unit = record(LogSeverity.INFO, callerTag(), msg, t)
+    @JvmStatic
+    public fun w(msg: String, t: Throwable? = null): Unit = record(LogSeverity.WARN, callerTag(), msg, t)
+    @JvmStatic
+    public fun e(msg: String, t: Throwable? = null): Unit = record(LogSeverity.ERROR, callerTag(), msg, t)
+    @JvmStatic
+    public fun wtf(msg: String, t: Throwable? = null): Unit = record(LogSeverity.ASSERT, callerTag(), msg, t)
+
+    @PublishedApi
+    internal fun record(severity: LogSeverity, tag: String, msg: String, t: Throwable?) {
+        instance?.record(severity, tag, msg, t)
+    }
+}
+
+/**
+ * The actual engine behind AELog. Holds plugins, event bus, and state.
+ *
+ * All properties are internal to keep the public API surface area minimal.
+ */
+public class LogInspector internal constructor(
+    internal val config: LogConfig,
+) {
+    internal val eventBus: EventBus = EventBus()
+    @PublishedApi
+    internal val plugins: PluginManager = PluginManager(config, eventBus)
+    internal val lifecycle: Lifecycle = Lifecycle(plugins, eventBus)
+
+    internal fun record(severity: LogSeverity, tag: String, msg: String, t: Throwable?) {
+        plugins.getPlugin(LogPlugin::class)?.recorder?.log(severity, tag, msg, t)
+    }
+
+    internal fun export(): String {
+        val sb = StringBuilder()
+        plugins.plugins.value.forEach { plugin ->
+            val data = plugin.export()
+            if (data.isNotBlank()) {
+                sb.append("--- ${plugin.name} ---\n$data\n\n")
+            }
+        }
+        return sb.toString().trim()
+    }
+
+    internal fun clearAll(): Unit = lifecycle.clearAll()
 }

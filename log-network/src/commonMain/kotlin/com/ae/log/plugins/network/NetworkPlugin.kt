@@ -45,7 +45,7 @@ import kotlinx.coroutines.launch
  * For HTTP clients without a first-class interceptor, record calls directly:
  *
  * ```kotlin
- * val recorder = AELog.plugin<NetworkPlugin>()?.recorder
+ * val recorder = AELog.getPlugin<NetworkPlugin>()?.recorder
  * val id = recorder?.newId() ?: return
  * recorder.request(id, url, NetworkMethod.GET)
  * // … later …
@@ -102,6 +102,4 @@ public class NetworkPlugin(
     }
 }
 
-/** Type-safe accessor for the [NetworkRecorder] on the default [com.ae.log.AELog] instance. */
-public val com.ae.log.AELog.Companion.network: NetworkRecorder?
-    get() = plugin<NetworkPlugin>()?.recorder
+

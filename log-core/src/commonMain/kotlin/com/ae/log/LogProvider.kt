@@ -40,7 +40,7 @@ import com.ae.log.ui.theme.LogTheme
  */
 @Composable
 public fun LogProvider(
-    instance: AELog? = AELog.defaultOrNull(),
+    instance: LogInspector? = AELog.instance,
     uiConfig: UiConfig = UiConfig(),
     enabled: Boolean = true,
     content: @Composable () -> Unit,
@@ -111,5 +111,5 @@ public fun LogProvider(
  * Extension to get all [UIPlugin]s from this inspector.
  * Available in logs-ui so logs-core stays Compose-free.
  */
-public val AELog.uiPlugins: List<UIPlugin>
+public val LogInspector.uiPlugins: List<UIPlugin>
     get() = plugins.plugins.value.filterIsInstance<UIPlugin>()

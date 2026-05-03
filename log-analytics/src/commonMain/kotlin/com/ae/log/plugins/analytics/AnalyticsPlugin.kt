@@ -21,12 +21,12 @@ import kotlinx.coroutines.launch
  *
  * ## Installation
  * ```kotlin
- * AELog.default.install(AnalyticsPlugin())
+ * AELog.init(AnalyticsPlugin())
  * ```
  *
  * ## Recording events:
  * ```kotlin
- * val analytics = AELog.default.getPlugin<AnalyticsPlugin>()?.tracker
+ * val analytics = AELog.getPlugin<AnalyticsPlugin>()?.tracker
  * analytics?.track("button_tap", mapOf("screen" to "home"))
  * analytics?.screen("ProductDetail", mapOf("productId" to "123"))
  * ```
@@ -78,6 +78,4 @@ public class AnalyticsPlugin(
     }
 }
 
-/** Type-safe accessor for the [AnalyticsTracker] on the default [com.ae.log.AELog] instance. */
-public val com.ae.log.AELog.Companion.analytics: AnalyticsTracker?
-    get() = plugin<AnalyticsPlugin>()?.tracker
+

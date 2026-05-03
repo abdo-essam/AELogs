@@ -59,7 +59,7 @@ public class LogViewerActivity : ComponentActivity() {
  * This injects a ComposeView directly into the current Activity's DecorView,
  * avoiding any Activity lifecycle interruptions (no onPause/onResume refresh bugs).
  */
-public fun AELog.Companion.launchViewer(context: android.content.Context) {
+public fun AELog.launchViewer(context: android.content.Context) {
     val activity = context as? android.app.Activity ?: return
     val decorView = activity.window.decorView as android.view.ViewGroup
 

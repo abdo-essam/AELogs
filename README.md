@@ -167,30 +167,14 @@ AELog.wtf("Auth", "Unexpected state")
 
 > All calls are **silent no-ops** if `AELog.init()` has not been called yet — safe in shared modules that run before app startup.
 
-#### Tagged logger — eliminate tag repetition (recommended for classes)
+#### Auto-tag — no tag required (recommended)
 
-Create one `Logger` per class. The tag is set once and applied to every call:
-
-```kotlin
-class AuthViewModel {
-    // ✅ Tag declared once — never repeated
-    private val log = AELog.logger("AuthViewModel")
-    // or: private val log = AELog.logger("AuthViewModel")
-
-    fun login() {
-        log.d("Login started")
-        log.i("OTP verified")
-        log.e("Token refresh failed", throwable)
-    }
-}
-```
-
-#### Companion shorthands (alternative — same result)
+Omit the tag and AELog derives it from the caller's class name automatically. No repetition, no overhead:
 
 ```kotlin
-// If you already have AELog imported, these are identical to AELog.*
-AELog.d("Auth", "Token refreshed")
-AELog.e("Database", "Failed to clear cache", exception)
+AELog.d("Token refreshed")          // tag → "AuthViewModel"
+AELog.i("App launched!")             // tag → "HomeScreen"
+AELog.e("Failed to clear cache", t)  // tag → "Database"
 ```
 
 ```kotlin

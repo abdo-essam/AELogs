@@ -2,47 +2,46 @@
 
 Add AELog to your project and initialize it in just a few lines.
 
-## Basic Setup
+## 1. Initialize
 
-Call this early in your app lifecycle:
+Call this early in your app lifecycle (e.g., `Application.onCreate` on Android or `Main` on iOS):
 
 ```kotlin
-AELogSetup.init(
-    plugins = listOf(
-        LogPlugin(),
-        NetworkPlugin(),
-        AnalyticsPlugin()
-    )
+AELog.init(
+    LogPlugin(),
+    NetworkPlugin(),
+    AnalyticsPlugin()
 )
 ```
 
-Wrap your root compose app:
+## 2. Wrap your App
+
+Wrap your root Composable with `LogProvider`. This enables the floating debug button and the overlay panel.
 
 ```kotlin
 // In your App composable (commonMain)
-AELogProvider(
-    inspector = AELog.default, 
-    enabled = true // Tie this to your build variant (e.g. debug=true, release=false)
+LogProvider(
+    enabled = true // Tie this to your build variant (e.g., debug=true, release=false)
 ) {
     // Your app content
     MyApp()
 }
 ```
 
-## Log Something
+## 3. Start Logging
 
-Use the global static APIs corresponding to your installed plugins:
+Use the discoverable static APIs. AELog handles everything else behind the scenes.
 
 ```kotlin
-// 1. Logs
-AELog.i("MyScreen", "Button clicked")
-AELog.e("Database", "Failed to load configs", exception)
+// 1. Logs (with automatic tag derivation from the calling class)
+AELog.i("App launched!")
+AELog.d("Auth", "Token refreshed") // Or specify an explicit tag
 
-// 2. Network
-NetworkRecorder.logRequest("GET", "https://api.example.com", headers = emptyMap())
+// 2. Network (handled automatically via interceptors)
+// val client = HttpClient { install(KtorInterceptor) }
 
 // 3. Analytics
-AnalyticsTracker.logEvent("user_tapped_purchase", properties = mapOf("val" to "2.99"))
+AELog.getPlugin<AnalyticsPlugin>()?.tracker?.track("button_tap")
 ```
 
 ## Show / Hide the Overlay

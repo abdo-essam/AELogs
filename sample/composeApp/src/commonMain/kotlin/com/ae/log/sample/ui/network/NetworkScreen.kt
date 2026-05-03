@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.ae.log.AELog
 import com.ae.log.plugins.network.NetworkRecorder
 import com.ae.log.plugins.network.model.NetworkMethod
 import com.ae.log.sample.SampleState

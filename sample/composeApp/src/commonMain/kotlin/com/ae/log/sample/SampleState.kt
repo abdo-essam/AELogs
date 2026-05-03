@@ -35,8 +35,8 @@ object SampleState {
                 AnalyticsPlugin(),
             )
 
-            _networkApi.value = AELog.plugin<NetworkPlugin>()?.recorder
-            _analyticsApi.value = AELog.plugin<AnalyticsPlugin>()?.tracker
+            _networkApi.value = AELog.getPlugin<NetworkPlugin>()?.recorder
+            _analyticsApi.value = AELog.getPlugin<AnalyticsPlugin>()?.tracker
             _httpClient.value =
                 HttpClient {
                     install(KtorInterceptor)

@@ -128,6 +128,4 @@ public class LogPlugin(
     }
 }
 
-/** Type-safe accessor for the [LogRecorder] on the default [com.ae.log.AELog] instance. */
-public val com.ae.log.AELog.Companion.log: LogRecorder?
-    get() = plugin<LogPlugin>()?.recorder
+

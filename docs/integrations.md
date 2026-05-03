@@ -1,6 +1,6 @@
 # Logging Integrations
 
-AELog works with **any** logging library. Just forward logs to `AELog.default.log()`.
+AELog works with **any** logging library. Just forward logs to the static `AELog.log()` method.
 
 ## Kermit
 
@@ -10,22 +10,18 @@ import co.touchlab.kermit.Severity
 import com.ae.log.AELog
 import com.ae.log.plugins.log.model.LogSeverity
 
-class AELogKermitWriter(
-    private val inspector: AELog = AELog.default
-) : LogWriter() {
+class AELogKermitWriter : LogWriter() {
     override fun log(
         severity: Severity,
         message: String,
         tag: String,
         throwable: Throwable?
     ) {
-        inspector.log(
+        AELog.log(
             severity = severity.toAELogLogSeverity(),
             tag = tag,
-            message = buildString {
-                append(message)
-                throwable?.let { append("\n${it.stackTraceToString()}") }
-            }
+            message = message,
+            throwable = throwable
         )
     }
 }
@@ -51,22 +47,18 @@ import io.github.aakira.napier.LogLevel
 import com.ae.log.AELog
 import com.ae.log.plugins.log.model.LogSeverity
 
-class AELogNapierAntilog(
-    private val inspector: AELog = AELog.default
-) : Antilog() {
+class AELogNapierAntilog : Antilog() {
     override fun performLog(
         priority: LogLevel,
         tag: String?,
         throwable: Throwable?,
         message: String?
     ) {
-        inspector.log(
+        AELog.log(
             severity = priority.toAELogLogSeverity(),
             tag = tag ?: "Napier",
-            message = buildString {
-                message?.let { append(it) }
-                throwable?.let { append("\n${it.stackTraceToString()}") }
-            }
+            message = message ?: "",
+            throwable = throwable
         )
     }
 }
@@ -91,17 +83,13 @@ import timber.log.Timber
 import com.ae.log.AELog
 import com.ae.log.plugins.log.model.LogSeverity
 
-class AELogTimberTree(
-    private val inspector: AELog = AELog.default
-) : Timber.Tree() {
+class AELogTimberTree : Timber.Tree() {
     override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
-        inspector.log(
+        AELog.log(
             severity = priority.toAELogLogSeverity(),
             tag = tag ?: "Timber",
-            message = buildString {
-                append(message)
-                t?.let { append("\n${it.stackTraceToString()}") }
-            }
+            message = message,
+            throwable = t
         )
     }
 }
@@ -120,53 +108,19 @@ private fun Int.toAELogLogSeverity(): LogSeverity = when (this) {
 Timber.plant(AELogTimberTree())
 ```
 
-## KotlinLogging / SLF4J
-
-```kotlin
-import org.slf4j.event.Level
-import com.ae.log.AELog
-import com.ae.log.plugins.log.model.LogSeverity
-import ch.qos.logback.classic.spi.ILoggingEvent
-import ch.qos.logback.core.AppenderBase
-
-class AELogSlf4jAppender(
-    private val inspector: AELog = AELog.default
-) : AppenderBase<ILoggingEvent>() {
-    override fun append(event: ILoggingEvent) {
-        inspector.log(
-            severity = event.level.toAELogLogSeverity(),
-            tag = event.loggerName.substringAfterLast('.'),
-            message = event.formattedMessage
-        )
-    }
-}
-
-private fun Level.toAELogLogSeverity(): LogSeverity = when (this) {
-    Level.TRACE -> LogSeverity.VERBOSE
-    Level.DEBUG -> LogSeverity.DEBUG
-    Level.INFO -> LogSeverity.INFO
-    Level.WARN -> LogSeverity.WARN
-    Level.ERROR -> LogSeverity.ERROR
-}
-```
-
 ## Ktor Client Logging
 
 ```kotlin
 import io.ktor.client.*
 import io.ktor.client.plugins.logging.*
 import com.ae.log.AELog
-import com.ae.log.plugins.log.model.LogSeverity
 
 val client = HttpClient {
     install(Logging) {
         logger = object : Logger {
             override fun log(message: String) {
-                AELog.default.log(
-                    severity = LogSeverity.DEBUG,
-                    tag = "HTTP",
-                    message = message
-                )
+                // Forward to AELog
+                AELog.d("HTTP", message)
             }
         }
         level = LogLevel.ALL
@@ -177,9 +131,10 @@ val client = HttpClient {
 ## Direct Usage (No Library)
 
 ```kotlin
-// Just call log() directly — no bridge needed
-val inspector = AELog.default
+// Use the static shorthands
+AELog.i("MyApp", "App started")
+AELog.e("Auth", "Login failed", error)
 
-inspector.log(LogSeverity.INFO, "MyApp", "App started")
-inspector.log(LogSeverity.ERROR, "Auth", "Login failed: $error")
+// Or the generic log method
+AELog.log(LogSeverity.INFO, "MyApp", "Direct log call")
 ```

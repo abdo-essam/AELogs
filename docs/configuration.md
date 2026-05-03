@@ -1,32 +1,41 @@
 # Configuration
 
-Configure AELog structure via `AELogSetup.init()` and behaviour via `AELogUiConfig`.
+AELog is designed to be "zero-config" by default, but provides hooks to customize both data collection and UI behavior.
 
-## Options
+## Core Configuration (Data)
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `enabled` | `Boolean` | `false` | Enable or disable the overlay entirely (passed into `AELogProvider`) |
-| `showFloatingButton` | `Boolean` | `true` | Show floating bug button overlay |
-| `enableLongPress` | `Boolean` | `true` | Show panel on 3-finger long press |
-
-## Example
+Pass a `LogConfig` object to `AELog.init()` to control background behavior:
 
 ```kotlin
-// Data config
-AELogSetup.init(
-    config = AELogConfig(maxLogEntries = 1000)
+AELog.init(
+    LogPlugin(),
+    config = LogConfig(
+        maxLogEntries = 1000,
+        // Custom dispatcher for background processing
+        dispatcher = Dispatchers.Default,
+        // Catch and report internal SDK errors
+        errorHandler = { throwable -> FirebaseCrashlytics.getInstance().recordException(throwable) }
+    )
 )
+```
 
-// UI config
-AELogProvider(
-    inspector = AELog.default,
+## UI Configuration
+
+Configure the overlay behavior via `LogProvider`:
+
+```kotlin
+LogProvider(
     enabled = BuildConfig.DEBUG,
-    uiConfig = AELogUiConfig(
+    uiConfig = UiConfig(
         showFloatingButton = true,
-        enableLongPress = true
+        enableLongPress = true,
+        floatingButtonOffset = 100.dp,
+        presentationMode = PresentationMode.BottomSheet
     )
 ) {
     MyApp()
 }
 ```
+
+> [!TIP]
+> You no longer need to pass `instance = AELog.default`. `LogProvider` picks up the initialized shared instance automatically.

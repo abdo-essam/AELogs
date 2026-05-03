@@ -19,7 +19,7 @@ import kotlin.time.Clock
  * Use this API directly only for custom or unsupported HTTP clients:
  *
  * ```kotlin
- * val recorder = AELog.plugin<NetworkPlugin>()?.recorder ?: return
+ * val recorder = AELog.getPlugin<NetworkPlugin>()?.recorder ?: return
  * val id  = api.newId()
  *
  * recorder.request(id, "https://api.example.com/users", NetworkMethod.GET)

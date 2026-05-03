@@ -85,7 +85,7 @@ public class OkHttpInterceptor(
 
     override fun intercept(chain: Interceptor.Chain): Response {
         if (!AELog.isEnabled) return chain.proceed(chain.request())
-        val recorder = AELog.plugin<NetworkPlugin>()?.recorder
+        val recorder = AELog.getPlugin<NetworkPlugin>()?.recorder
         val request = chain.request()
 
         // Fast path — plugin not installed, stay completely out of the way

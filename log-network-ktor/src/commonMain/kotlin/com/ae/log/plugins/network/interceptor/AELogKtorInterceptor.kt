@@ -96,7 +96,7 @@ public val KtorInterceptor: ClientPlugin<KtorConfig> =
 
         on(Send) { request ->
             if (!AELog.isEnabled) return@on proceed(request)
-            val recorder = AELog.plugin<NetworkPlugin>()?.recorder ?: return@on proceed(request)
+            val recorder = AELog.getPlugin<NetworkPlugin>()?.recorder ?: return@on proceed(request)
 
             val urlString = request.url.buildString()
             if (excludeUrls.any { it.matches(urlString) }) return@on proceed(request)
@@ -175,7 +175,7 @@ public val KtorInterceptor: ClientPlugin<KtorConfig> =
         onResponse { response ->
             if (!AELog.isEnabled) return@onResponse
             val id = response.call.attributes.getOrNull(networkRequestIdKey) ?: return@onResponse
-            val recorder = AELog.plugin<NetworkPlugin>()?.recorder ?: return@onResponse
+            val recorder = AELog.getPlugin<NetworkPlugin>()?.recorder ?: return@onResponse
 
             if (shouldCaptureBody(response.headers["Content-Type"])) {
                 runCatching {
