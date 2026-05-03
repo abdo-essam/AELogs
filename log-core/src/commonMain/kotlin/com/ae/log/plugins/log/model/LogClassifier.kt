@@ -100,7 +100,8 @@ public val LogEntry.isResponse: Boolean
 
 public val LogEntry.isRequest: Boolean
     get() =
-        httpFields != null && !isResponse &&
+        httpFields != null &&
+            !isResponse &&
             (httpFields.method != null || message.contains("-->") || message.contains("REQUEST", ignoreCase = true))
 
 public val LogEntry.isNetworkLog: Boolean
