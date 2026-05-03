@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
  *
  * ```kotlin
  * val client = HttpClient(CIO) {
- *     install(AELogKtorInterceptor)   // ← one line, done
+ *     install(KtorInterceptor)   // ← one line, done
  * }
  * ```
  *
@@ -36,7 +36,7 @@ import kotlinx.coroutines.launch
  *
  * ```kotlin
  * val client = OkHttpClient.Builder()
- *     .addInterceptor(AELogOkHttpInterceptor())
+ *     .addInterceptor(OkHttpInterceptor())
  *     .build()
  * ```
  *

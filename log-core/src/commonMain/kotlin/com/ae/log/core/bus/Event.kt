@@ -5,30 +5,30 @@ package com.ae.log.core.bus
  *
  * Define custom events by implementing this interface:
  * ```kotlin
- * data class MyPluginEvent(val data: String) : AELogEvent
+ * data class MyPluginEvent(val data: String) : Event
  * ```
  *
  * Built-in events are provided for common cross-plugin signals.
  */
-public interface AELogEvent
+public interface Event
 
 /** Fired by AELog when the panel UI is opened. */
-public object PanelOpenedEvent : AELogEvent
+public object PanelOpenedEvent : Event
 
 /** Fired by AELog when the panel UI is closed. */
-public object PanelClosedEvent : AELogEvent
+public object PanelClosedEvent : Event
 
 /** Fired by AELog when the host app comes to the foreground. */
-public object AppStartedEvent : AELogEvent
+public object AppStartedEvent : Event
 
 /** Fired by AELog when the host app goes to the background. */
-public object AppStoppedEvent : AELogEvent
+public object AppStoppedEvent : Event
 
 /** Fired after [com.ae.log.AELog.clearAll] — signals all plugins to reset their state. */
-public object AllDataClearedEvent : AELogEvent
+public object AllDataClearedEvent : Event
 
-/** Fired by plugins to register their custom tags with the logs viewer dynamically. */
-public data class RegisterLogTagEvent(
+/** Fired by plugins to indicate that a log tag should be treated as an analytics event. */
+public data class LogTagRegisteredEvent(
     val tag: String,
     val badgeLabel: String,
-) : AELogEvent
+) : Event

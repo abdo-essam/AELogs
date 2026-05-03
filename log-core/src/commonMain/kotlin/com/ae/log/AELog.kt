@@ -1,8 +1,9 @@
 package com.ae.log
 
-import com.ae.log.core.AELogPlugin
+import com.ae.log.core.Plugin
 import com.ae.log.core.bus.EventBus
 import com.ae.log.plugins.log.log
+import com.ae.log.plugins.log.model.LogSeverity
 import kotlinx.atomicfu.atomic
 
 /**
@@ -14,7 +15,7 @@ import kotlinx.atomicfu.atomic
  * AELog
  * ├── PluginManager  — registration, lifecycle & scope management
  * ├── EventBus       — cross-plugin pub/sub
- * └── AELogConfig  — global configuration
+ * └── LogConfig  — global configuration
  * ```
  *
  * ## 1. Setup — single entry point
@@ -63,7 +64,7 @@ import kotlinx.atomicfu.atomic
  * ```
  */
 public class AELog private constructor(
-    public val config: AELogConfig,
+    public val config: LogConfig,
 ) {
     // ── Sub-systems ───────────────────────────────────────────────────────────
 
@@ -72,12 +73,12 @@ public class AELog private constructor(
     /**
      * Manages plugin registration, lookup, and lifecycle.
      */
-    public val plugins: AELogPluginManager = AELogPluginManager(config, eventBus)
+    public val plugins: PluginManager = PluginManager(config, eventBus)
 
     /**
      * Manages app and UI lifecycle notifications to all installed plugins.
      */
-    public val lifecycle: AELogLifecycle = AELogLifecycle(plugins, eventBus)
+    public val lifecycle: Lifecycle = Lifecycle(plugins, eventBus)
 
     // ── Companion (factory & singleton) ──────────────────────────────────────
 
@@ -128,7 +129,7 @@ public class AELog private constructor(
          * AELog.init(LogPlugin(), NetworkPlugin(), AnalyticsPlugin())
          *
          * // With custom config
-         * AELog.init(LogPlugin(), config = AELogConfig())
+         * AELog.init(LogPlugin(), config = LogConfig())
          * ```
          *
          * @param plugins  Plugins to install on the shared instance.
@@ -136,8 +137,8 @@ public class AELog private constructor(
          * @return The shared [default] instance.
          */
         public fun init(
-            vararg plugins: AELogPlugin,
-            config: AELogConfig = AELogConfig(),
+            vararg plugins: com.ae.log.core.Plugin,
+            config: LogConfig = LogConfig(),
         ): AELog {
             // Fast path: already initialised
             _default.value?.let { return it }
@@ -184,6 +185,16 @@ public class AELog private constructor(
             return sb.toString().trim()
         }
 
+        /** Notify start lifecycle to default instance. */
+        public fun notifyStart(): Unit = defaultOrNull()?.lifecycle?.notifyStart() ?: Unit
+
+        /** Notify stop lifecycle to default instance. */
+        public fun notifyStop(): Unit = defaultOrNull()?.lifecycle?.notifyStop() ?: Unit
+
+        /** Clear all data from all installed plugins. */
+        public fun clearAll(): Unit = defaultOrNull()?.lifecycle?.clearAll() ?: Unit
+
+
         /**
          * Look up a plugin on the [default] instance by type.
          *
@@ -194,7 +205,7 @@ public class AELog private constructor(
          * val networkApi = AELog.plugin<NetworkPlugin>()?.recorder
          * ```
          */
-        public inline fun <reified T : AELogPlugin> plugin(): T? = defaultOrNull()?.plugins?.getPlugin(T::class)
+        public inline fun <reified T : com.ae.log.core.Plugin> plugin(): T? = defaultOrNull()?.plugins?.getPlugin(T::class)
 
         /**
          * Create a new **isolated** [AELog] instance with custom configuration.
@@ -203,62 +214,62 @@ public class AELog private constructor(
          * separate instance is required. For the common case, prefer [init]
          * which configures the shared singleton.
          */
-        internal fun create(config: AELogConfig = AELogConfig()): AELog = AELog(config)
+        internal fun create(config: LogConfig = LogConfig()): AELog = AELog(config)
 
         // ── Direct shorthands — tag + message ─────────────────────────────────────
 
-        /** Log a [com.ae.log.plugins.log.model.LogSeverity.VERBOSE] message. */
+        /** Log a [LogSeverity.VERBOSE] message. */
         public fun v(
             tag: String,
             message: String,
             throwable: Throwable? = null,
         ) {
-            log?.log(com.ae.log.plugins.log.model.LogSeverity.VERBOSE, tag, message, throwable)
+            log?.log(LogSeverity.VERBOSE, tag, message, throwable)
         }
 
-        /** Log a [com.ae.log.plugins.log.model.LogSeverity.DEBUG] message. */
+        /** Log a [LogSeverity.DEBUG] message. */
         public fun d(
             tag: String,
             message: String,
             throwable: Throwable? = null,
         ) {
-            log?.log(com.ae.log.plugins.log.model.LogSeverity.DEBUG, tag, message, throwable)
+            log?.log(LogSeverity.DEBUG, tag, message, throwable)
         }
 
-        /** Log a [com.ae.log.plugins.log.model.LogSeverity.INFO] message. */
+        /** Log a [LogSeverity.INFO] message. */
         public fun i(
             tag: String,
             message: String,
             throwable: Throwable? = null,
         ) {
-            log?.log(com.ae.log.plugins.log.model.LogSeverity.INFO, tag, message, throwable)
+            log?.log(LogSeverity.INFO, tag, message, throwable)
         }
 
-        /** Log a [com.ae.log.plugins.log.model.LogSeverity.WARN] message. */
+        /** Log a [LogSeverity.WARN] message. */
         public fun w(
             tag: String,
             message: String,
             throwable: Throwable? = null,
         ) {
-            log?.log(com.ae.log.plugins.log.model.LogSeverity.WARN, tag, message, throwable)
+            log?.log(LogSeverity.WARN, tag, message, throwable)
         }
 
-        /** Log a [com.ae.log.plugins.log.model.LogSeverity.ERROR] message. */
+        /** Log a [LogSeverity.ERROR] message. */
         public fun e(
             tag: String,
             message: String,
             throwable: Throwable? = null,
         ) {
-            log?.log(com.ae.log.plugins.log.model.LogSeverity.ERROR, tag, message, throwable)
+            log?.log(LogSeverity.ERROR, tag, message, throwable)
         }
 
-        /** Log a [com.ae.log.plugins.log.model.LogSeverity.ASSERT] ("What a Terrible Failure") message. */
+        /** Log a [LogSeverity.ASSERT] ("What a Terrible Failure") message. */
         public fun wtf(
             tag: String,
             message: String,
             throwable: Throwable? = null,
         ) {
-            log?.log(com.ae.log.plugins.log.model.LogSeverity.ASSERT, tag, message, throwable)
+            log?.log(LogSeverity.ASSERT, tag, message, throwable)
         }
 
         // ── Tagged logger factory ─────────────────────────────────────────────────

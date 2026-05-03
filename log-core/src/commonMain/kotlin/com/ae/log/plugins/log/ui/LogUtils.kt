@@ -13,19 +13,7 @@ import kotlin.time.Instant
  * Utility functions for log formatting and coloring.
  */
 internal object LogUtils {
-    @OptIn(kotlin.time.ExperimentalTime::class)
-    fun formatTimestamp(timestamp: Long): String =
-        runCatching {
-            val instant = Instant.fromEpochMilliseconds(timestamp)
-            val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-            buildString {
-                append(localDateTime.hour.toString().padStart(2, '0'))
-                append(":")
-                append(localDateTime.minute.toString().padStart(2, '0'))
-                append(":")
-                append(localDateTime.second.toString().padStart(2, '0'))
-            }
-        }.getOrDefault("")
+    fun formatTimestamp(timestamp: Long): String = com.ae.log.core.utils.TimeUtils.formatTimestamp(timestamp)
 
     fun formatLogForCopy(log: LogEntry): String =
         buildString {
@@ -39,7 +27,7 @@ internal object LogUtils {
                 appendLine(it)
             } ?: run {
                 appendLine("Message:")
-                appendLine(log.cleanMessage)
+                appendLine(log.bodyOnly)
             }
         }
 
@@ -51,23 +39,9 @@ internal object LogUtils {
             }
         }
 
-    fun getMethodColor(method: String): Color =
-        when (method) {
-            "GET" -> Color(0xFF4CAF50)
-            "POST" -> Color(0xFF2196F3)
-            "PUT" -> Color(0xFFFF9800)
-            "DELETE" -> Color(0xFFE53935)
-            "PATCH" -> Color(0xFF9C27B0)
-            else -> Color(0xFF9E9E9E)
-        }
+    fun getMethodColor(method: String): Color = com.ae.log.ui.theme.NetworkColors.getMethodColor(method)
 
-    fun getStatusCodeColor(statusCode: Int): Color =
-        when (statusCode) {
-            in 200..299 -> Color(0xFF4CAF50)
-            in 300..399 -> Color(0xFFFF9800)
-            in 400..499 -> Color(0xFFE53935)
-            else -> Color(0xFF9C27B0)
-        }
+    fun getStatusCodeColor(statusCode: Int): Color = com.ae.log.ui.theme.NetworkColors.getStatusCodeColor(statusCode)
 
     @Composable
     fun getLogTypeColor(log: LogEntry): Pair<Color, Color> {
@@ -94,12 +68,10 @@ internal object LogUtils {
         return mainColor to bgColor
     }
 
-    fun getBadgeLabel(log: LogEntry): String =
+    fun getBadgeLabel(log: LogEntry, registry: LogTagRegistry? = null): String =
         when {
             log.isAnalytics ->
-                com.ae.log.plugins.log.model.LogTagRegistry
-                    .getLabel(log.tag)
-                    ?: log.tag.take(3).uppercase()
+                registry?.getLabel(log.tag) ?: log.tag.take(3).uppercase()
             log.isError -> "ERR"
             log.isResponse -> "RES"
             log.isRequest -> "REQ"

@@ -33,7 +33,7 @@ import kotlinx.coroutines.flow.filterIsInstance
  */
 public class EventBus {
     private val _events =
-        MutableSharedFlow<AELogEvent>(
+        MutableSharedFlow<Event>(
             extraBufferCapacity = 64,
         )
 
@@ -42,7 +42,7 @@ public class EventBus {
      *
      * Use [kotlinx.coroutines.flow.filterIsInstance] to receive only specific event types.
      */
-    public val events: SharedFlow<AELogEvent> = _events.asSharedFlow()
+    public val events: SharedFlow<Event> = _events.asSharedFlow()
 
     /**
      * Publish an event to all current subscribers.
@@ -50,7 +50,7 @@ public class EventBus {
      * This is a fire-and-forget call — it never suspends, but may drop the event
      * if no subscriber is listening and the internal buffer (64 slots) is full.
      */
-    public fun publish(event: AELogEvent) {
+    public fun publish(event: Event) {
         _events.tryEmit(event)
     }
 
@@ -59,7 +59,7 @@ public class EventBus {
      *
      * Use this from a coroutine when delivery guarantee matters.
      */
-    public suspend fun publishSuspend(event: AELogEvent) {
+    public suspend fun publishSuspend(event: Event) {
         _events.emit(event)
     }
 }
@@ -72,5 +72,5 @@ public class EventBus {
  *     .collect { event -> handleEvent(event) }
  * ```
  */
-public inline fun <reified T : AELogEvent> EventBus.subscribe(): kotlinx.coroutines.flow.Flow<T> =
+public inline fun <reified T : Event> EventBus.subscribe(): kotlinx.coroutines.flow.Flow<T> =
     events.filterIsInstance<T>()

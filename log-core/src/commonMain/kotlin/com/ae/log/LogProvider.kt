@@ -8,7 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import com.ae.log.core.AELogPlugin
+import com.ae.log.core.Plugin
 import com.ae.log.core.LocalLogController
 import com.ae.log.core.LogController
 import com.ae.log.core.UIPlugin
@@ -18,39 +18,27 @@ import com.ae.log.ui.theme.LogSpacing
 import com.ae.log.ui.theme.LogTheme
 
 /**
- * Top-level composable wrapper that enables the AELog overlay and initialises it.
+ * Top-level composable wrapper that enables the AELog overlay.
+ *
+ * Wrap your entire app content with this composable.
+ * If [instance] is null, this acts as a transparent pass-through.
  *
  * ```kotlin
  * @Composable
  * fun App() {
- *     AELogProvider(
- *         plugins = listOf(LogPlugin(), NetworkPlugin(), AnalyticsPlugin()),
+ *     LogProvider(
  *         enabled = BuildConfig.DEBUG
  *     ) {
  *         MaterialTheme { MainNavigation() }
  *     }
  * }
  * ```
+ *
+ * @param instance  The [AELog] instance to connect to. Defaults to [AELog.defaultOrNull].
+ * @param uiConfig  UI-specific configuration (button visibility, theme, etc.).
+ * @param enabled   Set to `false` in release builds for zero overhead.
+ * @param content   Your app's content.
  */
-@Composable
-public fun AELogProvider(
-    plugins: List<AELogPlugin>,
-    uiConfig: AELogUiConfig = AELogUiConfig(),
-    config: AELogConfig = AELogConfig(),
-    enabled: Boolean = true,
-    content: @Composable () -> Unit,
-) {
-    if (enabled) {
-        AELog.init(*plugins.toTypedArray(), config = config)
-    }
-
-    AELogProvider(
-        instance = if (enabled) AELog.defaultOrNull() else null,
-        uiConfig = uiConfig,
-        enabled = enabled,
-        content = content,
-    )
-}
 
 /**
  * Top-level composable wrapper that enables the AELog overlay.
@@ -64,9 +52,9 @@ public fun AELogProvider(
  * @param content   Your app's content.
  */
 @Composable
-public fun AELogProvider(
+public fun LogProvider(
     instance: AELog? = AELog.defaultOrNull(),
-    uiConfig: AELogUiConfig = AELogUiConfig(),
+    uiConfig: UiConfig = UiConfig(),
     enabled: Boolean = true,
     content: @Composable () -> Unit,
 ) {
@@ -121,6 +109,7 @@ public fun AELogProvider(
                 if (isVisible) {
                     LogContainer(
                         plugins = uiPlugins,
+                        uiConfig = uiConfig,
                         isLargeScreen = maxWidth > 600.dp,
                         presentationMode = uiConfig.presentationMode,
                         onDismiss = { controller.hide() },

@@ -9,7 +9,7 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import com.ae.log.plugins.log.model.*
 import com.ae.log.plugins.log.model.LogEntry
-import com.ae.log.ui.components.AELogsListPanel
+import com.ae.log.ui.components.ListPanel
 
 /**
  * Main logs panel content — used by [com.ae.log.plugins.log.LogPlugin].
@@ -45,16 +45,16 @@ internal fun LogContent(
             }
         }
 
-    AELogsListPanel(
+    ListPanel(
         items = allLogs,
         itemLabel = "entries",
         searchQuery = searchQuery,
         searchPlaceholder = "Search tag or message…",
         onSearchChange = { viewModel.updateSearchQuery(it) },
-        filterLabels = LogFilters.defaultFilters.map { it.label },
-        selectedFilterIndex = LogFilters.defaultFilters.indexOf(selectedFilter).takeIf { it >= 0 } ?: 0,
+        filterLabels = LogSeverityFilters.defaultFilters.map { it.label },
+        selectedFilterIndex = LogSeverityFilters.defaultFilters.indexOf(selectedFilter).takeIf { it >= 0 } ?: 0,
         onFilterSelect = { index ->
-            val filter = LogFilters.defaultFilters.getOrNull(index) ?: LogFilters.ALL
+            val filter = LogSeverityFilters.defaultFilters.getOrNull(index) ?: LogSeverityFilters.ALL
             viewModel.updateSelectedFilter(filter)
         },
         onClearAll = { viewModel.clearLogs() },
@@ -71,6 +71,7 @@ internal fun LogContent(
         LogEntryItem(
             log = log,
             isExpanded = expandedLogId == log.id,
+            registry = viewModel.registry,
             onToggleExpand = onToggleExpand,
             onCopy = onCopyLog,
         )

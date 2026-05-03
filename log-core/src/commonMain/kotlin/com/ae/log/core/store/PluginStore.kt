@@ -116,8 +116,8 @@ public class PluginStore<T>(
     }
 
     /** Current number of items. */
-    public val count: Int get() = synchronized(this) { ring.count }
+    public val count: Int get() = _dataFlow.value.size
 
     /** True when the store holds no items. */
-    public val isEmpty: Boolean get() = synchronized(this) { ring.isEmpty }
+    public val isEmpty: Boolean get() = _dataFlow.value.isEmpty()
 }

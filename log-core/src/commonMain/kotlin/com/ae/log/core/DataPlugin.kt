@@ -12,4 +12,4 @@ package com.ae.log.core
  * crash?.recentCrashes
  * ```
  */
-public interface DataPlugin : AELogPlugin
+public interface DataPlugin : Plugin

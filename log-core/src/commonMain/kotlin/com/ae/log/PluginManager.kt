@@ -1,6 +1,6 @@
 package com.ae.log
 
-import com.ae.log.core.AELogPlugin
+import com.ae.log.core.Plugin
 import com.ae.log.core.PluginContext
 import com.ae.log.core.bus.EventBus
 import kotlinx.coroutines.CoroutineScope
@@ -16,7 +16,7 @@ import kotlinx.atomicfu.getAndUpdate as atomicGetAndUpdate
 import kotlinx.atomicfu.update as atomicUpdate
 
 /**
- * Manages the full lifecycle of registered [AELogPlugin]s.
+ * Manages the full lifecycle of registered [Plugin]s.
  *
  * Owns per-plugin [CoroutineScope]s (via [SupervisorJob]) so they are
  * automatically cancelled when the plugin is detached — callers never
@@ -28,24 +28,24 @@ import kotlinx.atomicfu.update as atomicUpdate
  * ## Responsibilities
  * - Install / uninstall plugins (de-duplicated by ID)
  * - Build and pass [PluginContext] on attach
- * - Cancel plugin scope before calling [AELogPlugin.onDetach]
+ * - Cancel plugin scope before calling [Plugin.onDetach]
  * - Provide type-safe and ID-based plugin lookup
  */
-public class AELogPluginManager internal constructor(
-    private val config: AELogConfig,
+public class PluginManager internal constructor(
+    private val config: LogConfig,
     private val eventBus: EventBus,
 ) {
-    private val _plugins = MutableStateFlow<List<AELogPlugin>>(emptyList())
+    private val _plugins = MutableStateFlow<List<Plugin>>(emptyList())
 
     /** Hot stream of all currently registered plugins. */
-    val plugins: StateFlow<List<AELogPlugin>> = _plugins.asStateFlow()
+    public val plugins: StateFlow<List<Plugin>> = _plugins.asStateFlow()
 
     /** Per-plugin coroutine scopes, keyed by plugin id. */
     private val scopes = kotlinx.atomicfu.atomic(emptyMap<String, CoroutineScope>())
 
     // ── Registration ──────────────────────────────────────────────────────────
 
-    public fun install(plugin: AELogPlugin): AELogPluginManager {
+    public fun install(plugin: Plugin): PluginManager {
         val wasAdded =
             _plugins
                 .updateAndGet { current ->
@@ -55,13 +55,13 @@ public class AELogPluginManager internal constructor(
         if (wasAdded && !scopes.value.containsKey(plugin.id)) {
             val scope = CoroutineScope(SupervisorJob() + config.dispatcher)
             scopes.atomicUpdate { it + (plugin.id to scope) }
-            safeCall(plugin.id) { plugin.onAttach(buildContext(scope)) }
+            safeCall { plugin.onAttach(buildContext(scope)) }
         }
         return this
     }
 
-    public fun uninstall(pluginId: String): AELogPluginManager {
-        var detached: AELogPlugin? = null
+    public fun uninstall(pluginId: String): PluginManager {
+        var detached: Plugin? = null
         _plugins.update { current ->
             val plugin = current.find { it.id == pluginId } ?: return@update current
             detached = plugin
@@ -70,7 +70,7 @@ public class AELogPluginManager internal constructor(
         detached?.let { plugin ->
             val removedScope = scopes.atomicGetAndUpdate { it - plugin.id }[plugin.id]
             removedScope?.cancel()
-            safeCall(plugin.id) { plugin.onDetach() }
+            safeCall { plugin.onDetach() }
         }
         return this
     }
@@ -78,42 +78,32 @@ public class AELogPluginManager internal constructor(
     // ── Lookup ────────────────────────────────────────────────────────────────
 
     @Suppress("UNCHECKED_CAST")
-    public fun <T : AELogPlugin> getPlugin(type: KClass<T>): T? =
+    public fun <T : Plugin> getPlugin(type: KClass<T>): T? =
         _plugins.value.firstOrNull { type.isInstance(it) } as? T
 
-    public fun getPluginById(id: String): AELogPlugin? = _plugins.value.find { it.id == id }
+    public fun getPluginById(id: String): Plugin? = _plugins.value.find { it.id == id }
 
     // ── Batch iteration ───────────────────────────────────────────────────────
 
     /** Iterate all plugins safely — one failure doesn't stop the rest. */
-    internal fun forEach(action: (AELogPlugin) -> Unit) = _plugins.value.forEach { safeCall(it.id) { action(it) } }
+    internal fun forEach(action: (Plugin) -> Unit) = _plugins.value.forEach { safeCall { action(it) } }
 
     // ── Internal ──────────────────────────────────────────────────────────────
 
     private fun buildContext(scope: CoroutineScope): PluginContext =
         object : PluginContext {
             override val scope: CoroutineScope = scope
-            override val config: AELogConfig = this@AELogPluginManager.config
-            override val eventBus: EventBus = this@AELogPluginManager.eventBus
+            override val config: LogConfig = this@PluginManager.config
+            override val eventBus: EventBus = this@PluginManager.eventBus
 
             @Suppress("UNCHECKED_CAST")
-            override fun <T : AELogPlugin> getPlugin(type: KClass<T>): T? = this@AELogPluginManager.getPlugin(type)
+            override fun <T : Plugin> getPlugin(type: KClass<T>): T? = this@PluginManager.getPlugin(type)
         }
 
-    companion object {
-        /** Runs [block] and swallows exceptions so one bad plugin can't crash others. */
-        fun safeCall(
-            pluginId: String,
-            block: () -> Unit,
-        ) {
-            runCatching { block() }
-                .onFailure { error ->
-                    AELog
-                        .defaultOrNull()
-                        ?.config
-                        ?.errorHandler
-                        ?.invoke(error)
-                }
+    /** Runs [block] and swallows exceptions so one bad plugin can't crash others. */
+    private fun safeCall(block: () -> Unit) {
+        runCatching { block() }.onFailure { error ->
+            config.errorHandler.invoke(error)
         }
     }
 }

@@ -30,7 +30,7 @@ import kotlinx.io.readByteArray
  * Install the plugin — one line:
  * ```kotlin
  * val client = HttpClient(CIO) {
- *     install(AELogKtorInterceptor)
+ *     install(KtorInterceptor)
  * }
  * ```
  *
@@ -57,7 +57,7 @@ import kotlinx.io.readByteArray
  * every hook returns immediately — the real HTTP client is never affected.
  */
 
-public class AELogKtorConfig {
+public class KtorConfig {
     public var redactHeaders: Set<String> =
         setOf(
             "Authorization",
@@ -71,8 +71,8 @@ public class AELogKtorConfig {
     public var excludeUrls: List<Regex> = emptyList()
 }
 
-public val AELogKtorInterceptor: ClientPlugin<AELogKtorConfig> =
-    createClientPlugin("AELogKtor", ::AELogKtorConfig) {
+public val KtorInterceptor: ClientPlugin<KtorConfig> =
+    createClientPlugin("AELogKtor", ::KtorConfig) {
         val redactHeaders = pluginConfig.redactHeaders
         val excludeUrls = pluginConfig.excludeUrls
         val maxRequestBodyBytes = pluginConfig.maxRequestBodyBytes

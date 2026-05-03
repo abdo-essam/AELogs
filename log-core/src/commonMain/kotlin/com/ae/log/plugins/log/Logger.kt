@@ -1,11 +1,12 @@
 package com.ae.log.plugins.log
 
 import com.ae.log.AELog
+import com.ae.log.plugins.log.model.LogSeverity
 
 /**
  * A pre-tagged logger that eliminates tag repetition on every call.
  *
- * Create one per class via [AELog.logger] or [com.ae.log.AELog.logger]:
+ * Create one per class via [AELog.logger]:
  *
  * ```kotlin
  * class AuthViewModel {
@@ -25,52 +26,52 @@ import com.ae.log.AELog
 public class Logger(
     public val tag: String,
 ) {
-    /** Log a [com.ae.log.plugins.log.model.LogSeverity.VERBOSE] message. */
+    /** Log a [LogSeverity.VERBOSE] message. */
     public fun v(
         message: String,
         throwable: Throwable? = null,
     ) {
-        AELog.log?.log(com.ae.log.plugins.log.model.LogSeverity.VERBOSE, tag, message, throwable)
+        AELog.log?.log(LogSeverity.VERBOSE, tag, message, throwable)
     }
 
-    /** Log a [com.ae.log.plugins.log.model.LogSeverity.DEBUG] message. */
+    /** Log a [LogSeverity.DEBUG] message. */
     public fun d(
         message: String,
         throwable: Throwable? = null,
     ) {
-        AELog.log?.log(com.ae.log.plugins.log.model.LogSeverity.DEBUG, tag, message, throwable)
+        AELog.log?.log(LogSeverity.DEBUG, tag, message, throwable)
     }
 
-    /** Log a [com.ae.log.plugins.log.model.LogSeverity.INFO] message. */
+    /** Log a [LogSeverity.INFO] message. */
     public fun i(
         message: String,
         throwable: Throwable? = null,
     ) {
-        AELog.log?.log(com.ae.log.plugins.log.model.LogSeverity.INFO, tag, message, throwable)
+        AELog.log?.log(LogSeverity.INFO, tag, message, throwable)
     }
 
-    /** Log a [com.ae.log.plugins.log.model.LogSeverity.WARN] message. */
+    /** Log a [LogSeverity.WARN] message. */
     public fun w(
         message: String,
         throwable: Throwable? = null,
     ) {
-        AELog.log?.log(com.ae.log.plugins.log.model.LogSeverity.WARN, tag, message, throwable)
+        AELog.log?.log(LogSeverity.WARN, tag, message, throwable)
     }
 
-    /** Log a [com.ae.log.plugins.log.model.LogSeverity.ERROR] message. */
+    /** Log a [LogSeverity.ERROR] message. */
     public fun e(
         message: String,
         throwable: Throwable? = null,
     ) {
-        AELog.log?.log(com.ae.log.plugins.log.model.LogSeverity.ERROR, tag, message, throwable)
+        AELog.log?.log(LogSeverity.ERROR, tag, message, throwable)
     }
 
-    /** Log a [com.ae.log.plugins.log.model.LogSeverity.ASSERT] ("What a Terrible Failure") message. */
+    /** Log a [LogSeverity.ASSERT] ("What a Terrible Failure") message. */
     public fun wtf(
         message: String,
         throwable: Throwable? = null,
     ) {
-        AELog.log?.log(com.ae.log.plugins.log.model.LogSeverity.ASSERT, tag, message, throwable)
+        AELog.log?.log(LogSeverity.ASSERT, tag, message, throwable)
     }
 }
 

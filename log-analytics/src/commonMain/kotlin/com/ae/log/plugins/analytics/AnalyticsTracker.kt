@@ -18,7 +18,10 @@ import kotlin.time.Clock
 public class AnalyticsTracker internal constructor(
     private val store: AnalyticsStore,
     private val clock: Clock = Clock.System,
-    private val idGenerator: () -> String = { generateId() },
+    private val idGenerator: () -> String = {
+        com.ae.log.core.utils.IdGenerator
+            .next()
+    },
 ) {
     /**
      * Track a custom event.

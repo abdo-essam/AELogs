@@ -65,9 +65,10 @@ public class LogPlugin(
     override val icon: ImageVector = Icons.Default.Description
 
     internal val logStore = PluginStore<LogEntry>(capacity = maxEntries)
+    internal val registry = com.ae.log.plugins.log.model.LogTagRegistry()
 
     /** Public write API — use this to send logs to the viewer. */
-    public val recorder: LogRecorder = LogRecorder(logStore)
+    public val recorder: LogRecorder = LogRecorder(store = logStore, registry = registry)
 
     private val _badgeCount = MutableStateFlow(0)
     override val badgeCount: StateFlow<Int> = _badgeCount
@@ -79,7 +80,7 @@ public class LogPlugin(
      * Creates [LogViewModel] bound to the plugin's managed scope.
      */
     override fun onAttach(context: PluginContext) {
-        viewModel = LogViewModel(logStore = logStore, scope = context.scope)
+        viewModel = LogViewModel(logStore = logStore, registry = registry, scope = context.scope)
 
         context.scope.launch {
             logStore.dataFlow.collect { logs ->
@@ -89,10 +90,9 @@ public class LogPlugin(
 
         context.scope.launch {
             context.eventBus
-                .subscribe<com.ae.log.core.bus.RegisterLogTagEvent>()
+                .subscribe<com.ae.log.core.bus.LogTagRegisteredEvent>()
                 .collect { event ->
-                    com.ae.log.plugins.log.model.LogTagRegistry
-                        .register(event.tag, event.badgeLabel)
+                    registry.register(event.tag, event.badgeLabel)
                 }
         }
     }

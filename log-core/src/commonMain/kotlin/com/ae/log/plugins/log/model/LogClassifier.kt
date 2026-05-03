@@ -4,21 +4,6 @@ import kotlinx.atomicfu.update
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 
-public object LogTagRegistry {
-    private val tags = kotlinx.atomicfu.atomic(emptyMap<String, String>())
-
-    public fun register(
-        tag: String,
-        label: String,
-    ) {
-        tags.update { it + (tag to label) }
-    }
-
-    public fun isRegistered(tag: String): Boolean = tags.value.containsKey(tag)
-
-    public fun getLabel(tag: String): String? = tags.value[tag]
-}
-
 private val PRETTY_JSON =
     Json {
         prettyPrint = true
@@ -46,44 +31,18 @@ private val EXCLUDED_LINES =
 
 private val IMPORTANT_HEADERS = listOf("Content-Type", "Authorization")
 
-// --- Type Classification ---
-public val LogEntry.isResponse: Boolean
-    get() =
-        message.contains("<--") ||
-            message.contains("RESPONSE", ignoreCase = true) ||
-            (httpStatusCode != null && !message.contains("-->"))
-
-public val LogEntry.isRequest: Boolean
-    get() =
-        !isResponse &&
-            (message.contains("-->") || message.contains("REQUEST", ignoreCase = true) || httpMethod != null)
-
-public val LogEntry.isNetworkLog: Boolean
-    get() =
-        !LogTagRegistry.isRegistered(tag) &&
-            (
-                tag.contains("HTTP", ignoreCase = true) ||
-                    tag.contains("Network", ignoreCase = true) ||
-                    tag.contains("API", ignoreCase = true) ||
-                    tag.contains("ktor", ignoreCase = true) ||
-                    isRequest ||
-                    isResponse ||
-                    url != null ||
-                    httpMethod != null
-            )
-
-public val LogEntry.isError: Boolean
-    get() = severity == LogSeverity.ERROR || severity == LogSeverity.ASSERT
-
-public val LogEntry.isAnalytics: Boolean
-    get() = LogTagRegistry.isRegistered(tag)
-
-// --- HTTP Parsing ---
-public val LogEntry.httpMethod: String?
-    get() = HTTP_METHODS.firstOrNull { message.contains(it) }
-
-public val LogEntry.httpStatusCode: Int?
-    get() =
+/**
+ * Pre-computes classification and extraction fields for a log entry.
+ * Should be called once during insertion to avoid redundant regex matching.
+ */
+public fun classify(
+    severity: LogSeverity,
+    tag: String,
+    message: String,
+    registry: LogTagRegistry,
+): Triple<LogKind, HttpFields?, String?> {
+    val method = HTTP_METHODS.firstOrNull { message.contains(it) }
+    val statusCode =
         runCatching {
             STATUS_CODE_PATTERN
                 .find(message)
@@ -92,9 +51,76 @@ public val LogEntry.httpStatusCode: Int?
                 ?.toIntOrNull()
                 ?.takeIf { it in 100..599 }
         }.getOrNull()
+    val url = runCatching { URL_PATTERN.find(message)?.value }.getOrNull()
+
+    val isResponse =
+        message.contains("<--") ||
+            message.contains("RESPONSE", ignoreCase = true) ||
+            (statusCode != null && !message.contains("-->"))
+
+    val isRequest =
+        !isResponse &&
+            (message.contains("-->") || message.contains("REQUEST", ignoreCase = true) || method != null)
+
+    val isAnalytics = registry.isRegistered(tag)
+    val analyticsLabel = if (isAnalytics) registry.getLabel(tag) else null
+
+    val isNetwork =
+        !isAnalytics &&
+            (
+                tag.contains("HTTP", ignoreCase = true) ||
+                    tag.contains("Network", ignoreCase = true) ||
+                    tag.contains("API", ignoreCase = true) ||
+                    tag.contains("ktor", ignoreCase = true) ||
+                    isRequest ||
+                    isResponse ||
+                    url != null ||
+                    method != null
+            )
+
+    val kind =
+        when {
+            isAnalytics -> LogKind.ANALYTICS
+            isNetwork -> LogKind.NETWORK
+            else -> LogKind.LOG
+        }
+
+    val httpFields =
+        if (isNetwork || isRequest || isResponse) {
+            HttpFields(method, statusCode, url, isResponse)
+        } else {
+            null
+        }
+
+    return Triple(kind, httpFields, analyticsLabel)
+}
+
+// --- Type Classification ---
+public val LogEntry.isResponse: Boolean
+    get() = httpFields?.isResponse ?: false
+
+public val LogEntry.isRequest: Boolean
+    get() =
+        httpFields != null && !isResponse && (httpFields.method != null || message.contains("-->") || message.contains("REQUEST", ignoreCase = true))
+
+public val LogEntry.isNetworkLog: Boolean
+    get() = kind == LogKind.NETWORK
+
+public val LogEntry.isError: Boolean
+    get() = severity == LogSeverity.ERROR || severity == LogSeverity.ASSERT
+
+public val LogEntry.isAnalytics: Boolean
+    get() = kind == LogKind.ANALYTICS
+
+// --- HTTP Parsing ---
+public val LogEntry.httpMethod: String?
+    get() = httpFields?.method
+
+public val LogEntry.httpStatusCode: Int?
+    get() = httpFields?.statusCode
 
 public val LogEntry.url: String?
-    get() = runCatching { URL_PATTERN.find(message)?.value }.getOrNull()
+    get() = httpFields?.url
 
 public val LogEntry.endpoint: String?
     get() =
@@ -107,16 +133,13 @@ public val LogEntry.endpoint: String?
 // --- Display Helpers ---
 public val LogEntry.displayTag: String
     get() =
-        when {
-            isAnalytics -> LogTagRegistry.getLabel(tag)?.uppercase() ?: tag.uppercase()
-            isError -> "ERROR"
-            isResponse -> "RESPONSE"
-            isRequest -> "REQUEST"
-            isNetworkLog -> "NETWORK"
-            else -> "LOG"
+        when (kind) {
+            LogKind.ANALYTICS -> analyticsLabel?.uppercase() ?: tag.uppercase()
+            LogKind.NETWORK -> if (isResponse) "RESPONSE" else if (isRequest) "REQUEST" else "NETWORK"
+            else -> if (isError) "ERROR" else "LOG"
         }
 
-public val LogEntry.cleanMessage: String
+public val LogEntry.bodyOnly: String
     get() =
         message
             .lineSequence()

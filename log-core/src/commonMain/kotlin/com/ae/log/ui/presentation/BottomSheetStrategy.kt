@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 public object BottomSheetStrategy : PresentationStrategy {
     @Composable
     override fun Present(
+        uiConfig: com.ae.log.UiConfig,
         onDismiss: () -> Unit,
         content: @Composable () -> Unit,
     ) {
@@ -38,7 +39,7 @@ public object BottomSheetStrategy : PresentationStrategy {
                 modifier =
                     androidx.compose.ui.Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight(0.9f)
+                        .fillMaxHeight(uiConfig.bottomSheetHeightFraction)
                         .nestedScroll(
                             remember {
                                 object : NestedScrollConnection {

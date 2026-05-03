@@ -22,7 +22,7 @@ import okio.Buffer
  * Install the interceptor — one line:
  * ```kotlin
  * val client = OkHttpClient.Builder()
- *     .addInterceptor(AELogOkHttpInterceptor())
+ *     .addInterceptor(OkHttpInterceptor())
  *     .build()
  * ```
  *
@@ -49,7 +49,7 @@ import okio.Buffer
  * If [NetworkPlugin] is not installed or [AELog.init] has not been called,
  * [intercept] delegates straight to `chain.proceed()` with zero overhead.
  */
-public class AELogOkHttpInterceptor(
+public class OkHttpInterceptor(
     public val maxRequestBodyBytes: Long = 250_000L,
     public val maxResponseBodyBytes: Long = 250_000L,
     public val redactHeaders: Set<String> = DEFAULT_REDACTED,

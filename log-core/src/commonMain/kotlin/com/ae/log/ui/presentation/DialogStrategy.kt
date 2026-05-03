@@ -17,6 +17,7 @@ import androidx.compose.ui.window.DialogProperties
 public object DialogStrategy : PresentationStrategy {
     @Composable
     override fun Present(
+        uiConfig: com.ae.log.UiConfig,
         onDismiss: () -> Unit,
         content: @Composable () -> Unit,
     ) {
@@ -27,8 +28,8 @@ public object DialogStrategy : PresentationStrategy {
             Surface(
                 modifier =
                     androidx.compose.ui.Modifier
-                        .fillMaxWidth(0.85f)
-                        .fillMaxHeight(0.8f),
+                        .fillMaxWidth(uiConfig.dialogSizeFraction.first)
+                        .fillMaxHeight(uiConfig.dialogSizeFraction.second),
                 shape = RoundedCornerShape(24.dp),
                 color = MaterialTheme.colorScheme.surface,
                 tonalElevation = 6.dp,

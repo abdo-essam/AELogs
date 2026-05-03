@@ -1,18 +1,21 @@
 package com.ae.log.core
 
-import com.ae.log.AELogConfig
+import com.ae.log.LogConfig
 import com.ae.log.core.bus.EventBus
+import com.ae.log.core.bus.subscribe
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import kotlin.reflect.KClass
 
 /**
- * Scoped context passed to each plugin on [AELogPlugin.onAttach].
+ * Scoped context passed to each plugin on [Plugin.onAttach].
  *
  * Provides a controlled, minimal API surface — plugins only get what they need,
  * not a reference to the full [com.ae.log.AELog] instance.
  *
  * ## What plugins CAN do via context
- * - Launch coroutines safely via [scope] (auto-cancelled before [AELogPlugin.onDetach])
+ * - Launch coroutines safely via [scope] (auto-cancelled before [Plugin.onDetach])
  * - Read global config via [config]
  * - Publish / subscribe to events via [eventBus]
  * - Look up sibling plugins via [getPlugin]
@@ -33,7 +36,7 @@ public interface PluginContext {
     public val scope: CoroutineScope
 
     /** Read-only view of the global AELog configuration. */
-    public val config: AELogConfig
+    public val config: LogConfig
 
     /**
      * Shared event bus for cross-plugin communication.
@@ -53,14 +56,30 @@ public interface PluginContext {
      * val logs = context.getPlugin<LogPlugin>()
      * ```
      */
-    public fun <T : AELogPlugin> getPlugin(type: KClass<T>): T?
+    public fun <T : Plugin> getPlugin(type: KClass<T>): T?
 }
 
 /**
  * Kotlin reified convenience wrapper for [PluginContext.getPlugin].
+ */
+public inline fun <reified T : Plugin> PluginContext.getPlugin(): T? = getPlugin(T::class)
+
+/**
+ * Convenience helper to collect events of type [T] from the [EventBus].
  *
  * ```kotlin
- * val logs = context.getPlugin<LogPlugin>()
+ * override fun onAttach(context: PluginContext) {
+ *     context.collectEvents<MyEvent> { event ->
+ *         // handle event
+ *     }
+ * }
  * ```
  */
-public inline fun <reified T : AELogPlugin> PluginContext.getPlugin(): T? = getPlugin(T::class)
+public inline fun <reified T : com.ae.log.core.bus.Event> PluginContext.collectEvents(
+    crossinline action: suspend (T) -> Unit,
+): kotlinx.coroutines.Job =
+    scope.launch {
+        eventBus.subscribe<T>().collect { event ->
+            action(event)
+        }
+    }

@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.ae.log.ui.theme.LogSpacing
 
 @Composable
-public fun <T> AELogsListPanel(
+public fun <T> ListPanel(
     items: List<T>,
     itemLabel: String,
     searchQuery: String,
@@ -81,7 +81,7 @@ public fun <T> AELogsListPanel(
         Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
             if (items.isEmpty()) {
                 val msg = if (searchQuery.isNotEmpty()) emptyQueryMessage else emptyMessage
-                AELogsEmptyPlaceholder(msg)
+                EmptyPlaceholder(msg)
             } else {
                 Card(
                     modifier = Modifier.fillMaxWidth().padding(horizontal = LogSpacing.x5),
@@ -111,7 +111,7 @@ public fun <T> AELogsListPanel(
 }
 
 @Composable
-public fun AELogsEmptyPlaceholder(message: String) {
+public fun EmptyPlaceholder(message: String) {
     Box(Modifier.fillMaxSize().padding(LogSpacing.x8), Alignment.Center) {
         Text(
             text = message,
@@ -123,7 +123,7 @@ public fun AELogsEmptyPlaceholder(message: String) {
 }
 
 @Composable
-public fun AELogsExpandedDetails(
+public fun ExpandedDetails(
     bgColor: Color = MaterialTheme.colorScheme.surfaceVariant,
     onCopy: () -> Unit,
     content: @Composable ColumnScope.() -> Unit,

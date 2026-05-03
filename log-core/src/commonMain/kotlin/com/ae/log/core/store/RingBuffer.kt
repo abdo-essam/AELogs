@@ -35,17 +35,13 @@ public class RingBuffer<T>(
 
     /**
      * Returns all items in insertion order (oldest first).
-     *
-     * **Important:** uses `until` (exclusive) — NOT `..` (inclusive) —
-     * to avoid reading the one uninitialized null slot past the last entry.
-     * The previous `0..size` caused a NPE crash in `LazyColumn`.
      */
     @Suppress("UNCHECKED_CAST")
     public fun toList(): List<T> {
         if (size == 0) return emptyList()
         val result = ArrayList<T>(size)
         val start = if (size < capacity) 0 else head
-        for (i in 0 until size) { // ← was `0..size` (off-by-one bug!)
+        for (i in 0 until size) {
             result.add(buffer[(start + i) % capacity] as T)
         }
         return result

@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - 
 
-## [1.0.0] - 2026-06-01
+## [1.0.0] - 2024-05-03
 
 ### Added
 - 🎉 Initial release
@@ -26,8 +26,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Adaptive layout: bottom sheet (phones) / dialog (tablets)
 - Floating debug button with configurable position
 - Long-press gesture to open inspector
-- `AELogProvider` composable wrapper
-- `AELogConfig` for customization
+- `LogProvider` composable wrapper
+- `LogConfig` for customization
 - `UIPlugin` and `DataPlugin` interfaces for extensions
 - KMP support: Android, iOS (arm64, x64, simulatorArm64)
 - JSON syntax highlighting in log details

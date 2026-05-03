@@ -10,8 +10,8 @@ import com.ae.log.core.bus.PanelOpenedEvent
 /**
  * Manages lifecycle notifications for AELog plugins and event bus.
  */
-public class AELogLifecycle internal constructor(
-    private val pluginManager: AELogPluginManager,
+public class Lifecycle internal constructor(
+    private val pluginManager: PluginManager,
     private val eventBus: EventBus,
 ) {
     /**

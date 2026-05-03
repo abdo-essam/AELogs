@@ -1,6 +1,7 @@
 package com.ae.log
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
@@ -11,14 +12,14 @@ import com.ae.log.core.LocalLogController
 import kotlinx.coroutines.flow.first
 
 /**
- * A dedicated Activity to show the AELog interface in View-based Android apps.
+ * A dedicated Activity to show the Log interface in View-based Android apps.
  *
  * Launch this from anywhere in your app:
  * ```kotlin
- * startActivity(Intent(context, AELogViewerActivity::class.java))
+ * startActivity(Intent(context, LogViewerActivity::class.java))
  * ```
  */
-public class AELogViewerActivity : ComponentActivity() {
+public class LogViewerActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -26,8 +27,8 @@ public class AELogViewerActivity : ComponentActivity() {
         window.setBackgroundDrawableResource(android.R.color.transparent)
 
         setContent {
-            AELogProvider(
-                uiConfig = AELogUiConfig(showFloatingButton = false),
+            LogProvider(
+                uiConfig = UiConfig(showFloatingButton = false),
                 enabled = true,
                 content = {
                     val controller = LocalLogController.current
@@ -63,21 +64,20 @@ public fun AELog.Companion.launchViewer(context: android.content.Context) {
     val decorView = activity.window.decorView as android.view.ViewGroup
 
     // Check if we already added the viewer to avoid duplicates
-    val viewId = 999999
-    if (decorView.findViewById<android.view.View>(viewId) != null) {
+    if (decorView.findViewById<android.view.View>(VIEWER_ID) != null) {
         return
     }
 
     val composeView =
         androidx.compose.ui.platform.ComposeView(activity).apply {
-            id = viewId
+            id = VIEWER_ID
             // Ensures the ComposeView can handle touches properly
             isClickable = true
             isFocusable = true
 
             setContent {
-                AELogProvider(
-                    uiConfig = AELogUiConfig(showFloatingButton = false),
+                LogProvider(
+                    uiConfig = UiConfig(showFloatingButton = false),
                     enabled = true,
                     content = {
                         val controller = LocalLogController.current
@@ -115,3 +115,5 @@ public fun AELog.Companion.launchViewer(context: android.content.Context) {
         ),
     )
 }
+
+private val VIEWER_ID by lazy { View.generateViewId() }

@@ -17,6 +17,7 @@ import com.ae.log.ui.presentation.PresentationStrategy
 @Composable
 internal fun LogContainer(
     plugins: List<UIPlugin>,
+    uiConfig: com.ae.log.UiConfig,
     isLargeScreen: Boolean,
     presentationMode: PresentationMode,
     onDismiss: () -> Unit,
@@ -28,7 +29,7 @@ internal fun LogContainer(
             PresentationMode.Adaptive -> if (isLargeScreen) DialogStrategy else BottomSheetStrategy
         }
 
-    strategy.Present(onDismiss = onDismiss) {
+    strategy.Present(uiConfig = uiConfig, onDismiss = onDismiss) {
         LogContent(
             plugins = plugins,
             onDismiss = onDismiss,

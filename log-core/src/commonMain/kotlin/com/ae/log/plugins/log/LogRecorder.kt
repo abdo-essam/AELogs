@@ -7,10 +7,11 @@ import kotlin.time.Clock
 
 public class LogRecorder internal constructor(
     private val store: LogStore,
+    private val registry: com.ae.log.plugins.log.model.LogTagRegistry,
     private val clock: Clock = Clock.System,
     private val idGenerator: () -> String = {
         com.ae.log.core.utils.IdGenerator
-            .generateId()
+            .next()
     },
 ) {
     /**
@@ -38,6 +39,14 @@ public class LogRecorder internal constructor(
         config?.platformLogSink?.log(severity, tag, message, throwable)
 
         val fullMessage = if (throwable != null) "$message\n${throwable.stackTraceToString()}" else message
+        val (kind, httpFields, analyticsLabel) =
+            com.ae.log.plugins.log.model.classify(
+                severity = severity,
+                tag = tag,
+                message = fullMessage,
+                registry = registry,
+            )
+
         store.add(
             com.ae.log.plugins.log.model.LogEntry(
                 id = idGenerator(),
@@ -45,6 +54,9 @@ public class LogRecorder internal constructor(
                 tag = tag,
                 message = fullMessage,
                 timestamp = clock.now().toEpochMilliseconds(),
+                kind = kind,
+                httpFields = httpFields,
+                analyticsLabel = analyticsLabel,
             ),
         )
     }

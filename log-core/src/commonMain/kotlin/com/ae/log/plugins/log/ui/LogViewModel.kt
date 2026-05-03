@@ -2,7 +2,9 @@ package com.ae.log.plugins.log.ui
 
 import com.ae.log.plugins.log.LogStore
 import com.ae.log.plugins.log.model.LogEntry
-import com.ae.log.plugins.log.model.LogFilter
+import com.ae.log.plugins.log.model.LogSeverityFilter
+import com.ae.log.plugins.log.model.LogSeverityFilters
+import com.ae.log.plugins.log.model.LogTagRegistry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -13,15 +15,16 @@ import kotlinx.coroutines.flow.stateIn
 
 internal class LogViewModel(
     private val logStore: LogStore,
+    val registry: com.ae.log.plugins.log.model.LogTagRegistry,
     scope: CoroutineScope,
 ) {
     private val _searchQuery = MutableStateFlow("")
-    public val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
+    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
-    private val _selectedFilter = MutableStateFlow<LogFilter>(com.ae.log.plugins.log.model.LogFilters.ALL)
-    public val selectedFilter: StateFlow<LogFilter> = _selectedFilter.asStateFlow()
+    private val _selectedFilter = MutableStateFlow<LogSeverityFilter>(LogSeverityFilters.ALL)
+    val selectedFilter: StateFlow<LogSeverityFilter> = _selectedFilter.asStateFlow()
 
-    public val filteredLogs: StateFlow<List<LogEntry>> =
+    val filteredLogs: StateFlow<List<LogEntry>> =
         combine(
             logStore.dataFlow,
             _searchQuery,
@@ -42,18 +45,18 @@ internal class LogViewModel(
             initialValue = emptyList(),
         )
 
-    public fun updateSearchQuery(query: String) {
+    fun updateSearchQuery(query: String) {
         _searchQuery.value = query
     }
 
-    public fun updateSelectedFilter(filter: LogFilter) {
+    fun updateSelectedFilter(filter: LogSeverityFilter) {
         _selectedFilter.value = filter
     }
 
     /** Clear all stored log entries and reset search + filter. */
-    public fun clearLogs() {
+    fun clearLogs() {
         logStore.clear()
         _searchQuery.value = ""
-        _selectedFilter.value = com.ae.log.plugins.log.model.LogFilters.ALL
+        _selectedFilter.value = LogSeverityFilters.ALL
     }
 }

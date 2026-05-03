@@ -24,7 +24,7 @@ internal fun LogDetailsContent(log: LogEntry) {
             DetailSection(title = "URL", content = url)
         }
 
-        val content = log.jsonBody ?: log.cleanMessage
+        val content = log.jsonBody ?: log.bodyOnly
         if (content.isNotBlank()) {
             DetailSection(
                 title = if (log.jsonBody != null) "Body" else "Message",

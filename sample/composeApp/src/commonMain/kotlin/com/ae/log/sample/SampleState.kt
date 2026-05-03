@@ -6,44 +6,40 @@ import com.ae.log.plugins.analytics.AnalyticsTracker
 import com.ae.log.plugins.log.LogPlugin
 import com.ae.log.plugins.network.NetworkPlugin
 import com.ae.log.plugins.network.NetworkRecorder
-import com.ae.log.plugins.network.interceptor.AELogKtorInterceptor
+import com.ae.log.plugins.network.interceptor.KtorInterceptor
 import io.ktor.client.HttpClient
+import kotlinx.atomicfu.atomic
 
 /**
- * Singleton that holds plugin API references after [SampleApp.onCreate].
+ * Singleton that holds plugin API references.
  *
- * Lives in commonMain so [App] (also commonMain) can access it without
- * using reified inline functions (which cause JVM target mismatches in KMP).
- *
- * APIs are `null` before init — all callers guard with `?.`.
+ * Lives in commonMain so [App] can access it without Target mismatches.
  */
-object SampleState {
-    var networkApi: NetworkRecorder? = null
-    var analyticsApi: AnalyticsTracker? = null
+public object SampleState {
+    private val _networkApi = atomic<NetworkRecorder?>(null)
+    public val networkApi: NetworkRecorder? get() = _networkApi.value
 
-    /**
-     * Real [HttpClient] created in [SampleApp] with [AELogKtorInterceptor] installed.
-     * Every call made through this client is automatically captured by [NetworkPlugin].
-     */
-    var httpClient: HttpClient? = null
-    private var isInitialized = false
+    private val _analyticsApi = atomic<AnalyticsTracker?>(null)
+    public val analyticsApi: AnalyticsTracker? get() = _analyticsApi.value
 
-    fun initialize() {
-        if (isInitialized) return
-        isInitialized = true
+    private val _httpClient = atomic<HttpClient?>(null)
+    public val httpClient: HttpClient? get() = _httpClient.value
 
-        AELog.init(
-            LogPlugin(),
-            NetworkPlugin(),
-            AnalyticsPlugin(),
-        )
+    private val isInitialized = atomic(false)
 
-        networkApi = AELog.plugin<NetworkPlugin>()?.recorder
-        analyticsApi = AELog.plugin<AnalyticsPlugin>()?.tracker
+    public fun initialize() {
+        if (isInitialized.compareAndSet(expect = false, update = true)) {
+            AELog.init(
+                LogPlugin(),
+                NetworkPlugin(),
+                AnalyticsPlugin(),
+            )
 
-        httpClient =
-            HttpClient {
-                install(AELogKtorInterceptor)
+            _networkApi.value = AELog.plugin<NetworkPlugin>()?.recorder
+            _analyticsApi.value = AELog.plugin<AnalyticsPlugin>()?.tracker
+            _httpClient.value = HttpClient {
+                install(KtorInterceptor)
             }
+        }
     }
 }

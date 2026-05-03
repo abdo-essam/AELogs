@@ -22,7 +22,7 @@ By participating, you agree to uphold this code.
 - JDK 17+
 - Android Studio Ladybug or later / Fleet
 - Xcode 15+ (for iOS targets)
-- Kotlin 2.3.0+
+- Kotlin 2.2.0+
 
 ### Development Setup
 
@@ -94,7 +94,7 @@ fix: resolve theme bleed into host app
 docs: update plugin creation guide
 test: add LogStore unit tests
 refactor: extract log filtering to separate class
-chore: update Kotlin to 2.3.0
+chore: update Kotlin to 2.2.0
 perf: cache LogEntry computed properties
 ci: add iOS build to CI pipeline
 ```

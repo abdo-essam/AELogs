@@ -14,15 +14,7 @@ import com.ae.log.plugins.network.model.NetworkEntry
 
 @Composable
 internal fun MethodBadge(label: String) {
-    val color =
-        when (label) {
-            "GET" -> Color(0xFF2196F3)
-            "POST" -> Color(0xFF4CAF50)
-            "PUT" -> Color(0xFFFF9800)
-            "PATCH" -> Color(0xFF9C27B0)
-            "DELETE" -> Color(0xFFF44336)
-            else -> Color(0xFF607D8B)
-        }
+    val color = com.ae.log.ui.theme.NetworkColors.getMethodColor(label)
     Box(
         modifier =
             Modifier
@@ -39,11 +31,8 @@ internal fun StatusBadge(entry: NetworkEntry) {
     val color =
         when {
             entry.isPending -> MaterialTheme.colorScheme.onSurfaceVariant
-            entry.isSuccess -> Color(0xFF4CAF50)
-            entry.statusCode != null && entry.statusCode in 300..399 -> Color(0xFF9C27B0)
-            entry.statusCode != null && entry.statusCode in 100..199 -> Color(0xFF2196F3)
             entry.isError -> MaterialTheme.colorScheme.error
-            else -> Color(0xFFFFC107)
+            else -> com.ae.log.ui.theme.NetworkColors.getStatusCodeColor(entry.statusCode)
         }
     Text(text = text, style = MaterialTheme.typography.labelSmall, color = color)
 }

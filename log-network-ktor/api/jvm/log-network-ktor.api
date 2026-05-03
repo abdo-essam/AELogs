@@ -1,4 +1,8 @@
-public final class com/ae/log/plugins/network/interceptor/AELogKtorConfig {
+public final class com/ae/log/plugins/network/interceptor/AELogKtorInterceptorKt {
+	public static final fun getKtorInterceptor ()Lio/ktor/client/plugins/api/ClientPlugin;
+}
+
+public final class com/ae/log/plugins/network/interceptor/KtorConfig {
 	public fun <init> ()V
 	public final fun getExcludeUrls ()Ljava/util/List;
 	public final fun getMaxRequestBodyBytes ()J
@@ -8,9 +12,5 @@ public final class com/ae/log/plugins/network/interceptor/AELogKtorConfig {
 	public final fun setMaxRequestBodyBytes (J)V
 	public final fun setMaxResponseBodyBytes (J)V
 	public final fun setRedactHeaders (Ljava/util/Set;)V
-}
-
-public final class com/ae/log/plugins/network/interceptor/AELogKtorInterceptorKt {
-	public static final fun getAELogKtorInterceptor ()Lio/ktor/client/plugins/api/ClientPlugin;
 }
 

@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.sp
 import com.ae.log.plugins.network.model.NetworkEntry
 import com.ae.log.plugins.network.utils.extractQueryParams
 import com.ae.log.plugins.network.utils.prettyPrintJson
-import com.ae.log.ui.components.AELogsExpandedDetails
+import com.ae.log.ui.components.ExpandedDetails
 import com.ae.log.ui.theme.LogSpacing
 
 @Composable
@@ -58,7 +58,7 @@ internal fun NetworkEntryDetails(
 
     val clipboard = LocalClipboardManager.current
 
-    AELogsExpandedDetails(
+    ExpandedDetails(
         bgColor = bgColor,
         onCopy = onCopy,
     ) {

@@ -26,6 +26,7 @@ public interface PresentationStrategy {
      */
     @Composable
     public fun Present(
+        uiConfig: com.ae.log.UiConfig,
         onDismiss: () -> Unit,
         content: @Composable () -> Unit,
     )

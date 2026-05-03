@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.ae.log.plugins.analytics.model.AnalyticsEvent
 import com.ae.log.plugins.analytics.utils.toFullTimeLabel
-import com.ae.log.ui.components.AELogsExpandedDetails
+import com.ae.log.ui.components.ExpandedDetails
 import com.ae.log.ui.theme.LogSpacing
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -23,7 +23,7 @@ internal fun AnalyticsEventDetails(
     event: AnalyticsEvent,
     onCopy: () -> Unit,
 ) {
-    AELogsExpandedDetails(
+    ExpandedDetails(
         bgColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
         onCopy = onCopy,
     ) {

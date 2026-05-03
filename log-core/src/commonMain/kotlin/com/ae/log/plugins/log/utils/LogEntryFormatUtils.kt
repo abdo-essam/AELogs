@@ -1,7 +1,7 @@
 package com.ae.log.plugins.log.utils
 
 import com.ae.log.plugins.log.model.LogEntry
-import com.ae.log.plugins.log.model.cleanMessage
+import com.ae.log.plugins.log.model.bodyOnly
 
 internal data class AnalyticsPreview(
     val title: String,
@@ -18,4 +18,4 @@ internal fun LogEntry.getAnalyticsPreview(): AnalyticsPreview {
 }
 
 internal fun LogEntry.getCleanMessagePreview(maxLength: Int = 80): String =
-    this.cleanMessage.take(maxLength).replace("\n", " ")
+    this.bodyOnly.take(maxLength).replace("\n", " ")

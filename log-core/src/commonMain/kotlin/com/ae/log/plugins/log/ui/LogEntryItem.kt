@@ -21,13 +21,14 @@ import com.ae.log.plugins.log.model.*
 import com.ae.log.plugins.log.model.LogEntry
 import com.ae.log.plugins.log.utils.getAnalyticsPreview
 import com.ae.log.plugins.log.utils.getCleanMessagePreview
-import com.ae.log.ui.components.AELogsExpandedDetails
+import com.ae.log.ui.components.ExpandedDetails
 import com.ae.log.ui.theme.LogSpacing
 
 @Composable
 internal fun LogEntryItem(
     log: LogEntry,
     isExpanded: Boolean,
+    registry: com.ae.log.plugins.log.model.LogTagRegistry,
     onToggleExpand: (String) -> Unit,
     onCopy: (LogEntry) -> Unit,
 ) {
@@ -44,7 +45,7 @@ internal fun LogEntryItem(
                 ) { onToggleExpand(log.id) }
                 .padding(horizontal = LogSpacing.x4, vertical = LogSpacing.x3),
     ) {
-        LogEntryHeader(log = log, isExpanded = isExpanded)
+        LogEntryHeader(log = log, isExpanded = isExpanded, registry = registry)
 
         AnimatedVisibility(
             visible = isExpanded,
@@ -64,12 +65,13 @@ internal fun LogEntryItem(
 private fun LogEntryHeader(
     log: LogEntry,
     isExpanded: Boolean,
+    registry: com.ae.log.plugins.log.model.LogTagRegistry,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        LogTypeBadge(log = log)
+        LogTypeBadge(log = log, registry = registry)
 
         Spacer(modifier = Modifier.width(LogSpacing.x3))
 
@@ -191,7 +193,7 @@ private fun LogEntryExpandedContent(
     bgColor: Color,
     onCopy: () -> Unit,
 ) {
-    AELogsExpandedDetails(
+    ExpandedDetails(
         bgColor = bgColor,
         onCopy = onCopy,
     ) {

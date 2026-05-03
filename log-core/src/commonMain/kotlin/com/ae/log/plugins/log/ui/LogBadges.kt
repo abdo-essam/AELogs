@@ -14,9 +14,12 @@ import androidx.compose.ui.unit.dp
 import com.ae.log.plugins.log.model.LogEntry
 
 @Composable
-internal fun LogTypeBadge(log: LogEntry) {
+internal fun LogTypeBadge(
+    log: LogEntry,
+    registry: com.ae.log.plugins.log.model.LogTagRegistry? = null,
+) {
     val (color, _) = LogUtils.getLogTypeColor(log)
-    val label = LogUtils.getBadgeLabel(log)
+    val label = LogUtils.getBadgeLabel(log, registry)
 
     Box(
         modifier =

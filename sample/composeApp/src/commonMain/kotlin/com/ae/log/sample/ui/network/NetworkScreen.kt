@@ -55,7 +55,7 @@ fun NetworkScreen() {
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            // ── Live Calls — real HTTP via AELogKtorInterceptor ────────────────
+            // ── Live Calls — real HTTP via KtorInterceptor ────────────────
             item { SectionLabel("🌐 Live HTTP Calls (real network)") }
             item {
                 Text(

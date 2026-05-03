@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
  * Implement this interface to add a visual debugging panel (e.g., logs, network, storage).
  * For headless plugins that only collect data without UI, use [DataPlugin] instead.
  */
-public interface UIPlugin : AELogPlugin {
+public interface UIPlugin : Plugin {
     /** Icon displayed on the plugin's tab in the AELog panel. */
     public val icon: ImageVector
 

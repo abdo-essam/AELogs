@@ -8,20 +8,20 @@ import androidx.compose.ui.unit.dp
 /**
  * UI-specific configuration for the AELog overlay.
  *
- * Passed to [AELogProvider] separately from the core [AELogConfig],
+ * Passed to [LogProvider] separately from the core [LogConfig],
  * keeping Compose types out of the `logs-core` module.
  *
  * ```kotlin
- * AELogProvider(
+ * LogProvider(
  *     inspector = inspector,
- *     uiConfig = AELogUiConfig(
+ *     uiConfig = UiConfig(
  *         showFloatingButton = true,
  *         presentationMode = PresentationMode.Adaptive,
  *     ),
  * ) { ... }
  * ```
  */
-public data class AELogUiConfig(
+public data class UiConfig(
     /** Show the floating debug button overlay. Default: `true`. */
     val showFloatingButton: Boolean = true,
     /** Floating button screen position. Default: `BottomEnd`. */
@@ -43,6 +43,14 @@ public data class AELogUiConfig(
      * Default: [PresentationMode.Adaptive] (bottom sheet on phone, dialog on tablet).
      */
     val presentationMode: PresentationMode = PresentationMode.Adaptive,
+    /**
+     * Height fraction for the bottom sheet (0.0 to 1.0). Default: 0.9.
+     */
+    val bottomSheetHeightFraction: Float = 0.9f,
+    /**
+     * Size fraction for the dialog (width, height) (0.0 to 1.0). Default: (0.85, 0.8).
+     */
+    val dialogSizeFraction: Pair<Float, Float> = 0.85f to 0.8f,
 )
 
 /**

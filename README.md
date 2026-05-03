@@ -23,7 +23,7 @@
     <img src="https://img.shields.io/github/license/abdo-essam/AELog?style=flat-square" alt="License" />
   </a>
   <a href="https://kotlinlang.org">
-    <img src="https://img.shields.io/badge/Kotlin-2.3.0-7F52FF?style=flat-square&logo=kotlin" alt="Kotlin" />
+    <img src="https://img.shields.io/badge/Kotlin-2.2.0-7F52FF?style=flat-square&logo=kotlin" alt="Kotlin" />
   </a>
 </p>
 
@@ -126,9 +126,9 @@ Wrap your main content:
 ```kotlin
 @Composable
 fun App(debugMode: Boolean) {
-    AELogProvider(
+    LogProvider(
         enabled = debugMode, // ← disables UI overhead in release builds
-        uiConfig = AELogUiConfig(
+        uiConfig = UiConfig(
             showFloatingButton = true, // Enables the 'bug' overlay button
             enableLongPress = true,    // Show panel on 3-finger long press
         )
@@ -209,13 +209,13 @@ Both interceptors are **secure by default**. They automatically redact sensitive
 
 ```kotlin
 // OkHttp
-val interceptor = AELogOkHttpInterceptor(
+val interceptor = OkHttpInterceptor(
     redactHeaders = setOf("X-Sensitive-Header") // Extends default redactions
 )
 
 // Ktor
 val client = HttpClient {
-    install(AELogKtorInterceptor) {
+    install(KtorInterceptor) {
         redactHeaders = setOf("X-Api-Key")
     }
 }
@@ -225,7 +225,7 @@ val client = HttpClient {
 To prevent memory issues when inspecting large payloads (e.g., file uploads), bodies are automatically truncated (default 250 KB).
 
 ```kotlin
-AELogOkHttpInterceptor(
+OkHttpInterceptor(
     maxRequestBodyBytes = 500_000,  // 500 KB limit
     maxResponseBodyBytes = 1_000_000 // 1 MB limit
 )
@@ -239,7 +239,7 @@ By default, Ktor response streams can only be read once. To enable non-destructi
 ```kotlin
 val client = HttpClient {
     install(DoubleReceive) // Recommended for Network Plugin
-    install(AELogKtorInterceptor)
+    install(KtorInterceptor)
 }
 ```
 
@@ -318,7 +318,7 @@ The SDK follows an encapsulated `Model-Store-API-UI` pattern, making plugins 100
 
 ```text
 ┌─────────────────────────────────────────────────┐
-│              AELogProvider                   │  Compose wrapper
+│              LogProvider                   │  Compose wrapper
 │  ┌───────────────────────────────────────────┐  │
 │  │            AELog (Core)               │  │  Plugin engine
 │  │  ┌─────────┐ ┌─────────┐ ┌────────────┐  │  │
@@ -339,7 +339,7 @@ The SDK follows an encapsulated `Model-Store-API-UI` pattern, making plugins 100
 |----------|----------------|
 | Android | API 24 (Android 7.0) |
 | iOS | 15.0 |
-| Kotlin | 2.1.10+ |
+| Kotlin | 2.2.0+ |
 | Compose Multiplatform | 1.7.3+ |
 
 ## 🤝 Contributing
@@ -356,7 +356,7 @@ cd AELog
 ## 📄 License
 
 ```text
-Copyright 2026 Abdo Essam
+Copyright 2024 Abdo Essam
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

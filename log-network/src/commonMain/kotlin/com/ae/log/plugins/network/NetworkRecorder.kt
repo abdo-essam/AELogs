@@ -13,8 +13,8 @@ import kotlin.time.Clock
  * **Prefer the first-class interceptors** — they handle ID management, timing,
  * and error recording automatically:
  *
- * - Ktor: `install(AELogKtorInterceptor)` — see [com.ae.log.plugins.network.interceptor.AELogKtorInterceptor]
- * - OkHttp: `.addInterceptor(AELogOkHttpInterceptor())` — see [com.ae.log.plugins.network.interceptor.AELogOkHttpInterceptor]
+ * - Ktor: `install(KtorInterceptor)` — see [com.ae.log.plugins.network.interceptor.KtorInterceptor]
+ * - OkHttp: `.addInterceptor(OkHttpInterceptor())` — see [com.ae.log.plugins.network.interceptor.OkHttpInterceptor]
  *
  * Use this API directly only for custom or unsupported HTTP clients:
  *
@@ -31,10 +31,10 @@ import kotlin.time.Clock
  */
 public class NetworkRecorder internal constructor(
     private val store: NetworkStore,
-    @PublishedApi internal val clock: Clock = Clock.System,
+    private val clock: Clock = Clock.System,
     private val idGenerator: () -> String = {
         com.ae.log.core.utils.IdGenerator
-            .generateId()
+            .next()
     },
 ) {
     /**
@@ -113,7 +113,7 @@ public class NetworkRecorder internal constructor(
      * }
      * ```
      */
-    public inline fun <T> recordCall(
+    public fun <T> recordCall(
         url: String,
         method: NetworkMethod,
         rawMethod: String = method.name,

@@ -9,4 +9,7 @@ fun MainViewController() =
             enforceStrictPlistSanityCheck = false
             onFocusBehavior = OnFocusBehavior.DoNothing
         },
-    ) { App(debugMode = true) }
+    ) {
+        SampleState.initialize()
+        App(debugMode = true)
+    }

@@ -21,7 +21,7 @@ package com.ae.log.core
  * | onDetach | Plugin unregistered (once)                      |
  * | onClear  | User requested a data wipe                      |
  */
-public interface AELogPlugin {
+public interface Plugin {
     /** Unique identifier for this plugin (must be stable across restarts) */
     public val id: String
 

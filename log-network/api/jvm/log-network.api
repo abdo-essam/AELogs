@@ -34,7 +34,6 @@ public final class com/ae/log/plugins/network/NetworkRecorder {
 	public static final field $stable I
 	public final fun clear ()V
 	public final fun error (Ljava/lang/String;Ljava/lang/String;)V
-	public final fun getClock ()Lkotlin/time/Clock;
 	public final fun newId ()Ljava/lang/String;
 	public final fun recordCall (Ljava/lang/String;Lcom/ae/log/plugins/network/model/NetworkMethod;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
 	public static synthetic fun recordCall$default (Lcom/ae/log/plugins/network/NetworkRecorder;Ljava/lang/String;Lcom/ae/log/plugins/network/model/NetworkMethod;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Lkotlin/jvm/functions/Function0;ILjava/lang/Object;)Ljava/lang/Object;

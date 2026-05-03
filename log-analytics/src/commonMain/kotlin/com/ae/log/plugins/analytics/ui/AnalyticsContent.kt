@@ -16,7 +16,7 @@ import com.ae.log.plugins.analytics.model.AnalyticsEvent
 import com.ae.log.plugins.analytics.model.AnalyticsFilters
 import com.ae.log.plugins.analytics.ui.components.AnalyticsEventItem
 import com.ae.log.plugins.analytics.utils.toClipboardText
-import com.ae.log.ui.components.AELogsListPanel
+import com.ae.log.ui.components.ListPanel
 
 @Composable
 internal fun AnalyticsContent(
@@ -45,7 +45,7 @@ internal fun AnalyticsContent(
             }
         }
 
-    AELogsListPanel(
+    ListPanel(
         items = events,
         itemLabel = "events",
         searchQuery = query,

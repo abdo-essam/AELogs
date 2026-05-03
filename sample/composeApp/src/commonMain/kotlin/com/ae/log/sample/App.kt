@@ -22,8 +22,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.ae.log.AELogProvider
-import com.ae.log.AELogUiConfig
+import com.ae.log.LogProvider
+import com.ae.log.UiConfig
 import com.ae.log.sample.ui.analytics.AnalyticsScreen
 import com.ae.log.sample.ui.logs.LogScreen
 import com.ae.log.sample.ui.network.NetworkScreen
@@ -50,13 +50,12 @@ private val TABS =
 fun App(debugMode: Boolean = false) {
     var selectedTab by rememberSaveable { mutableIntStateOf(0) }
 
-    SampleState.initialize()
     SampleTheme {
-        AELogProvider(
+        LogProvider(
             uiConfig =
-                AELogUiConfig(
+                UiConfig(
                     showFloatingButton = true,
-                    enableLongPress = false, // disabled to test if it's blocking clicks
+                    enableLongPress = true,
                     floatingButtonOffset = 160.dp,
                 ),
             enabled = debugMode,
