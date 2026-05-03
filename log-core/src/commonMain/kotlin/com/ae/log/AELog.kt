@@ -194,7 +194,6 @@ public class AELog private constructor(
         /** Clear all data from all installed plugins. */
         public fun clearAll(): Unit = defaultOrNull()?.lifecycle?.clearAll() ?: Unit
 
-
         /**
          * Look up a plugin on the [default] instance by type.
          *
@@ -205,7 +204,8 @@ public class AELog private constructor(
          * val networkApi = AELog.plugin<NetworkPlugin>()?.recorder
          * ```
          */
-        public inline fun <reified T : com.ae.log.core.Plugin> plugin(): T? = defaultOrNull()?.plugins?.getPlugin(T::class)
+        public inline fun <reified T : com.ae.log.core.Plugin> plugin(): T? =
+            defaultOrNull()?.plugins?.getPlugin(T::class)
 
         /**
          * Create a new **isolated** [AELog] instance with custom configuration.

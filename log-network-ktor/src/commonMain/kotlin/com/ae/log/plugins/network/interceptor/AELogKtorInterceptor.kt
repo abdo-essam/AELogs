@@ -12,7 +12,6 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.content.ByteArrayContent
 import io.ktor.http.content.TextContent
 import io.ktor.util.AttributeKey
-import kotlinx.io.readByteArray
 
 /**
  * Ktor [io.ktor.client.HttpClient] plugin that automatically records every
@@ -143,35 +142,35 @@ public val KtorInterceptor: ClientPlugin<KtorConfig> =
                 body = reqBody,
             )
 
-                request.attributes.put(networkRequestIdKey, id)
+            request.attributes.put(networkRequestIdKey, id)
 
-                val call =
-                    try {
-                        proceed(request)
-                    } catch (t: Throwable) {
-                        recorder.error(id = id, message = t.message ?: t::class.simpleName ?: "Unknown error")
-                        throw t
-                    }
+            val call =
+                try {
+                    proceed(request)
+                } catch (t: Throwable) {
+                    recorder.error(id = id, message = t.message ?: t::class.simpleName ?: "Unknown error")
+                    throw t
+                }
 
-                val durationMs = startMark.elapsedNow().inWholeMilliseconds
+            val durationMs = startMark.elapsedNow().inWholeMilliseconds
 
-                // Capture response headers and status immediately
-                val headers =
-                    call.response.headers
-                        .entries()
-                        .associate { entry -> entry.key to entry.value.joinToString(", ") }
-                        .redact()
+            // Capture response headers and status immediately
+            val headers =
+                call.response.headers
+                    .entries()
+                    .associate { entry -> entry.key to entry.value.joinToString(", ") }
+                    .redact()
 
-                recorder.response(
-                    id = id,
-                    statusCode = call.response.status.value,
-                    headers = headers,
-                    body = null, // Will be updated by the onResponse hook if possible
-                    durationMs = durationMs,
-                )
+            recorder.response(
+                id = id,
+                statusCode = call.response.status.value,
+                headers = headers,
+                body = null, // Will be updated by the onResponse hook if possible
+                durationMs = durationMs,
+            )
 
-                return@on call
-            }
+            return@on call
+        }
 
         onResponse { response ->
             if (!AELog.isEnabled) return@onResponse
@@ -194,7 +193,8 @@ public val KtorInterceptor: ClientPlugin<KtorConfig> =
                         id = id,
                         statusCode = response.status.value,
                         headers =
-                            response.headers.entries()
+                            response.headers
+                                .entries()
                                 .associate { entry -> entry.key to entry.value.joinToString(", ") }
                                 .redact(),
                         body = bodyString,

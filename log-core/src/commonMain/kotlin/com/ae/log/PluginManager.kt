@@ -78,8 +78,7 @@ public class PluginManager internal constructor(
     // ── Lookup ────────────────────────────────────────────────────────────────
 
     @Suppress("UNCHECKED_CAST")
-    public fun <T : Plugin> getPlugin(type: KClass<T>): T? =
-        _plugins.value.firstOrNull { type.isInstance(it) } as? T
+    public fun <T : Plugin> getPlugin(type: KClass<T>): T? = _plugins.value.firstOrNull { type.isInstance(it) } as? T
 
     public fun getPluginById(id: String): Plugin? = _plugins.value.find { it.id == id }
 

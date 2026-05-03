@@ -1,6 +1,5 @@
 package com.ae.log.plugins.log.model
 
-import kotlinx.atomicfu.update
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 
@@ -101,7 +100,8 @@ public val LogEntry.isResponse: Boolean
 
 public val LogEntry.isRequest: Boolean
     get() =
-        httpFields != null && !isResponse && (httpFields.method != null || message.contains("-->") || message.contains("REQUEST", ignoreCase = true))
+        httpFields != null && !isResponse &&
+            (httpFields.method != null || message.contains("-->") || message.contains("REQUEST", ignoreCase = true))
 
 public val LogEntry.isNetworkLog: Boolean
     get() = kind == LogKind.NETWORK
@@ -135,7 +135,14 @@ public val LogEntry.displayTag: String
     get() =
         when (kind) {
             LogKind.ANALYTICS -> analyticsLabel?.uppercase() ?: tag.uppercase()
-            LogKind.NETWORK -> if (isResponse) "RESPONSE" else if (isRequest) "REQUEST" else "NETWORK"
+            LogKind.NETWORK ->
+                if (isResponse) {
+                    "RESPONSE"
+                } else if (isRequest) {
+                    "REQUEST"
+                } else {
+                    "NETWORK"
+                }
             else -> if (isError) "ERROR" else "LOG"
         }
 

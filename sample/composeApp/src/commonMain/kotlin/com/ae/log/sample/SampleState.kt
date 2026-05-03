@@ -37,9 +37,10 @@ public object SampleState {
 
             _networkApi.value = AELog.plugin<NetworkPlugin>()?.recorder
             _analyticsApi.value = AELog.plugin<AnalyticsPlugin>()?.tracker
-            _httpClient.value = HttpClient {
-                install(KtorInterceptor)
-            }
+            _httpClient.value =
+                HttpClient {
+                    install(KtorInterceptor)
+                }
         }
     }
 }

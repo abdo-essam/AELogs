@@ -9,7 +9,9 @@ import kotlin.time.Clock
 @OptIn(kotlin.time.ExperimentalTime::class)
 @Immutable
 public data class LogEntry(
-    val id: String = com.ae.log.core.utils.IdGenerator.next(),
+    val id: String =
+        com.ae.log.core.utils.IdGenerator
+            .next(),
     val severity: LogSeverity,
     val tag: String,
     val message: String,
@@ -23,7 +25,9 @@ public data class LogEntry(
  * Defines the high-level category of a log entry for filtering and display.
  */
 public enum class LogKind {
-    LOG, NETWORK, ANALYTICS
+    LOG,
+    NETWORK,
+    ANALYTICS,
 }
 
 /**

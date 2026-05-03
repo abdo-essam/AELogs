@@ -5,15 +5,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import com.ae.log.plugins.log.model.*
 import com.ae.log.plugins.log.model.LogEntry
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Instant
 
 /**
  * Utility functions for log formatting and coloring.
  */
 internal object LogUtils {
-    fun formatTimestamp(timestamp: Long): String = com.ae.log.core.utils.TimeUtils.formatTimestamp(timestamp)
+    fun formatTimestamp(timestamp: Long): String =
+        com.ae.log.core.utils.TimeUtils
+            .formatTimestamp(timestamp)
 
     fun formatLogForCopy(log: LogEntry): String =
         buildString {
@@ -39,9 +38,13 @@ internal object LogUtils {
             }
         }
 
-    fun getMethodColor(method: String): Color = com.ae.log.ui.theme.NetworkColors.getMethodColor(method)
+    fun getMethodColor(method: String): Color =
+        com.ae.log.ui.theme.NetworkColors
+            .getMethodColor(method)
 
-    fun getStatusCodeColor(statusCode: Int): Color = com.ae.log.ui.theme.NetworkColors.getStatusCodeColor(statusCode)
+    fun getStatusCodeColor(statusCode: Int): Color =
+        com.ae.log.ui.theme.NetworkColors
+            .getStatusCodeColor(statusCode)
 
     @Composable
     fun getLogTypeColor(log: LogEntry): Pair<Color, Color> {
@@ -68,7 +71,10 @@ internal object LogUtils {
         return mainColor to bgColor
     }
 
-    fun getBadgeLabel(log: LogEntry, registry: LogTagRegistry? = null): String =
+    fun getBadgeLabel(
+        log: LogEntry,
+        registry: LogTagRegistry? = null,
+    ): String =
         when {
             log.isAnalytics ->
                 registry?.getLabel(log.tag) ?: log.tag.take(3).uppercase()

@@ -136,7 +136,9 @@ public class OkHttpInterceptor(
                     runCatching {
                         val bodyString = response.peekBody(maxResponseBodyBytes).string()
                         val contentLength = response.body?.contentLength() ?: -1L
-                        if (contentLength > maxResponseBodyBytes || (contentLength == -1L && bodyString.length.toLong() >= maxResponseBodyBytes)) {
+                        if (contentLength > maxResponseBodyBytes ||
+                            (contentLength == -1L && bodyString.length.toLong() >= maxResponseBodyBytes)
+                        ) {
                             bodyString + "\n… [truncated]"
                         } else {
                             bodyString

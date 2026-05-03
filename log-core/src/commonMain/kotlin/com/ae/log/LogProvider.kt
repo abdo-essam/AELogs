@@ -8,7 +8,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import com.ae.log.core.Plugin
 import com.ae.log.core.LocalLogController
 import com.ae.log.core.LogController
 import com.ae.log.core.UIPlugin
@@ -33,18 +32,6 @@ import com.ae.log.ui.theme.LogTheme
  *     }
  * }
  * ```
- *
- * @param instance  The [AELog] instance to connect to. Defaults to [AELog.defaultOrNull].
- * @param uiConfig  UI-specific configuration (button visibility, theme, etc.).
- * @param enabled   Set to `false` in release builds for zero overhead.
- * @param content   Your app's content.
- */
-
-/**
- * Top-level composable wrapper that enables the AELog overlay.
- *
- * Wrap your entire app content with this composable.
- * If [instance] is null, this acts as a transparent pass-through.
  *
  * @param instance  The [AELog] instance to connect to. Defaults to [AELog.defaultOrNull].
  * @param uiConfig  UI-specific configuration (button visibility, theme, etc.).

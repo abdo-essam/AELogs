@@ -65,7 +65,9 @@ public class LogPlugin(
     override val icon: ImageVector = Icons.Default.Description
 
     internal val logStore = PluginStore<LogEntry>(capacity = maxEntries)
-    internal val registry = com.ae.log.plugins.log.model.LogTagRegistry()
+    internal val registry =
+        com.ae.log.plugins.log.model
+            .LogTagRegistry()
 
     /** Public write API — use this to send logs to the viewer. */
     public val recorder: LogRecorder = LogRecorder(store = logStore, registry = registry)
