@@ -1,6 +1,6 @@
 # Logging Integrations
 
-AELog works with **any** logging library. Just forward logs to the static `AELog.log()` method.
+AELog works with **any** logging library. Just forward logs to the static `AELog.log.entry()` method.
 
 ## Kermit
 
@@ -17,7 +17,7 @@ class AELogKermitWriter : LogWriter() {
         tag: String,
         throwable: Throwable?
     ) {
-        AELog.log(
+        AELog.log.entry(
             severity = severity.toAELogLogSeverity(),
             tag = tag,
             message = message,
@@ -54,7 +54,7 @@ class AELogNapierAntilog : Antilog() {
         throwable: Throwable?,
         message: String?
     ) {
-        AELog.log(
+        AELog.log.entry(
             severity = priority.toAELogLogSeverity(),
             tag = tag ?: "Napier",
             message = message ?: "",
@@ -85,7 +85,7 @@ import com.ae.log.plugins.log.model.LogSeverity
 
 class AELogTimberTree : Timber.Tree() {
     override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
-        AELog.log(
+        AELog.log.entry(
             severity = priority.toAELogLogSeverity(),
             tag = tag ?: "Timber",
             message = message,
@@ -120,7 +120,7 @@ val client = HttpClient {
         logger = object : Logger {
             override fun log(message: String) {
                 // Forward to AELog
-                AELog.d("HTTP", message)
+                AELog.log.d("HTTP", message)
             }
         }
         level = LogLevel.ALL
@@ -132,9 +132,9 @@ val client = HttpClient {
 
 ```kotlin
 // Use the static shorthands
-AELog.i("MyApp", "App started")
-AELog.e("Auth", "Login failed", error)
+AELog.log.i("MyApp", "App started")
+AELog.log.e("Auth", "Login failed", error)
 
 // Or the generic log method
-AELog.log(LogSeverity.INFO, "MyApp", "Direct log call")
+AELog.log.entry(LogSeverity.INFO, "MyApp", "Direct log call")
 ```

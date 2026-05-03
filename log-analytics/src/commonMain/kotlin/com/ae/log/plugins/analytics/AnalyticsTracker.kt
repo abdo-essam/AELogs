@@ -1,3 +1,4 @@
+@file:Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
 @file:OptIn(kotlin.time.ExperimentalTime::class)
 
 package com.ae.log.plugins.analytics

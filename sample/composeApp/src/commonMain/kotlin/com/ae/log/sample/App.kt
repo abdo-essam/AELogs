@@ -1,63 +1,33 @@
 package com.ae.log.sample
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Analytics
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Wifi
-import androidx.compose.material.icons.outlined.Analytics
-import androidx.compose.material.icons.outlined.List
-import androidx.compose.material.icons.outlined.WifiFind
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.ae.log.LogProvider
 import com.ae.log.UiConfig
 import com.ae.log.sample.ui.analytics.AnalyticsScreen
-import com.ae.log.sample.ui.logs.LogScreen
+import com.ae.log.sample.ui.log.LogScreen
 import com.ae.log.sample.ui.network.NetworkScreen
 import com.ae.log.sample.ui.theme.SampleTheme
 
-// ── Navigation model ──────────────────────────────────────────────────────────
-
-private data class NavTab(
-    val label: String,
-    val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector,
-)
-
-private val TABS =
-    listOf(
-        NavTab("Logs", Icons.Filled.List, Icons.Outlined.List),
-        NavTab("Network", Icons.Filled.Wifi, Icons.Outlined.WifiFind),
-        NavTab("Analytics", Icons.Filled.Analytics, Icons.Outlined.Analytics),
-    )
-
-// ── Root composable ───────────────────────────────────────────────────────────
-
 @Composable
-fun App(debugMode: Boolean = false) {
+fun App(debugMode: Boolean = true) {
     var selectedTab by rememberSaveable { mutableIntStateOf(0) }
 
     SampleTheme {
         LogProvider(
-            uiConfig =
-                UiConfig(
-                    showFloatingButton = true,
-                    enableLongPress = true,
-                    floatingButtonOffset = 160.dp,
-                ),
+            uiConfig = UiConfig(
+                showFloatingButton = true,
+                floatingButtonOffset = 160.dp
+            ),
             enabled = debugMode,
         ) {
             Scaffold(
@@ -65,13 +35,11 @@ fun App(debugMode: Boolean = false) {
                 bottomBar = {
                     SampleNavBar(
                         selectedTab = selectedTab,
-                        onTabSelected = { selectedTab = it },
+                        onTabSelected = { selectedTab = it }
                     )
-                },
+                }
             ) { innerPadding ->
-                androidx.compose.foundation.layout.Box(
-                    modifier = Modifier.padding(innerPadding).fillMaxSize(),
-                ) {
+                Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
                     when (selectedTab) {
                         0 -> LogScreen()
                         1 -> NetworkScreen()
@@ -83,25 +51,26 @@ fun App(debugMode: Boolean = false) {
     }
 }
 
-// ── Bottom Navigation Bar ─────────────────────────────────────────────────────
-
 @Composable
-private fun SampleNavBar(
-    selectedTab: Int,
-    onTabSelected: (Int) -> Unit,
-) {
+private fun SampleNavBar(selectedTab: Int, onTabSelected: (Int) -> Unit) {
+    val items = listOf(
+        "Logs" to (Icons.Filled.List to Icons.Outlined.List),
+        "Network" to (Icons.Filled.Wifi to Icons.Outlined.Wifi),
+        "Analytics" to (Icons.Filled.Analytics to Icons.Outlined.Analytics)
+    )
+
     NavigationBar {
-        TABS.forEachIndexed { index, tab ->
+        items.forEachIndexed { index, (label, icons) ->
             NavigationBarItem(
                 selected = selectedTab == index,
                 onClick = { onTabSelected(index) },
+                label = { Text(label) },
                 icon = {
                     Icon(
-                        imageVector = if (selectedTab == index) tab.selectedIcon else tab.unselectedIcon,
-                        contentDescription = tab.label,
+                        imageVector = if (selectedTab == index) icons.first else icons.second,
+                        contentDescription = label
                     )
-                },
-                label = { Text(tab.label) },
+                }
             )
         }
     }

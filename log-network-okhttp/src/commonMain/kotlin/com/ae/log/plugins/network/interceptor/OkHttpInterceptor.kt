@@ -1,3 +1,4 @@
+@file:Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
 package com.ae.log.plugins.network.interceptor
 
 import com.ae.log.AELog
@@ -10,44 +11,6 @@ import okio.Buffer
 /**
  * OkHttp [Interceptor] that automatically records every request/response pair
  * into the [NetworkPlugin] viewer — zero boilerplate, no ID management.
- *
- * ## Setup
- *
- * Add the dependency:
- * ```kotlin
- * // build.gradle.kts
- * implementation("io.github.abdo-essam:log-network-okhttp:<version>")
- * ```
- *
- * Install the interceptor — one line:
- * ```kotlin
- * val client = OkHttpClient.Builder()
- *     .addInterceptor(OkHttpInterceptor())
- *     .build()
- * ```
- *
- * Prefer [okhttp3.OkHttpClient.Builder.addNetworkInterceptor] over
- * [okhttp3.OkHttpClient.Builder.addInterceptor] to also capture cache hits
- * and see redirected / final network-level response bodies.
- *
- * ## What is captured
- *
- * | Field | Source |
- * |-------|--------|
- * | URL | `request.url` |
- * | Method | `request.method` |
- * | Request headers | `request.headers` |
- * | Request body | buffered peek — safe, non-consuming |
- * | Status code | `response.code` |
- * | Response headers | `response.headers` |
- * | Response body | `peekBody()` up to [MAX_BODY_BYTES] |
- * | Duration | wall-clock delta (request → first byte of response) |
- * | Error | `IOException.message` on connection failures |
- *
- * ## Silent no-op
- *
- * If [NetworkPlugin] is not installed or [AELog.init] has not been called,
- * [intercept] delegates straight to `chain.proceed()` with zero overhead.
  */
 public class OkHttpInterceptor(
     public val maxRequestBodyBytes: Long = 250_000L,
@@ -94,7 +57,7 @@ public class OkHttpInterceptor(
         val id = recorder.newId()
         val startNs = System.nanoTime()
 
-        // Read request body without consuming it (OkHttp bodies are single-read streams)
+        // Read request body without consuming it
         val body = request.body
         val requestBody =
             if (body != null && !body.isOneShot()) {
@@ -117,11 +80,10 @@ public class OkHttpInterceptor(
                 null
             }
 
-        recorder.request(
+        recorder.startRequest(
             id = id,
             url = request.url.toString(),
             method = NetworkMethod.fromString(request.method),
-            rawMethod = request.method,
             headers = request.headers.toMultiMap().redact(),
             body = requestBody,
         )
@@ -130,7 +92,6 @@ public class OkHttpInterceptor(
             val response = chain.proceed(request)
             val durationMs = (System.nanoTime() - startNs) / 1_000_000
 
-            // peekBody() clones the internal source — the live response stream is NOT consumed
             val responseBody =
                 if (shouldCaptureBody(response.body?.contentType()?.toString())) {
                     runCatching {
@@ -149,7 +110,7 @@ public class OkHttpInterceptor(
                     if (len > 0) "<binary or unsupported, $len bytes>" else "<binary or unsupported>"
                 }
 
-            recorder.response(
+            recorder.logResponse(
                 id = id,
                 statusCode = response.code,
                 headers = response.headers.toMultiMap().redact(),
@@ -158,7 +119,7 @@ public class OkHttpInterceptor(
             )
             response
         } catch (t: Throwable) {
-            recorder.error(id, t.message ?: t::class.simpleName ?: "Unknown error")
+            recorder.logError(id, t.message ?: t::class.simpleName ?: "Unknown error")
             throw t
         }
     }

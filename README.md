@@ -172,16 +172,16 @@ AELog.wtf("Auth", "Unexpected state")
 Omit the tag and AELog derives it from the caller's class name automatically. No repetition, no overhead:
 
 ```kotlin
-AELog.d("Token refreshed")          // tag → "AuthViewModel"
-AELog.i("App launched!")             // tag → "HomeScreen"
-AELog.e("Failed to clear cache", t)  // tag → "Database"
+AELog.log.d("Token refreshed")          // tag → "AuthViewModel"
+AELog.log.i("App launched!")             // tag → "HomeScreen"
+AELog.log.e("Failed to clear cache", t)  // tag → "Database"
 ```
 
 ```kotlin
 // Network & Analytics APIs
-NetworkRecorder.logRequest(method = "GET", url = "https://api.example.com/users", headers = mapOf("Auth" to "Bearer 123"))
-NetworkRecorder.logResponse(url = "https://api.example.com/users", statusCode = 200, responseBody = "{ \"count\": 2 }")
-AnalyticsTracker.logEvent("item_added_to_cart", properties = mapOf("id" to "123", "price" to "29.99"))
+AELog.network.logRequest(method = "GET", url = "https://api.example.com/users")
+AELog.network.logResponse(url = "https://api.example.com/users", statusCode = 200)
+AELog.analytics.logEvent("item_added_to_cart", properties = mapOf("id" to "123"))
 ```
 
 ### 🌐 Network Interceptors

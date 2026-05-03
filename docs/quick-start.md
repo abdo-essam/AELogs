@@ -34,14 +34,14 @@ Use the discoverable static APIs. AELog handles everything else behind the scene
 
 ```kotlin
 // 1. Logs (with automatic tag derivation from the calling class)
-AELog.i("App launched!")
-AELog.d("Auth", "Token refreshed") // Or specify an explicit tag
+AELog.log.i("App launched!")
+AELog.log.d("Auth", "Token refreshed") // Or specify an explicit tag
 
 // 2. Network (handled automatically via interceptors)
 // val client = HttpClient { install(KtorInterceptor) }
 
 // 3. Analytics
-AELog.getPlugin<AnalyticsPlugin>()?.tracker?.track("button_tap")
+AELog.analytics.logEvent("button_tap")
 ```
 
 ## Show / Hide the Overlay

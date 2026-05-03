@@ -1,7 +1,10 @@
+@file:Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
 @file:OptIn(kotlin.time.ExperimentalTime::class)
 
 package com.ae.log.plugins.network
 
+import com.ae.log.AELog
+import com.ae.log.core.utils.IdGenerator
 import com.ae.log.plugins.network.model.NetworkEntry
 import com.ae.log.plugins.network.model.NetworkMethod
 import com.ae.log.plugins.network.store.NetworkStore
@@ -9,53 +12,57 @@ import kotlin.time.Clock
 
 /**
  * Low-level write API for [NetworkPlugin].
- *
- * **Prefer the first-class interceptors** — they handle ID management, timing,
- * and error recording automatically:
- *
- * - Ktor: `install(KtorInterceptor)` — see [com.ae.log.plugins.network.interceptor.KtorInterceptor]
- * - OkHttp: `.addInterceptor(OkHttpInterceptor())` — see [com.ae.log.plugins.network.interceptor.OkHttpInterceptor]
- *
- * Use this API directly only for custom or unsupported HTTP clients:
- *
- * ```kotlin
- * val recorder = AELog.getPlugin<NetworkPlugin>()?.recorder ?: return
- * val id  = api.newId()
- *
- * recorder.request(id, "https://api.example.com/users", NetworkMethod.GET)
- * // … perform the request …
- * recorder.response(id, statusCode = 200, body = body, durationMs = elapsed)
- * // or on failure:
- * api.error(id, "Connection timed out")
- * ```
  */
 public class NetworkRecorder internal constructor(
     private val store: NetworkStore,
     private val clock: Clock = Clock.System,
     private val idGenerator: () -> String = {
-        com.ae.log.core.utils.IdGenerator
-            .next()
+        IdGenerator.next()
     },
 ) {
-    /**
-     * Record the start of an outgoing request.
-     * @param id Stable unique ID — use the same ID when calling [response] or [error].
-     */
-    public fun request(
+    /** Record a full request + response in a single call. */
+    public fun logRequest(
+        method: String,
+        url: String,
+        headers: Map<String, String> = emptyMap(),
+        body: String? = null,
+        statusCode: Int? = null,
+        responseHeaders: Map<String, String> = emptyMap(),
+        responseBody: String? = null,
+    ) {
+        if (!AELog.isEnabled) return
+        val id = newId()
+        store.recordOrReplace(
+            NetworkEntry(
+                id = id,
+                url = url,
+                method = NetworkMethod.valueOf(method.uppercase()),
+                rawMethod = method,
+                requestHeaders = headers,
+                requestBody = body,
+                responseHeaders = responseHeaders,
+                responseBody = responseBody,
+                statusCode = statusCode,
+                timestamp = clock.now().toEpochMilliseconds(),
+            ),
+        )
+    }
+
+    /** Start recording a request that will be completed later. */
+    public fun startRequest(
         id: String,
         url: String,
         method: NetworkMethod,
-        rawMethod: String = method.name,
         headers: Map<String, String> = emptyMap(),
         body: String? = null,
     ) {
-        if (!com.ae.log.AELog.isEnabled) return
+        if (!AELog.isEnabled) return
         store.recordOrReplace(
             NetworkEntry(
                 id = id,
                 url = url,
                 method = method,
-                rawMethod = rawMethod,
+                rawMethod = method.name,
                 requestHeaders = headers,
                 requestBody = body,
                 timestamp = clock.now().toEpochMilliseconds(),
@@ -63,18 +70,15 @@ public class NetworkRecorder internal constructor(
         )
     }
 
-    /**
-     * Update an existing request with its response data.
-     * @param id Must match the ID passed to [request].
-     */
-    public fun response(
+    /** Finish a previously started request. */
+    public fun logResponse(
         id: String,
         statusCode: Int,
         body: String? = null,
         headers: Map<String, String> = emptyMap(),
         durationMs: Long? = null,
     ) {
-        if (!com.ae.log.AELog.isEnabled) return
+        if (!AELog.isEnabled) return
         store.update(id) { existing ->
             existing.copy(
                 statusCode = statusCode,
@@ -85,76 +89,17 @@ public class NetworkRecorder internal constructor(
         }
     }
 
-    /** Record a failed request (connection error, timeout, etc.). */
-    public fun error(
-        id: String,
-        message: String,
-    ) {
-        if (!com.ae.log.AELog.isEnabled) return
-        store.update(id) { existing ->
-            existing.copy(error = message)
-        }
+    /** Record a failed request. */
+    public fun logError(id: String, message: String) {
+        if (!AELog.isEnabled) return
+        store.update(id) { it.copy(error = message) }
     }
 
-    /** Record a complete request + response entry in one call. */
     internal fun recordOrReplace(entry: NetworkEntry) {
-        if (!com.ae.log.AELog.isEnabled) return
+        if (!AELog.isEnabled) return
         store.recordOrReplace(entry)
     }
 
-    /**
-     * Higher-level helper to track a network call automatically.
-     * Generates an ID, records the request, times the execution, and logs the result or error.
-     *
-     * ```kotlin
-     * val data = api.recordCall(url, NetworkMethod.GET) {
-     *     val response = httpClient.execute(...)
-     *     NetworkResult(response.data, response.code, response.bodyString)
-     * }
-     * ```
-     */
-    public fun <T> recordCall(
-        url: String,
-        method: NetworkMethod,
-        rawMethod: String = method.name,
-        headers: Map<String, String> = emptyMap(),
-        body: String? = null,
-        block: () -> NetworkResult<T>,
-    ): T {
-        val id = newId()
-        request(id, url, method, rawMethod, headers, body)
-        val start = clock.now().toEpochMilliseconds()
-
-        return try {
-            val result = block()
-            val durationMs = clock.now().toEpochMilliseconds() - start
-            response(
-                id = id,
-                statusCode = result.statusCode,
-                body = result.body,
-                headers = result.headers,
-                durationMs = durationMs,
-            )
-            result.value
-        } catch (e: Throwable) {
-            error(id, e.message ?: e.toString())
-            throw e
-        }
-    }
-
-    /** Clear all recorded entries. */
     public fun clear(): Unit = store.clear()
-
     public fun newId(): String = idGenerator()
 }
-
-/**
- * Return type for [NetworkRecorder.recordCall] which encapsulates the raw network details
- * alongside the parsed or domain value.
- */
-public class NetworkResult<out T>(
-    public val value: T,
-    public val statusCode: Int,
-    public val body: String? = null,
-    public val headers: Map<String, String> = emptyMap(),
-)
