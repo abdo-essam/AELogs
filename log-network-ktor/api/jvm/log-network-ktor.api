@@ -1,16 +1,16 @@
-public final class com/ae/log/plugins/network/interceptor/AELogKtorInterceptorKt {
-	public static final fun getKtorInterceptor ()Lio/ktor/client/plugins/api/ClientPlugin;
+public final class com/ae/log/plugins/network/interceptor/AELogKtorInterceptor {
+	public static final field Plugin Lcom/ae/log/plugins/network/interceptor/AELogKtorInterceptor$Plugin;
 }
 
-public final class com/ae/log/plugins/network/interceptor/KtorConfig {
-	public fun <init> ()V
-	public final fun getExcludeUrls ()Ljava/util/List;
-	public final fun getMaxRequestBodyBytes ()J
-	public final fun getMaxResponseBodyBytes ()J
-	public final fun getRedactHeaders ()Ljava/util/Set;
-	public final fun setExcludeUrls (Ljava/util/List;)V
-	public final fun setMaxRequestBodyBytes (J)V
-	public final fun setMaxResponseBodyBytes (J)V
-	public final fun setRedactHeaders (Ljava/util/Set;)V
+public final class com/ae/log/plugins/network/interceptor/AELogKtorInterceptor$Plugin : io/ktor/client/plugins/HttpClientPlugin {
+	public fun getKey ()Lio/ktor/util/AttributeKey;
+	public fun install (Lcom/ae/log/plugins/network/interceptor/AELogKtorInterceptor;Lio/ktor/client/HttpClient;)V
+	public synthetic fun install (Ljava/lang/Object;Lio/ktor/client/HttpClient;)V
+	public fun prepare (Lkotlin/jvm/functions/Function1;)Lcom/ae/log/plugins/network/interceptor/AELogKtorInterceptor;
+	public synthetic fun prepare (Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+}
+
+public final class com/ae/log/plugins/network/interceptor/AELogKtorInterceptorKt {
+	public static final fun getKtorInterceptor ()Lcom/ae/log/plugins/network/interceptor/AELogKtorInterceptor$Plugin;
 }
 

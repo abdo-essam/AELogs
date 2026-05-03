@@ -22,18 +22,18 @@ fun AnalyticsScreen() {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             item {
                 SectionHeader("User Engagement")
                 ActionCard(
                     title = "Events & Screens",
-                    description = "Using AELog.analytics.logEvent()"
+                    description = "Using AELog.analytics.logEvent()",
                 ) {
                     SampleActionButton("Track 'purchase' event", Color(0xFF9C27B0)) {
                         AELog.analytics.logEvent(
                             name = "purchase_success",
-                            properties = mapOf("amount" to 49.99, "currency" to "USD")
+                            properties = mapOf("amount" to 49.99, "currency" to "USD"),
                         )
                     }
                     Spacer(Modifier.height(8.dp))

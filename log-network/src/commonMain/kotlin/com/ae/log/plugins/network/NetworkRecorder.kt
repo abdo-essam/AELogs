@@ -90,7 +90,10 @@ public class NetworkRecorder internal constructor(
     }
 
     /** Record a failed request. */
-    public fun logError(id: String, message: String) {
+    public fun logError(
+        id: String,
+        message: String,
+    ) {
         if (!AELog.isEnabled) return
         store.update(id) { it.copy(error = message) }
     }
@@ -101,5 +104,6 @@ public class NetworkRecorder internal constructor(
     }
 
     public fun clear(): Unit = store.clear()
+
     public fun newId(): String = idGenerator()
 }

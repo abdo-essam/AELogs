@@ -101,5 +101,3 @@ public class NetworkPlugin(
         public const val ID: String = "ae_logs_network"
     }
 }
-
-

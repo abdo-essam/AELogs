@@ -58,16 +58,22 @@ public object AELog {
     @Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
     internal var isEnabled: Boolean
         get() = enabledAtomic.value
-        set(value) { enabledAtomic.value = value }
+        set(value) {
+            enabledAtomic.value = value
+        }
 
     /** Internal lookup. */
     @PublishedApi
     @Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
-    internal inline fun <reified T : Plugin> getPlugin(): T? =
-        instance?.plugins?.getPlugin(T::class)
+    internal inline fun <reified T : Plugin> getPlugin(): T? = instance?.plugins?.getPlugin(T::class)
 
     @PublishedApi
-    internal fun record(severity: LogSeverity, tag: String, msg: String, t: Throwable?) {
+    internal fun record(
+        severity: LogSeverity,
+        tag: String,
+        msg: String,
+        t: Throwable?,
+    ) {
         instance?.record(severity, tag, msg, t)
     }
 }
@@ -88,30 +94,82 @@ public object LogProxy {
     }
 
     @JvmStatic
-    public fun v(tag: String, msg: String, t: Throwable? = null): Unit = AELog.record(LogSeverity.VERBOSE, tag, msg, t)
-    @JvmStatic
-    public fun d(tag: String, msg: String, t: Throwable? = null): Unit = AELog.record(LogSeverity.DEBUG, tag, msg, t)
-    @JvmStatic
-    public fun i(tag: String, msg: String, t: Throwable? = null): Unit = AELog.record(LogSeverity.INFO, tag, msg, t)
-    @JvmStatic
-    public fun w(tag: String, msg: String, t: Throwable? = null): Unit = AELog.record(LogSeverity.WARN, tag, msg, t)
-    @JvmStatic
-    public fun e(tag: String, msg: String, t: Throwable? = null): Unit = AELog.record(LogSeverity.ERROR, tag, msg, t)
-    @JvmStatic
-    public fun wtf(tag: String, msg: String, t: Throwable? = null): Unit = AELog.record(LogSeverity.ASSERT, tag, msg, t)
+    public fun v(
+        tag: String,
+        msg: String,
+        t: Throwable? = null,
+    ): Unit = AELog.record(LogSeverity.VERBOSE, tag, msg, t)
 
     @JvmStatic
-    public fun v(msg: String, t: Throwable? = null): Unit = AELog.record(LogSeverity.VERBOSE, callerTag(), msg, t)
+    public fun d(
+        tag: String,
+        msg: String,
+        t: Throwable? = null,
+    ): Unit = AELog.record(LogSeverity.DEBUG, tag, msg, t)
+
     @JvmStatic
-    public fun d(msg: String, t: Throwable? = null): Unit = AELog.record(LogSeverity.DEBUG, callerTag(), msg, t)
+    public fun i(
+        tag: String,
+        msg: String,
+        t: Throwable? = null,
+    ): Unit = AELog.record(LogSeverity.INFO, tag, msg, t)
+
     @JvmStatic
-    public fun i(msg: String, t: Throwable? = null): Unit = AELog.record(LogSeverity.INFO, callerTag(), msg, t)
+    public fun w(
+        tag: String,
+        msg: String,
+        t: Throwable? = null,
+    ): Unit = AELog.record(LogSeverity.WARN, tag, msg, t)
+
     @JvmStatic
-    public fun w(msg: String, t: Throwable? = null): Unit = AELog.record(LogSeverity.WARN, callerTag(), msg, t)
+    public fun e(
+        tag: String,
+        msg: String,
+        t: Throwable? = null,
+    ): Unit = AELog.record(LogSeverity.ERROR, tag, msg, t)
+
     @JvmStatic
-    public fun e(msg: String, t: Throwable? = null): Unit = AELog.record(LogSeverity.ERROR, callerTag(), msg, t)
+    public fun wtf(
+        tag: String,
+        msg: String,
+        t: Throwable? = null,
+    ): Unit = AELog.record(LogSeverity.ASSERT, tag, msg, t)
+
     @JvmStatic
-    public fun wtf(msg: String, t: Throwable? = null): Unit = AELog.record(LogSeverity.ASSERT, callerTag(), msg, t)
+    public fun v(
+        msg: String,
+        t: Throwable? = null,
+    ): Unit = AELog.record(LogSeverity.VERBOSE, callerTag(), msg, t)
+
+    @JvmStatic
+    public fun d(
+        msg: String,
+        t: Throwable? = null,
+    ): Unit = AELog.record(LogSeverity.DEBUG, callerTag(), msg, t)
+
+    @JvmStatic
+    public fun i(
+        msg: String,
+        t: Throwable? = null,
+    ): Unit = AELog.record(LogSeverity.INFO, callerTag(), msg, t)
+
+    @JvmStatic
+    public fun w(
+        msg: String,
+        t: Throwable? = null,
+    ): Unit = AELog.record(LogSeverity.WARN, callerTag(), msg, t)
+
+    @JvmStatic
+    public fun e(
+        msg: String,
+        t: Throwable? = null,
+    ): Unit = AELog.record(LogSeverity.ERROR, callerTag(), msg, t)
+
+    @JvmStatic
+    public fun wtf(
+        msg: String,
+        t: Throwable? = null,
+    ): Unit = AELog.record(LogSeverity.ASSERT, callerTag(), msg, t)
 }
 
 /**
@@ -121,11 +179,17 @@ public class LogInspector internal constructor(
     internal val config: LogConfig,
 ) {
     internal val eventBus: EventBus = EventBus()
+
     @PublishedApi
     internal val plugins: PluginManager = PluginManager(config, eventBus)
     internal val lifecycle: Lifecycle = Lifecycle(plugins, eventBus)
 
-    internal fun record(severity: LogSeverity, tag: String, msg: String, t: Throwable?) {
+    internal fun record(
+        severity: LogSeverity,
+        tag: String,
+        msg: String,
+        t: Throwable?,
+    ) {
         plugins.getPlugin(LogPlugin::class)?.recorder?.log(severity, tag, msg, t)
     }
 

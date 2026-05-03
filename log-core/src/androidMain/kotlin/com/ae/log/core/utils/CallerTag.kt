@@ -12,9 +12,8 @@ internal actual fun callerTag(): String {
         .stackTrace
         .firstOrNull { frame ->
             skipPrefixes.none { frame.className.startsWith(it) }
-        }
-        ?.className
+        }?.className
         ?.substringAfterLast('.')
-        ?.substringBefore('$')   // strip anonymous/inner class suffixes
+        ?.substringBefore('$') // strip anonymous/inner class suffixes
         ?: "AELog"
 }
