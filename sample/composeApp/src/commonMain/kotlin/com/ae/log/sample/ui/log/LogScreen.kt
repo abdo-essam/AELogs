@@ -21,13 +21,13 @@ fun LogScreen() {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             item {
                 SectionHeader("Basic Logging")
                 ActionCard(
                     title = "Standard Severity Levels",
-                    description = "AELog.log.d(), .i(), .e(), etc."
+                    description = "AELog.log.d(), .i(), .e(), etc.",
                 ) {
                     SampleActionButton("Log VERBOSE (Gray)", Color(0xFF9E9E9E)) {
                         AELog.log.v("Simple logs are easy")
@@ -47,7 +47,7 @@ fun LogScreen() {
                 SectionHeader("Stress Testing")
                 ActionCard(
                     title = "Performance Test",
-                    description = "Sending multiple logs to verify the ring buffer"
+                    description = "Sending multiple logs to verify the ring buffer",
                 ) {
                     SampleActionButton("Send 20 logs", MaterialTheme.colorScheme.secondary) {
                         repeat(20) { i -> AELog.log.d("Batch", "Entry #${i + 1}") }

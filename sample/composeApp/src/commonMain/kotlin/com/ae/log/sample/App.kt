@@ -24,10 +24,11 @@ fun App(debugMode: Boolean = true) {
 
     SampleTheme {
         LogProvider(
-            uiConfig = UiConfig(
-                showFloatingButton = true,
-                floatingButtonOffset = 160.dp
-            ),
+            uiConfig =
+                UiConfig(
+                    showFloatingButton = true,
+                    floatingButtonOffset = 160.dp,
+                ),
             enabled = debugMode,
         ) {
             Scaffold(
@@ -35,9 +36,9 @@ fun App(debugMode: Boolean = true) {
                 bottomBar = {
                     SampleNavBar(
                         selectedTab = selectedTab,
-                        onTabSelected = { selectedTab = it }
+                        onTabSelected = { selectedTab = it },
                     )
-                }
+                },
             ) { innerPadding ->
                 Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
                     when (selectedTab) {
@@ -52,12 +53,16 @@ fun App(debugMode: Boolean = true) {
 }
 
 @Composable
-private fun SampleNavBar(selectedTab: Int, onTabSelected: (Int) -> Unit) {
-    val items = listOf(
-        "Logs" to (Icons.Filled.List to Icons.Outlined.List),
-        "Network" to (Icons.Filled.Wifi to Icons.Outlined.Wifi),
-        "Analytics" to (Icons.Filled.Analytics to Icons.Outlined.Analytics)
-    )
+private fun SampleNavBar(
+    selectedTab: Int,
+    onTabSelected: (Int) -> Unit,
+) {
+    val items =
+        listOf(
+            "Logs" to (Icons.Filled.List to Icons.Outlined.List),
+            "Network" to (Icons.Filled.Wifi to Icons.Outlined.Wifi),
+            "Analytics" to (Icons.Filled.Analytics to Icons.Outlined.Analytics),
+        )
 
     NavigationBar {
         items.forEachIndexed { index, (label, icons) ->
@@ -68,9 +73,9 @@ private fun SampleNavBar(selectedTab: Int, onTabSelected: (Int) -> Unit) {
                 icon = {
                     Icon(
                         imageVector = if (selectedTab == index) icons.first else icons.second,
-                        contentDescription = label
+                        contentDescription = label,
                     )
-                }
+                },
             )
         }
     }

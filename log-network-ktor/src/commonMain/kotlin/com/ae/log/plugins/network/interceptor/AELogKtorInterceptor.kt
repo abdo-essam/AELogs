@@ -16,11 +16,10 @@ import kotlin.time.Clock
 
 /**
  * Ktor Client interceptor that automatically records HTTP traffic to AELog.
- * 
+ *
  * Works with Ktor 2.x and 3.x.
  */
 public class AELogKtorInterceptor internal constructor() {
-
     public companion object Plugin : HttpClientPlugin<Unit, AELogKtorInterceptor> {
         override val key: AttributeKey<AELogKtorInterceptor> = AttributeKey("AELogKtorInterceptor")
 
@@ -29,40 +28,48 @@ public class AELogKtorInterceptor internal constructor() {
 
         override fun prepare(block: Unit.() -> Unit): AELogKtorInterceptor = AELogKtorInterceptor()
 
-        override fun install(plugin: AELogKtorInterceptor, scope: HttpClient) {
+        override fun install(
+            plugin: AELogKtorInterceptor,
+            scope: HttpClient,
+        ) {
             val clock = Clock.System
 
             // Intercept Outgoing Requests
             scope.requestPipeline.intercept(HttpRequestPipeline.State) {
                 if (!AELog.isEnabled) return@intercept
-                
+
                 val recorder = AELog.getPlugin<NetworkPlugin>()?.recorder ?: return@intercept
                 val id = recorder.newId()
-                
+
                 context.attributes.put(RequestIdKey, id)
                 context.attributes.put(StartTimeKey, clock.now().toEpochMilliseconds())
 
                 val method = NetworkMethod.valueOf(context.method.value.uppercase()) ?: NetworkMethod.GET
-                val headersMap = context.headers.build().entries().associate { it.key to it.value.joinToString(", ") }
-                
-                val bodyString = when (val body = context.body) {
-                    is TextContent -> body.text
-                    else -> null
-                }
+                val headersMap =
+                    context.headers
+                        .build()
+                        .entries()
+                        .associate { it.key to it.value.joinToString(", ") }
+
+                val bodyString =
+                    when (val body = context.body) {
+                        is TextContent -> body.text
+                        else -> null
+                    }
 
                 recorder.startRequest(
                     id = id,
                     url = context.url.buildString(),
                     method = method,
                     headers = headersMap,
-                    body = bodyString
+                    body = bodyString,
                 )
             }
 
             // Intercept Incoming Responses
             scope.receivePipeline.intercept(HttpReceivePipeline.State) { response ->
                 if (!AELog.isEnabled) return@intercept
-                
+
                 val recorder = AELog.getPlugin<NetworkPlugin>()?.recorder ?: return@intercept
                 val call = response.call
                 val id = call.attributes.getOrNull(RequestIdKey) ?: return@intercept
@@ -70,12 +77,12 @@ public class AELogKtorInterceptor internal constructor() {
                 val duration = clock.now().toEpochMilliseconds() - start
 
                 val headersMap = response.headers.entries().associate { it.key to it.value.joinToString(", ") }
-                
+
                 recorder.logResponse(
                     id = id,
                     statusCode = response.status.value,
                     headers = headersMap,
-                    durationMs = duration
+                    durationMs = duration,
                 )
             }
         }

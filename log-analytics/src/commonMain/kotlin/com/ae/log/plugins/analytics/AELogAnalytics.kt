@@ -22,7 +22,7 @@ public object AnalyticsProxy {
      */
     public fun logEvent(
         name: String,
-        properties: Map<String, Any> = emptyMap()
+        properties: Map<String, Any> = emptyMap(),
     ) {
         AELog.getPlugin<AnalyticsPlugin>()?.tracker?.track(name, properties)
     }
@@ -32,7 +32,7 @@ public object AnalyticsProxy {
      */
     public fun logScreen(
         screenName: String,
-        properties: Map<String, Any> = emptyMap()
+        properties: Map<String, Any> = emptyMap(),
     ) {
         AELog.getPlugin<AnalyticsPlugin>()?.tracker?.screen(screenName, properties)
     }
@@ -44,4 +44,3 @@ public object AnalyticsProxy {
         AELog.getPlugin<AnalyticsPlugin>()?.tracker?.clear()
     }
 }
-

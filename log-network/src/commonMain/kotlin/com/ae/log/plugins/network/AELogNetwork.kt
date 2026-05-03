@@ -21,10 +21,16 @@ public object NetworkProxy {
         body: String? = null,
         statusCode: Int? = null,
         responseHeaders: Map<String, String> = emptyMap(),
-        responseBody: String? = null
+        responseBody: String? = null,
     ) {
         AELog.getPlugin<NetworkPlugin>()?.recorder?.logRequest(
-            method, url, headers, body, statusCode, responseHeaders, responseBody
+            method,
+            url,
+            headers,
+            body,
+            statusCode,
+            responseHeaders,
+            responseBody,
         )
     }
 

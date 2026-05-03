@@ -1,3 +1,7 @@
+public final class com/ae/log/plugins/network/AELogNetworkKt {
+	public static final fun getNetwork (Lcom/ae/log/AELog;)Lcom/ae/log/plugins/network/NetworkProxy;
+}
+
 public final class com/ae/log/plugins/network/NetworkPlugin : com/ae/log/core/UIPlugin {
 	public static final field $stable I
 	public static final field Companion Lcom/ae/log/plugins/network/NetworkPlugin$Companion;
@@ -26,31 +30,25 @@ public final class com/ae/log/plugins/network/NetworkPlugin : com/ae/log/core/UI
 public final class com/ae/log/plugins/network/NetworkPlugin$Companion {
 }
 
-public final class com/ae/log/plugins/network/NetworkPluginKt {
-	public static final fun getNetwork (Lcom/ae/log/AELog$Companion;)Lcom/ae/log/plugins/network/NetworkRecorder;
+public final class com/ae/log/plugins/network/NetworkProxy {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/ae/log/plugins/network/NetworkProxy;
+	public final fun clear ()V
+	public final fun logRequest (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Ljava/lang/Integer;Ljava/util/Map;Ljava/lang/String;)V
+	public static synthetic fun logRequest$default (Lcom/ae/log/plugins/network/NetworkProxy;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Ljava/lang/Integer;Ljava/util/Map;Ljava/lang/String;ILjava/lang/Object;)V
 }
 
 public final class com/ae/log/plugins/network/NetworkRecorder {
 	public static final field $stable I
 	public final fun clear ()V
-	public final fun error (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun logError (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun logRequest (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Ljava/lang/Integer;Ljava/util/Map;Ljava/lang/String;)V
+	public static synthetic fun logRequest$default (Lcom/ae/log/plugins/network/NetworkRecorder;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Ljava/lang/Integer;Ljava/util/Map;Ljava/lang/String;ILjava/lang/Object;)V
+	public final fun logResponse (Ljava/lang/String;ILjava/lang/String;Ljava/util/Map;Ljava/lang/Long;)V
+	public static synthetic fun logResponse$default (Lcom/ae/log/plugins/network/NetworkRecorder;Ljava/lang/String;ILjava/lang/String;Ljava/util/Map;Ljava/lang/Long;ILjava/lang/Object;)V
 	public final fun newId ()Ljava/lang/String;
-	public final fun recordCall (Ljava/lang/String;Lcom/ae/log/plugins/network/model/NetworkMethod;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
-	public static synthetic fun recordCall$default (Lcom/ae/log/plugins/network/NetworkRecorder;Ljava/lang/String;Lcom/ae/log/plugins/network/model/NetworkMethod;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Lkotlin/jvm/functions/Function0;ILjava/lang/Object;)Ljava/lang/Object;
-	public final fun request (Ljava/lang/String;Ljava/lang/String;Lcom/ae/log/plugins/network/model/NetworkMethod;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;)V
-	public static synthetic fun request$default (Lcom/ae/log/plugins/network/NetworkRecorder;Ljava/lang/String;Ljava/lang/String;Lcom/ae/log/plugins/network/model/NetworkMethod;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;ILjava/lang/Object;)V
-	public final fun response (Ljava/lang/String;ILjava/lang/String;Ljava/util/Map;Ljava/lang/Long;)V
-	public static synthetic fun response$default (Lcom/ae/log/plugins/network/NetworkRecorder;Ljava/lang/String;ILjava/lang/String;Ljava/util/Map;Ljava/lang/Long;ILjava/lang/Object;)V
-}
-
-public final class com/ae/log/plugins/network/NetworkResult {
-	public static final field $stable I
-	public fun <init> (Ljava/lang/Object;ILjava/lang/String;Ljava/util/Map;)V
-	public synthetic fun <init> (Ljava/lang/Object;ILjava/lang/String;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun getBody ()Ljava/lang/String;
-	public final fun getHeaders ()Ljava/util/Map;
-	public final fun getStatusCode ()I
-	public final fun getValue ()Ljava/lang/Object;
+	public final fun startRequest (Ljava/lang/String;Ljava/lang/String;Lcom/ae/log/plugins/network/model/NetworkMethod;Ljava/util/Map;Ljava/lang/String;)V
+	public static synthetic fun startRequest$default (Lcom/ae/log/plugins/network/NetworkRecorder;Ljava/lang/String;Ljava/lang/String;Lcom/ae/log/plugins/network/model/NetworkMethod;Ljava/util/Map;Ljava/lang/String;ILjava/lang/Object;)V
 }
 
 public final class com/ae/log/plugins/network/model/NetworkEntry {

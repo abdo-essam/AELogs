@@ -29,13 +29,13 @@ fun NetworkScreen() {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             item {
                 SectionHeader("Live Interception")
                 ActionCard(
                     title = "Real HTTP Requests",
-                    description = "Captured automatically via KtorInterceptor"
+                    description = "Captured automatically via KtorInterceptor",
                 ) {
                     SampleActionButton("GET /posts/1 (Ktor)", Color(0xFF2196F3)) {
                         scope.launch {
@@ -49,14 +49,14 @@ fun NetworkScreen() {
                 SectionHeader("Manual Logging")
                 ActionCard(
                     title = "Custom Entries",
-                    description = "Using AELog.network.logRequest()"
+                    description = "Using AELog.network.logRequest()",
                 ) {
                     SampleActionButton("Log 200 OK (Success)", Color(0xFF4CAF50)) {
                         AELog.network.logRequest(
                             method = "GET",
                             url = "https://api.example.com/status",
                             statusCode = 200,
-                            responseBody = "{\"status\": \"healthy\"}"
+                            responseBody = "{\"status\": \"healthy\"}",
                         )
                     }
                     Spacer(Modifier.height(8.dp))
@@ -65,7 +65,7 @@ fun NetworkScreen() {
                             method = "POST",
                             url = "https://api.example.com/v1/auth",
                             statusCode = 404,
-                            responseBody = "{\"error\": \"User not found\"}"
+                            responseBody = "{\"error\": \"User not found\"}",
                         )
                     }
                 }

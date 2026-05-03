@@ -1,3 +1,7 @@
+public final class com/ae/log/plugins/analytics/AELogAnalyticsKt {
+	public static final fun getAnalytics (Lcom/ae/log/AELog;)Lcom/ae/log/plugins/analytics/AnalyticsProxy;
+}
+
 public final class com/ae/log/plugins/analytics/AnalyticsPlugin : com/ae/log/core/UIPlugin {
 	public static final field $stable I
 	public static final field Companion Lcom/ae/log/plugins/analytics/AnalyticsPlugin$Companion;
@@ -26,8 +30,14 @@ public final class com/ae/log/plugins/analytics/AnalyticsPlugin : com/ae/log/cor
 public final class com/ae/log/plugins/analytics/AnalyticsPlugin$Companion {
 }
 
-public final class com/ae/log/plugins/analytics/AnalyticsPluginKt {
-	public static final fun getAnalytics (Lcom/ae/log/AELog$Companion;)Lcom/ae/log/plugins/analytics/AnalyticsTracker;
+public final class com/ae/log/plugins/analytics/AnalyticsProxy {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/ae/log/plugins/analytics/AnalyticsProxy;
+	public final fun clear ()V
+	public final fun logEvent (Ljava/lang/String;Ljava/util/Map;)V
+	public static synthetic fun logEvent$default (Lcom/ae/log/plugins/analytics/AnalyticsProxy;Ljava/lang/String;Ljava/util/Map;ILjava/lang/Object;)V
+	public final fun logScreen (Ljava/lang/String;Ljava/util/Map;)V
+	public static synthetic fun logScreen$default (Lcom/ae/log/plugins/analytics/AnalyticsProxy;Ljava/lang/String;Ljava/util/Map;ILjava/lang/Object;)V
 }
 
 public final class com/ae/log/plugins/analytics/AnalyticsTracker {

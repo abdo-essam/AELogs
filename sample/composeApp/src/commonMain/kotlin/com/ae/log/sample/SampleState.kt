@@ -21,12 +21,13 @@ object SampleState {
         AELog.init(
             LogPlugin(),
             NetworkPlugin(),
-            AnalyticsPlugin()
+            AnalyticsPlugin(),
         )
 
         // 2. Initialise HTTP client with interceptor
-        httpClient = HttpClient {
-            install(KtorInterceptor)
-        }
+        httpClient =
+            HttpClient {
+                install(KtorInterceptor)
+            }
     }
 }

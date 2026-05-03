@@ -77,5 +77,3 @@ public class AnalyticsPlugin(
         public const val ID: String = "ae_logs_analytics"
     }
 }
-
-
