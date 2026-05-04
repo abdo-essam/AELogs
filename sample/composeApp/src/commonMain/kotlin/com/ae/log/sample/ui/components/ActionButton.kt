@@ -24,4 +24,3 @@ fun ActionButton(
         Text(label, color = Color.White)
     }
 }
-
