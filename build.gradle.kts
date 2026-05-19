@@ -30,8 +30,14 @@ apiValidation {
 
 spotless {
     kotlin {
-        target("**/*.kt")
-        targetExclude("**/build/**", "sample/iosApp/**")
+        // Target specific directories to avoid scanning sample/iosApp which contains problematic symlinks
+        target(
+            "core/**/*.kt",
+            "plugins/**/*.kt",
+            "sample/composeApp/**/*.kt",
+            "benchmarks/**/*.kt"
+        )
+        targetExclude("**/build/**")
         ktlint("1.5.0")
             .setEditorConfigPath("$rootDir/.editorconfig")
     }
