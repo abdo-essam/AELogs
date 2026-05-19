@@ -29,8 +29,8 @@ apiValidation {
 }
 
 spotless {
+    lineEndings = com.diffplug.spotless.LineEnding.UNIX
     kotlin {
-        // Target specific directories to avoid scanning sample/iosApp which contains problematic symlinks
         target(
             "core/**/*.kt",
             "plugins/**/*.kt",
@@ -42,7 +42,17 @@ spotless {
             .setEditorConfigPath("$rootDir/.editorconfig")
     }
     kotlinGradle {
-        target("**/*.gradle.kts")
+        target(
+            "*.gradle.kts",
+            "core/**/*.gradle.kts",
+            "plugins/**/*.gradle.kts",
+            "sample/composeApp/**/*.gradle.kts",
+            "benchmarks/**/*.gradle.kts"
+        )
         ktlint("1.5.0")
     }
+}
+
+tasks.clean {
+    delete("sample/iosApp/build")
 }
